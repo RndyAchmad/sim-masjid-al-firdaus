@@ -4,13 +4,17 @@
 
             {{-- Logo --}}
             <a href="/" class="flex items-center gap-4 transition hover:opacity-80">
-                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-white font-bold shadow-lg shadow-[#c49c4d]/20">
+                <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-white font-bold shadow-lg shadow-[#c49c4d]/20">
                     AF
                 </div>
-                <div>
-                    <h1 class="text-lg font-bold tracking-wide text-white">
+                <div class="flex flex-col justify-center">
+                    <h1 class="text-lg font-bold tracking-wide text-white leading-tight">
                         Masjid Al Firdaus
                     </h1>
+                    {{-- Tambahan Teks Taman Puspa Sari --}}
+                    <span class="text-xs font-medium tracking-wider text-gray-400">
+                        Perumahan Taman Puspa Sari
+                    </span>
                 </div>
             </a>
 

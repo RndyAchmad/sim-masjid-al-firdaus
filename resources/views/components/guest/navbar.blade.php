@@ -15,21 +15,26 @@
             </a>
 
             {{-- Desktop Menu --}}
-            <div class="hidden lg:flex lg:items-center lg:gap-10">
+            <div class="hidden lg:flex lg:items-center lg:gap-8">
                 <a href="/" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Beranda
                 </a>
                 <a href="/profil" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Profil
                 </a>
+
+                {{-- Kegiatan --}}
                 <a href="/kegiatan" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Kegiatan
                 </a>
+
+                {{-- Artikel --}}
                 <a href="/artikel" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Artikel
                 </a>
-                <a href="/galeri" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
-                    Galeri
+
+                <a href="/laporan-keuangan" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                    Laporan Keuangan
                 </a>
                 <a href="/kontak" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Kontak
@@ -52,13 +57,13 @@
     {{-- Mobile Menu --}}
     <div x-show="mobileMenuOpen" 
          x-transition:enter="transition ease-out duration-200"
-         x-transition:enter-start="opacity-0 -translate-y-2"
+         x-transition:enter-start="opacity-0 -translate-y-2" 
          x-transition:enter-end="opacity-100 translate-y-0"
-         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave="transition ease-in duration-150" 
          x-transition:leave-start="opacity-100 translate-y-0"
-         x-transition:leave-end="opacity-0 -translate-y-2"
+         x-transition:leave-end="opacity-0 -translate-y-2" 
          x-cloak 
-         class="border-t border-gray-800 bg-black lg:hidden">
+         class="border-t border-gray-800 bg-[#0B0B0B] lg:hidden">
 
         <div class="space-y-1 px-4 py-6">
             <a href="/" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
@@ -67,19 +72,22 @@
             <a href="/profil" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Profil
             </a>
+
             <a href="/kegiatan" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Kegiatan
             </a>
+
+            {{-- Artikel --}}
             <a href="/artikel" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Artikel
             </a>
-            <a href="/galeri" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
-                Galeri
+
+            <a href="/laporan-keuangan" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                Laporan Keuangan
             </a>
             <a href="/kontak" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Kontak
             </a>
         </div>
-        
     </div>
 </nav>

@@ -26,8 +26,8 @@
             <div>
                 <h3 class="mb-6 text-sm font-semibold tracking-wider text-white uppercase">Tautan Cepat</h3>
                 <ul class="space-y-4">
-                    <li><a href="/" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Beranda</a></li>
-                    <li><a href="/profil" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Profil Kami</a>
+                    <li><a href="{{ route('beranda') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Beranda</a></li>
+                    <li><a href="{{ route('profile') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Profil Kami</a>
                     </li>
                     <li><a href="/kegiatan" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
                             Kegiatan</a></li>

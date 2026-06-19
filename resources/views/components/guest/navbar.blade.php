@@ -3,7 +3,7 @@
         <div class="flex h-20 items-center justify-between">
 
             {{-- Logo --}}
-            <a href="/" class="flex items-center gap-4 transition hover:opacity-80">
+            <a href="{{ route('beranda') }}" class="flex items-center gap-4 transition hover:opacity-80">
                 <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-white font-bold shadow-lg shadow-[#c49c4d]/20">
                     AF
                 </div>
@@ -20,10 +20,10 @@
 
             {{-- Desktop Menu --}}
             <div class="hidden lg:flex lg:items-center lg:gap-8">
-                <a href="/" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                <a href="{{ route('beranda') }}" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Beranda
                 </a>
-                <a href="/profil" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                <a href="{{ route('profile') }}" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Profil
                 </a>
 

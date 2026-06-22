@@ -31,8 +31,8 @@
                     </li>
                     <li><a href="/kegiatan" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
                             Kegiatan</a></li>
-                    <li><a href="/artikel" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
-                            Artikel</a></li>
+                    <li><a href="{{ route('articles.index') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
+                            Artikel Keislaman</a></li>
                     <li><a href="/laporan-keuangan"
                             class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Laporan Keuangan</a></li>
                 </ul>

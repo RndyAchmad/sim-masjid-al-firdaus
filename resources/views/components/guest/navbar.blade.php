@@ -33,8 +33,8 @@
                 </a>
 
                 {{-- Artikel --}}
-                <a href="/artikel" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
-                    Artikel
+                <a href="{{ route('articles.index') }}" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                    Artikel Keislaman
                 </a>
 
                 <a href="/laporan-keuangan" class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
@@ -82,8 +82,8 @@
             </a>
 
             {{-- Artikel --}}
-            <a href="/artikel" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
-                Artikel
+            <a href="{{ route('articles.index') }}" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                Artikel Keislaman
             </a>
 
             <a href="/laporan-keuangan" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">

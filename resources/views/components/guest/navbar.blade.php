@@ -8,7 +8,7 @@
                     AF
                 </div>
                 <div class="flex flex-col justify-center">
-                    <h1 class="text-lg font-bold tracking-wide text-white leading-tight">
+                    <h1 class="font-serif text-l font-bold leading-tight text-white">
                         Masjid Al Firdaus
                     </h1>
                     {{-- Tambahan Teks Taman Puspa Sari --}}

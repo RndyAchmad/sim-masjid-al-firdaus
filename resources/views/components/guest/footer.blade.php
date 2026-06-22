@@ -11,7 +11,7 @@
                         AF
                     </div>
                     <div>
-                        <h2 class="text-lg font-bold tracking-wide text-white">
+                        <h2 class="font-serif text-l font-bold text-white">
                             Masjid Al Firdaus
                         </h2>
                     </div>
@@ -24,7 +24,7 @@
 
             {{-- Kolom 2: Tautan Cepat --}}
             <div>
-                <h3 class="mb-6 text-sm font-semibold tracking-wider text-white uppercase">Tautan Cepat</h3>
+                <h3 class="mb-6 font-sans text-sm font-semibold uppercase tracking-wider text-white">Tautan Cepat</h3>
                 <ul class="space-y-4">
                     <li><a href="{{ route('beranda') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Beranda</a></li>
                     <li><a href="{{ route('profile') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Profil Kami</a>
@@ -40,7 +40,7 @@
 
             {{-- Kolom 3: Hubungi Kami --}}
             <div>
-                <h3 class="mb-6 text-sm font-semibold tracking-wider text-white uppercase">Hubungi Kami</h3>
+                <h3 class="mb-6 font-sans text-sm font-semibold uppercase tracking-wider text-white">Hubungi Kami</h3>
                 <ul class="space-y-4 text-sm text-gray-400">
                     <li class="flex items-start gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[#c49c4d]" fill="none"
@@ -75,7 +75,7 @@
 
             {{-- Kolom 4: Media Sosial --}}
             <div>
-                <h3 class="mb-6 text-sm font-semibold tracking-wider text-white uppercase">Ikuti Kami</h3>
+                <h3 class="mb-6 font-sans text-sm font-semibold uppercase tracking-wider text-white">Ikuti Kami</h3>
                 <p class="mb-4 text-sm text-gray-400">Dapatkan update terbaru seputar kajian dan kegiatan kami di media
                     sosial.</p>
                 <div class="flex gap-4">

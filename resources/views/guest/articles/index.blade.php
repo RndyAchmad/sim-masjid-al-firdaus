@@ -2,7 +2,7 @@
     {{-- Hero Section dengan efek Radial Gradient yang lebih halus --}}
     <section class="relative overflow-hidden border-b border-white/5 bg-[#050505] py-24 sm:py-32">
         <div
-            class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#c49c4d]/10 via-[#0B0B0B] to-[#0B0B0B]">
+            class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-[#c49c4d]/10 via-[#0B0B0B] to-[#0B0B0B]">
         </div>
 
         <div class="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
@@ -29,7 +29,7 @@
                         class="group relative flex flex-col rounded-2xl border border-white/5 bg-[#111] p-4 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#c49c4d]/30 hover:bg-[#151515] hover:shadow-[#c49c4d]/5">
                         {{-- Thumbnail --}}
                         <a href="{{ route('articles.show', $article['slug']) }}"
-                            class="block aspect-[16/10] w-full overflow-hidden rounded-xl bg-black">
+                            class="block aspect-16/10 w-full overflow-hidden rounded-xl bg-black">
                             <img src="{{ asset($article['thumbnail']) }}" alt="{{ $article['title'] }}"
                                 class="h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-100">
                         </a>

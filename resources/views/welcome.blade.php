@@ -6,8 +6,8 @@
             class="absolute inset-0 -z-20 h-full w-full object-cover object-center">
 
         <div class="absolute inset-0 -z-10 bg-black/65"></div>
-        <div class="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/35 to-[#080806]"></div>
-        <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-t from-[#080806] to-transparent"></div>
+        <div class="absolute inset-0 -z-10 bg-linear-to-b from-black/70 via-black/35 to-[#080806]"></div>
+        <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-[#080806] to-transparent"></div>
 
         <div class="mx-auto flex max-w-4xl flex-col items-center text-center">
             <p class="mb-4 text-[0.7rem] font-semibold uppercase leading-5 tracking-[0.22em] text-[#d8b76a] sm:mb-5 sm:text-xs md:text-sm">
@@ -17,7 +17,7 @@
             <h1 class="max-w-3xl font-serif text-4xl font-bold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
                 Selamat Datang
                 <span
-                    class="mt-2 block bg-gradient-to-r from-[#c49c4d] via-[#f4dc9b] to-[#c49c4d] bg-clip-text text-transparent sm:mt-3">
+                    class="mt-2 block bg-linear-to-r from-[#c49c4d] via-[#f4dc9b] to-[#c49c4d] bg-clip-text text-transparent sm:mt-3">
                     Di Masjid Al-Firdaus
                 </span>
             </h1>
@@ -26,7 +26,7 @@
                 Pusat ibadah, silaturahmi, dan informasi jamaah Perumahan Taman Puspa Sari.
             </p>
 
-            <div class="mt-8 h-px w-20 bg-gradient-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-10 sm:w-24"></div>
+            <div class="mt-8 h-px w-20 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-10 sm:w-24"></div>
         </div>
     </section>
 

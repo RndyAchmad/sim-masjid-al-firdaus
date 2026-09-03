@@ -23,7 +23,7 @@
     <div class="flex min-h-screen flex-col transition-all duration-300 lg:ml-64">
 
         <!-- Komponen Navbar -->
-        <x-admin.navbar :title="$title ?? 'Dashboard'" />
+        <x-admin.navbar :title="$title ?? 'Dashboard'" :back-url="$backUrl ?? null" />
 
         <!-- Area Konten Utama -->
         <main class="flex-1 p-4 sm:p-6 lg:p-8">

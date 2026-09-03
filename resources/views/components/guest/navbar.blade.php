@@ -73,7 +73,7 @@
             <a href="/" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Beranda
             </a>
-            <a href="/profil" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+            <a href="{{ route('profile') }}" class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Profil
             </a>
 

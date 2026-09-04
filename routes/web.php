@@ -26,4 +26,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{id}', [\App\Http\Controllers\Admin\ArticleController::class, 'update'])->name('update');
         Route::delete('/{id}', [\App\Http\Controllers\Admin\ArticleController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('inventaris')->name('inventaris.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\InventarisController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\InventarisController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\InventarisController::class, 'store'])->name('store');
+        Route::get('/{id}', [\App\Http\Controllers\Admin\InventarisController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [\App\Http\Controllers\Admin\InventarisController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [\App\Http\Controllers\Admin\InventarisController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\InventarisController::class, 'destroy'])->name('destroy');
+    });
 });

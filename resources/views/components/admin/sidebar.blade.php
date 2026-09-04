@@ -12,7 +12,7 @@
         <div class="flex h-16 shrink-0 items-center justify-center border-b border-gray-800 px-4">
             <a href="/admin" class="flex items-center gap-3 transition hover:opacity-80">
                 <div
-                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-sm font-bold text-white shadow-lg shadow-[#c49c4d]/20">
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#c49c4d] to-[#c1a447] text-sm font-bold text-white shadow-lg shadow-[#c49c4d]/20">
                     AF
                 </div>
                 <h1 class="text-base font-bold tracking-wide text-white">Admin Panel</h1>
@@ -63,6 +63,17 @@
                         d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
                 </svg>
                 Artikel Keislaman
+            </a>
+
+            <!-- Menu Inventaris Masjid -->
+            <a href="{{ route('admin.inventaris.index') }}"
+                class="{{ request()->routeIs('admin.inventaris.*') ? 'bg-[#c49c4d] text-white' : 'text-gray-400 hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                </svg>
+                Inventaris Masjid
             </a>
 
             <a href=""

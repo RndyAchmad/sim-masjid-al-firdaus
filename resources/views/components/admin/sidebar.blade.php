@@ -12,7 +12,7 @@
         <div class="flex h-16 shrink-0 items-center justify-center border-b border-gray-800 px-4">
             <a href="/admin" class="flex items-center gap-3 transition hover:opacity-80">
                 <div
-                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#c49c4d] to-[#c1a447] text-sm font-bold text-white shadow-lg shadow-[#c49c4d]/20">
+                    class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-sm font-bold text-white shadow-lg shadow-[#c49c4d]/20">
                     AF
                 </div>
                 <h1 class="text-base font-bold tracking-wide text-white">Admin Panel</h1>

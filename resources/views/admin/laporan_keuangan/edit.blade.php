@@ -10,13 +10,13 @@
                 <label class="mb-3 block text-sm font-semibold text-gray-700">Tipe Transaksi</label>
                 <div class="flex flex-wrap gap-4">
                     <label
-                        class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-emerald-50 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-50 has-[:checked]:ring-1 has-[:checked]:ring-emerald-500">
+                        class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-emerald-50 has-checked:border-emerald-500 has-checked:bg-emerald-50 has-checked:ring-1 has-checked:ring-emerald-500">
                         <input type="radio" name="tipe" value="pemasukan"
                             class="h-4 w-4 text-emerald-600 focus:ring-emerald-600">
                         <span class="text-sm font-medium text-gray-900">Pemasukan</span>
                     </label>
                     <label
-                        class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-rose-50 has-[:checked]:border-rose-500 has-[:checked]:bg-rose-50 has-[:checked]:ring-1 has-[:checked]:ring-rose-500">
+                        class="flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 p-4 transition hover:bg-rose-50 has-checked:border-rose-500 has-checked:bg-rose-50 has-checked:ring-1 has-checked:ring-rose-500">
                         <input type="radio" name="tipe" value="pengeluaran"
                             class="h-4 w-4 text-rose-600 focus:ring-rose-600" checked>
                         <span class="text-sm font-medium text-gray-900">Pengeluaran</span>

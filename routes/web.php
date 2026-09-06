@@ -5,7 +5,7 @@ use App\Http\Controllers\Guest\ArticleController;
 use App\Http\Controllers\Guest\ProfileController;
 
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\ProfileController as AdminProfileController;
+use App\Http\Controllers\Admin\ProfilMasjidController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
@@ -15,7 +15,8 @@ Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('article
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/profile', [AdminProfileController::class, 'index'])->name('profile');
+
+    Route::get('/profile', [ProfilMasjidController::class, 'index'])->name('profile');
 
     Route::prefix('artikel')->name('articles.')->group(function () {
         Route::get('/', [\App\Http\Controllers\Admin\ArticleController::class, 'index'])->name('index');

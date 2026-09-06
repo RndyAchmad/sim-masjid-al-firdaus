@@ -76,8 +76,8 @@
                 Inventaris Masjid
             </a>
 
-            <a href=""
-                class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium text-gray-400 transition-colors hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+            <a href="{{ route('admin.laporan-keuangan.index') }}"
+                class="{{ request()->routeIs('admin.laporan-keuangan.*') ? 'bg-[#c49c4d] text-white' : 'text-gray-400 hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]' }} flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                     stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

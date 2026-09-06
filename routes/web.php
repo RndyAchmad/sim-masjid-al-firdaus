@@ -36,4 +36,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('/{id}', [\App\Http\Controllers\Admin\InventarisController::class, 'update'])->name('update');
         Route::delete('/{id}', [\App\Http\Controllers\Admin\InventarisController::class, 'destroy'])->name('destroy');
     });
+
+    Route::prefix('laporan-keuangan')->name('laporan-keuangan.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'index'])->name('index');
+        Route::get('/create', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'create'])->name('create');
+        Route::post('/', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'store'])->name('store');
+        Route::get('/{id}', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'update'])->name('update');
+        Route::delete('/{id}', [\App\Http\Controllers\Admin\LaporanKeuanganController::class, 'destroy'])->name('destroy');
+    });
 });

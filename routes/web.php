@@ -3,6 +3,7 @@
 use App\Http\Controllers\Guest\HomeController;
 use App\Http\Controllers\Guest\ArticleController;
 use App\Http\Controllers\Guest\ProfileController;
+use App\Http\Controllers\AuthController;
 
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfilMasjidController;
@@ -13,8 +14,12 @@ Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 Route::get('/artikel', [ArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [ArticleController::class, 'show'])->name('articles.show');
 
+// Login route for admin
+Route::get('/admin/login', [AuthController::class, 'index'])->name('login');
+Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/profile', [ProfilMasjidController::class, 'index'])->name('profile');
 

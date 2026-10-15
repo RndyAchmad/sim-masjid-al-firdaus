@@ -67,7 +67,7 @@
         <!-- Tabel Data Jadwal Imam Jumat (Scrollable di Layar Kecil) -->
         <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[640px] text-left text-sm text-gray-600">
+                <table class="w-full min-w-160 text-left text-sm text-gray-600">
                     <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
                         <tr>
                             <th class="px-6 py-4">Tanggal (Jumat)</th>

@@ -1,24 +1,28 @@
 <?php
 
+// Guest Controllers
 use App\Http\Controllers\Guest\HomeController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ProfileController as GuestProfileController;
 use App\Http\Controllers\AuthController;
 
+// Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidController;
 use App\Http\Controllers\Admin\LaporanKeuanganController as AdminLaporanKeuanganController;
 use App\Http\Controllers\Admin\InventarisController as AdminInventarisController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\JadwalImamController as AdminJadwalImamController;
+use App\Http\Controllers\Admin\PembangunanController as AdminPembangunanController;
 use Illuminate\Support\Facades\Route;
 
+// Guest Routes
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/profile', [GuestProfileController::class, 'index'])->name('profile');
 Route::get('/artikel', [GuestArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [GuestArticleController::class, 'show'])->name('articles.show');
 
-// Login route for admin
+// Admin Routes
 Route::get('/admin/login', [AuthController::class, 'index'])->name('login');
 Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
 
@@ -67,5 +71,15 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminJadwalImamController::class, 'destroy'])->name('destroy');
         Route::get('/export', [AdminJadwalImamController::class, 'exportToExcel'])->name('export');
         Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
+    });
+
+    Route::prefix('pembangunan')->name('pembangunan.')->group(function () {
+        Route::get('/', [AdminPembangunanController::class, 'index'])->name('index');
+        Route::get('/create', [AdminPembangunanController::class, 'create'])->name('create');
+        Route::post('/', [AdminPembangunanController::class, 'store'])->name('store');
+        Route::get('/{id}', [AdminPembangunanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AdminPembangunanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminPembangunanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AdminPembangunanController::class, 'destroy'])->name('destroy');
     });
 });

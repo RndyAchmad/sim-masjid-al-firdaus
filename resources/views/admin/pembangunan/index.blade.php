@@ -84,7 +84,7 @@
         <!-- 3. Tabel Data Transaksi & Rincian Penggunaan Dana -->
         <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xs">
             <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full min-w-[700px] text-left text-sm text-gray-600">
+                <table class="w-full min-w-175 text-left text-sm text-gray-600">
                     <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-500">
                         <tr>
                             <th class="px-6 py-4">Tanggal</th>

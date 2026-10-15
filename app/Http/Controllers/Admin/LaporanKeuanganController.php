@@ -9,12 +9,12 @@ class LaporanKeuanganController extends Controller
 {
     public function index()
     {
-        return view('admin.laporan_keuangan.index');
+        return view('admin.laporan-keuangan.index');
     }
 
     public function create()
     {
-        return view('admin.laporan_keuangan.create');
+        return view('admin.laporan-keuangan.create');
     }
 
     public function store(Request $request)
@@ -24,12 +24,12 @@ class LaporanKeuanganController extends Controller
 
     public function show(string $id)
     {
-        return view('admin.laporan_keuangan.show', compact('id'));
+        return view('admin.laporan-keuangan.show', compact('id'));
     }
 
     public function edit(string $id)
     {
-        return view('admin.laporan_keuangan.edit', compact('id'));
+        return view('admin.laporan-keuangan.edit', compact('id'));
     }
 
     public function update(Request $request, string $id)

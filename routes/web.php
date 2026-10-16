@@ -28,10 +28,13 @@ Route::get('/admin/login', [AuthController::class, 'index'])->name('login');
 Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
 
 Route::prefix('admin')->name('admin.')->group(function () {
+    // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // Profil Masjid Routes
     Route::get('/profile', [AdminProfilMasjidController::class, 'index'])->name('profile');
 
+    // Artikel Routes
     Route::prefix('artikel')->name('articles.')->group(function () {
         Route::get('/', [AdminArticleController::class, 'index'])->name('index');
         Route::get('/create', [AdminArticleController::class, 'create'])->name('create');
@@ -42,6 +45,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminArticleController::class, 'destroy'])->name('destroy');
     });
 
+    // Inventaris Routes
     Route::prefix('inventaris')->name('inventaris.')->group(function () {
         Route::get('/', [AdminInventarisController::class, 'index'])->name('index');
         Route::get('/create', [AdminInventarisController::class, 'create'])->name('create');
@@ -52,6 +56,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminInventarisController::class, 'destroy'])->name('destroy');
     });
 
+    // Laporan Keuangan Routes
     Route::prefix('laporan-keuangan')->name('laporan-keuangan.')->group(function () {
         Route::get('/', [AdminLaporanKeuanganController::class, 'index'])->name('index');
         Route::get('/create', [AdminLaporanKeuanganController::class, 'create'])->name('create');
@@ -62,6 +67,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{id}', [AdminLaporanKeuanganController::class, 'destroy'])->name('destroy');
     });
 
+    // Jadwal Imam Jumat Routes
     Route::prefix('jadwal-imam')->name('jadwal-imam.')->group(function () {
         Route::get('/', [AdminJadwalImamController::class, 'index'])->name('index');
         Route::get('/create', [AdminJadwalImamController::class, 'create'])->name('create');
@@ -74,6 +80,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
     });
 
+    // Pembangunan Routes
     Route::prefix('pembangunan')->name('pembangunan.')->group(function () {
         Route::get('/', [AdminPembangunanController::class, 'index'])->name('index');
         Route::get('/create', [AdminPembangunanController::class, 'create'])->name('create');

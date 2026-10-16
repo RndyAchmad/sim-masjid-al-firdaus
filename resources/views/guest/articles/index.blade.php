@@ -1,75 +1,176 @@
 <x-layouts.guest>
-    {{-- Hero Section dengan efek Radial Gradient yang lebih halus --}}
-    <section class="relative overflow-hidden border-b border-white/5 bg-[#050505] py-24 sm:py-32">
-        <div
-            class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-[#c49c4d]/10 via-[#0B0B0B] to-[#0B0B0B]">
-        </div>
-
-        <div class="relative mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
-            <span
-                class="inline-flex items-center rounded-full border border-[#c49c4d]/30 bg-[#c49c4d]/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-[#c49c4d]">
-                Bacaan Jamaah
+    {{-- Header Banner Halaman Artikel (Gaya Gelap Elegan) --}}
+    <div class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
+        <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
+                Syiar & Literasi
             </span>
-            <h1 class="mt-6 font-serif text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            <h1 class="mt-2 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
                 Artikel Keislaman
             </h1>
-            <p class="mx-auto mt-6 max-w-2xl text-base leading-8 text-gray-400">
-                Menuntut ilmu agama adalah jalan untuk memperbaiki ibadah, melembutkan hati, dan menumbuhkan akhlak yang
-                baik dalam kehidupan sehari-hari.
+            <p class="mt-2 text-xs text-gray-400 sm:mt-3 sm:text-sm md:text-base">
+                Kumpulan tulisan, wawasan, dan nasehat islami dari Takmir Masjid Al-Firdaus
             </p>
+            <div class="mx-auto mt-4 h-px w-16 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20"></div>
         </div>
-    </section>
+    </div>
 
-    {{-- Grid Artikel Section --}}
-    <section class="bg-[#0B0B0B] py-16 sm:py-24">
+    {{-- Main Content Section (Background Krem Sejuk / Off-White Sama Seperti Kegiatan) --}}
+    <div class="bg-[#FBF9F5] py-12 sm:py-16 lg:py-20">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-                @foreach ($articles as $article)
-                    <article
-                        class="group relative flex flex-col rounded-2xl border border-white/5 bg-[#111] p-4 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:border-[#c49c4d]/30 hover:bg-[#151515] hover:shadow-[#c49c4d]/5">
-                        {{-- Thumbnail --}}
-                        <a href="{{ route('articles.show', $article['slug']) }}"
-                            class="block aspect-16/10 w-full overflow-hidden rounded-xl bg-black">
-                            <img src="{{ asset($article['thumbnail']) }}" alt="{{ $article['title'] }}"
-                                class="h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-100">
-                        </a>
 
-                        <div class="flex flex-1 flex-col pt-6 pb-2 px-2">
-                            {{-- Meta Info --}}
-                            <div class="mb-3 flex items-center gap-2 text-xs font-medium text-gray-400">
-                                <span>{{ $article['author'] }}</span>
-                                <span class="h-1 w-1 rounded-full bg-[#c49c4d]"></span>
-                                <time datetime="{{ $article['published_at'] }}">{{ $article['published_at'] }}</time>
-                            </div>
+            {{-- Header Section (Rata Tengah) --}}
+            <div class="mb-10 text-center max-w-3xl mx-auto sm:mb-12">
+                <span class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-3">
+                    Kajian & Risalah
+                </span>
+                <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+                    Daftar Artikel
+                </h2>
+                <p class="mt-2 text-xs text-gray-600 sm:text-sm md:text-base">
+                    Simak berbagai artikel dan tulisan edukasi keislaman terbaru untuk menambah wawasan jamaah.
+                </p>
+            </div>
 
-                            {{-- Title --}}
-                            <h2
-                                class="font-serif text-xl font-bold leading-snug text-white group-hover:text-[#c49c4d] transition-colors duration-300">
-                                <a href="{{ route('articles.show', $article['slug']) }}">
-                                    <span class="absolute inset-0"></span> {{-- Membuat seluruh card bisa diklik --}}
-                                    {{ $article['title'] }}
-                                </a>
-                            </h2>
+            {{-- Grid Daftar Artikel --}}
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-                            {{-- Excerpt --}}
-                            <p class="mt-3 flex-1 text-sm leading-relaxed text-gray-400 line-clamp-3">
-                                {{ $article['excerpt'] }}
-                            </p>
+                {{-- Card Artikel 1 --}}
+                <div class="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-[#8c6b2d] hover:shadow-xl">
+                    <div class="relative aspect-video w-full overflow-hidden bg-stone-100 border-b border-stone-200">
+                        <img src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?q=80&w=800" 
+                             alt="Salat Berjamaah" 
+                             class="h-full w-full object-cover transition-transform duration-300 hover:scale-105">
+                    </div>
 
-                            {{-- Read More Link (Lebih elegan dari tombol) --}}
-                            <div class="mt-6 flex items-center text-sm font-semibold text-[#c49c4d]">
-                                Baca Selengkapnya
-                                <svg xmlns="http://www.w3.org/2000/svg"
-                                    class="ml-1 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    <div class="flex flex-1 flex-col justify-between p-5 sm:p-6 bg-white">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-[#8c6b2d]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
+                                <span>02 September 2026</span>
                             </div>
+
+                            <h3 class="mt-2 font-serif text-lg font-bold text-gray-900 sm:text-xl line-clamp-2">
+                                Keutamaan Menjaga Salat Berjamaah di Masjid
+                            </h3>
+
+                            <p class="mt-2 text-xs sm:text-sm text-gray-600 line-clamp-3">
+                                Salat berjamaah di masjid memiliki ganjaran pahala 27 kali lipat dibandingkan salat sendirian. Selain nilai spiritual, sholat berjamaah juga mempererat tali silaturahmi.
+                            </p>
                         </div>
-                    </article>
-                @endforeach
+
+                        <div class="mt-6 border-t border-stone-100 pt-4 space-y-3">
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>Penulis: <strong class="text-gray-800">Ust. Ahmad Fuzairi</strong></span>
+                            </div>
+
+                            <a href="#" 
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
+                                Baca Artikel
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Artikel 2 --}}
+                <div class="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-[#8c6b2d] hover:shadow-xl">
+                    <div class="relative aspect-video w-full overflow-hidden bg-stone-100 border-b border-stone-200">
+                        <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=800" 
+                             alt="Ramadan" 
+                             class="h-full w-full object-cover transition-transform duration-300 hover:scale-105">
+                    </div>
+
+                    <div class="flex flex-1 flex-col justify-between p-5 sm:p-6 bg-white">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-[#8c6b2d]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>15 Agustus 2026</span>
+                            </div>
+
+                            <h3 class="mt-2 font-serif text-lg font-bold text-gray-900 sm:text-xl line-clamp-2">
+                                Adab Menyambut Bulan Suci Ramadan
+                            </h3>
+
+                            <p class="mt-2 text-xs sm:text-sm text-gray-600 line-clamp-3">
+                                Persiapan ruhani dan fisik sangat diperlukan agar dapat memaksimalkan ibadah saat bulan suci Ramadan tiba.
+                            </p>
+                        </div>
+
+                        <div class="mt-6 border-t border-stone-100 pt-4 space-y-3">
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>Penulis: <strong class="text-gray-800">Admin Redaksi</strong></span>
+                            </div>
+
+                            <a href="#" 
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
+                                Baca Artikel
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Card Artikel 3 --}}
+                <div class="flex flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:border-[#8c6b2d] hover:shadow-xl">
+                    <div class="relative aspect-video w-full overflow-hidden bg-stone-100 border-b border-stone-200">
+                        <img src="https://images.unsplash.com/photo-1519817650390-64a93db51149?q=80&w=800" 
+                             alt="Al-Qur'an" 
+                             class="h-full w-full object-cover transition-transform duration-300 hover:scale-105">
+                    </div>
+
+                    <div class="flex flex-1 flex-col justify-between p-5 sm:p-6 bg-white">
+                        <div>
+                            <div class="flex items-center gap-2 text-xs font-semibold text-[#8c6b2d]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                </svg>
+                                <span>28 Juli 2026</span>
+                            </div>
+
+                            <h3 class="mt-2 font-serif text-lg font-bold text-gray-900 sm:text-xl line-clamp-2">
+                                Manfaat Mengamalkan Al-Qur'an dalam Kehidupan Sehari-hari
+                            </h3>
+
+                            <p class="mt-2 text-xs sm:text-sm text-gray-600 line-clamp-3">
+                                Al-Qur'an bukan hanya petunjuk ibadah, tetapi juga penerang jalan hidup dan solusi berbagai persoalan umat.
+                            </p>
+                        </div>
+
+                        <div class="mt-6 border-t border-stone-100 pt-4 space-y-3">
+                            <div class="flex items-center gap-2 text-xs text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-stone-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                <span>Penulis: <strong class="text-gray-800">Ust. Muhammad Ridwan</strong></span>
+                            </div>
+
+                            <a href="#" 
+                               class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
+                                Baca Artikel
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
-    </section>
+    </div>
 </x-layouts.guest>

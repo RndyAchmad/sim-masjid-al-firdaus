@@ -14,6 +14,7 @@ use App\Http\Controllers\Admin\InventarisController as AdminInventarisController
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\JadwalImamController as AdminJadwalImamController;
 use App\Http\Controllers\Admin\PembangunanController as AdminPembangunanController;
+use App\Http\Controllers\Admin\BeritaController as AdminBeritaController;
 use Illuminate\Support\Facades\Route;
 
 // Guest Routes
@@ -81,5 +82,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/{id}/edit', [AdminPembangunanController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminPembangunanController::class, 'update'])->name('update');
         Route::delete('/{id}', [AdminPembangunanController::class, 'destroy'])->name('destroy');
+    });
+
+    // Berita & Pengumuman Routes
+    Route::prefix('berita')->name('berita.')->group(function () {
+        Route::get('/', [AdminBeritaController::class, 'index'])->name('index');
+        Route::get('/create', [AdminBeritaController::class, 'create'])->name('create');
+        Route::post('/', [AdminBeritaController::class, 'store'])->name('store');
+        Route::get('/{id}', [AdminBeritaController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AdminBeritaController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminBeritaController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AdminBeritaController::class, 'destroy'])->name('destroy');
     });
 });

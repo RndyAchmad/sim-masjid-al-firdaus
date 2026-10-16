@@ -4,6 +4,7 @@
 use App\Http\Controllers\Guest\HomeController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ProfileController as GuestProfileController;
+use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
 use App\Http\Controllers\AuthController;
 
 // Admin Controllers
@@ -22,6 +23,8 @@ Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/profile', [GuestProfileController::class, 'index'])->name('profile');
 Route::get('/artikel', [GuestArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [GuestArticleController::class, 'show'])->name('articles.show');
+Route::get('/kegiatan', [GuestActivityController::class, 'index'])->name('activities.index');
+Route::get('/kegiatan/{slug}', [GuestActivityController::class, 'show'])->name('activities.show');
 
 // Admin Routes
 Route::get('/admin/login', [AuthController::class, 'index'])->name('login');

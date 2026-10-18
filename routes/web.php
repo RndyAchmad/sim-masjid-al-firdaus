@@ -14,6 +14,7 @@ use App\Http\Controllers\AuthController;
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidController;
+use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\LaporanKeuanganController as AdminLaporanKeuanganController;
 use App\Http\Controllers\Admin\InventarisController as AdminInventarisController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
@@ -48,6 +49,17 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Profil Masjid Routes
     Route::get('/profile', [AdminProfilMasjidController::class, 'index'])->name('profile');
+
+    // Kegiatan Routes
+    Route::prefix('kegiatan')->name('kegiatan.')->group(function () {
+        Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
+        Route::get('/create', [AdminKegiatanController::class, 'create'])->name('create');
+        Route::post('/', [AdminKegiatanController::class, 'store'])->name('store');
+        Route::get('/{id}', [AdminKegiatanController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AdminKegiatanController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminKegiatanController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
+    });
 
     // Artikel Routes
     Route::prefix('artikel')->name('articles.')->group(function () {

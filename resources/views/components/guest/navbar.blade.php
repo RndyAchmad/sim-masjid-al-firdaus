@@ -74,6 +74,10 @@
                             class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                             Inventaris
                         </a>
+                        <a href="{{ route('laporan.jadwal-imam') }}"
+                            class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                            Jadwal Imam Sholat Jumat
+                        </a>
                     </div>
                 </div>
 
@@ -153,6 +157,10 @@
                     <a href="{{ route('laporan.inventaris') }}"
                         class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
                         Inventaris
+                    </a>
+                    <a href="{{ route('laporan.jadwal-imam') }}"
+                        class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
+                        Jadwal Imam Sholat Jumat
                     </a>
                 </div>
             </div>

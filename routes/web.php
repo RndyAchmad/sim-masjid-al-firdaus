@@ -33,6 +33,7 @@ Route::get('/kegiatan/{slug}', [GuestActivityController::class, 'show'])->name('
 Route::get('/laporan/keuangan-operasional', [GuestLaporanController::class, 'indexOperasional'])->name('laporan.operasional');
 Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'indexPembangunan'])->name('laporan.pembangunan');
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
+Route::get('/laporan/jadwal-imam', [GuestLaporanController::class, 'indexJadwalImam'])->name('laporan.jadwal-imam');
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 
 // Admin Routes

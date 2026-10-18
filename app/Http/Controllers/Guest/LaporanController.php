@@ -21,4 +21,9 @@ class LaporanController extends Controller
     {
         return view('guest.laporan.inventaris');
     }
+    
+    public function indexJadwalImam()
+    {
+        return view('guest.laporan.jadwal-imam');
+    }
 }

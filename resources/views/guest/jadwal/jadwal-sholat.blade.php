@@ -1,7 +1,7 @@
 <x-layouts.guest>
     {{-- Header Banner --}}
     <div
-        class="relative bg-gradient-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
+        class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
         <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
                 Waktu Ibadah Resmi Kemenag RI
@@ -14,7 +14,7 @@
                 Jadwal waktu sholat fardhu, imsakiyah, dan dhuha untuk wilayah Kabupaten Sidoarjo
             </p>
             <div
-                class="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20">
+                class="mx-auto mt-4 h-px w-16 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20">
             </div>
         </div>
     </div>

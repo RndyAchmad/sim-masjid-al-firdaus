@@ -7,6 +7,7 @@ use App\Http\Controllers\Guest\BeritaController as GuestBeritaController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
 use App\Http\Controllers\Guest\LaporanController as GuestLaporanController;
+use App\Http\Controllers\Guest\KontakController as GuestKontakController;
 use App\Http\Controllers\AuthController;
 
 // Admin Controllers
@@ -32,6 +33,7 @@ Route::get('/kegiatan/{slug}', [GuestActivityController::class, 'show'])->name('
 Route::get('/laporan/keuangan-operasional', [GuestLaporanController::class, 'indexOperasional'])->name('laporan.operasional');
 Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'indexPembangunan'])->name('laporan.pembangunan');
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
+Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 
 // Admin Routes
 Route::get('/admin/login', [AuthController::class, 'index'])->name('login');

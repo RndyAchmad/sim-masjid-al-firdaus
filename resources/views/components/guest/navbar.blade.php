@@ -77,7 +77,7 @@
                     </div>
                 </div>
 
-                <a href="/kontak"
+                <a href="{{ route('kontak') }}"
                     class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Kontak
                 </a>
@@ -157,7 +157,7 @@
                 </div>
             </div>
 
-            <a href="/kontak"
+            <a href="{{ route('kontak') }}"
                 class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Kontak
             </a>

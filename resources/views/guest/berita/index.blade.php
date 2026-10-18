@@ -80,7 +80,7 @@
                                 <span>Oleh: <strong class="text-gray-800">Redaksi Al-Firdaus</strong></span>
                             </div>
 
-                            <a href="#"
+                            <a href="{{ route('berita.show', ['slug' => 'penyaluran-santunan-anak-yatim-dan-dhuafa-bulan-ini']) }}"
                                 class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                 Baca Selengkapnya
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"
@@ -133,7 +133,7 @@
                                 <span>Oleh: <strong class="text-gray-800">Seksi Sarpras</strong></span>
                             </div>
 
-                            <a href="#"
+                            <a href="{{ route('berita.show', ['slug' => 'penyaluran-santunan-anak-yatim-dan-dhuafa-bulan-ini']) }}"
                                 class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                 Baca Selengkapnya
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"

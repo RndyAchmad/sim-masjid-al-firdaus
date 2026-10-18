@@ -69,7 +69,7 @@
                                 <span>Penulis: <strong class="text-gray-800">Ust. Ahmad Fuzairi</strong></span>
                             </div>
 
-                            <a href="#" 
+                            <a href="{{ route('articles.show', ['slug' => 'keutamaan-menjaga-salat-berjamaah-di-masjid']) }}" 
                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                 Baca Artikel
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -114,7 +114,7 @@
                                 <span>Penulis: <strong class="text-gray-800">Admin Redaksi</strong></span>
                             </div>
 
-                            <a href="#" 
+                            <a href="{{ route('articles.show', ['slug' => 'adab-menyambut-bulan-suci-ramadan']) }}" 
                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                 Baca Artikel
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -159,7 +159,7 @@
                                 <span>Penulis: <strong class="text-gray-800">Ust. Muhammad Ridwan</strong></span>
                             </div>
 
-                            <a href="#" 
+                            <a href="{{ route('articles.show', ['slug' => 'manfaat-mengamalkan-al-quran-dalam-kehidupan-sehari-hari']) }}" 
                                class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                 Baca Artikel
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

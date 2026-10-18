@@ -23,7 +23,8 @@ use Illuminate\Support\Facades\Route;
 // Guest Routes
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/profile', [GuestProfileController::class, 'index'])->name('profile');
-Route::get('/berita', [GuestBeritaController::class, 'index'])->name('berita');
+Route::get('/berita', [GuestBeritaController::class, 'index'])->name('berita.index');
+Route::get('/berita/{slug}', [GuestBeritaController::class, 'show'])->name('berita.show');
 Route::get('/artikel', [GuestArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [GuestArticleController::class, 'show'])->name('articles.show');
 Route::get('/kegiatan', [GuestActivityController::class, 'index'])->name('activities.index');

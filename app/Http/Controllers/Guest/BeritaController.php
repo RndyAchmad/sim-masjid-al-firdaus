@@ -11,4 +11,9 @@ class BeritaController extends Controller
     {
         return view('guest.berita.index');
     }
+
+    public function show($slug)
+    {
+        return view('guest.berita.show', compact('slug'));
+    }
 }

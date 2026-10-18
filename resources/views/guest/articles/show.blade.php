@@ -1,131 +1,188 @@
 <x-layouts.guest>
-    <article class="bg-[#0B0B0B] text-white">
+    {{-- Header Banner Detail Artikel (Gelap Elegan) --}}
+    <div
+        class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-10 sm:py-14 border-b border-gray-800">
+        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
 
-        {{-- Header Section --}}
-        <section class="relative border-b border-white/5 bg-[#050505] pt-16 pb-32 sm:pt-24 sm:pb-40">
-            <div
-                class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#c49c4d]/10 via-[#0B0B0B] to-[#0B0B0B]">
-            </div>
-
-            <div class="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-                {{-- Tombol Kembali --}}
+            {{-- Tombol Kembali --}}
+            <div class="mb-4 flex justify-center sm:mb-6">
                 <a href="{{ route('articles.index') }}"
-                    class="group inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs font-semibold tracking-wider text-gray-300 uppercase transition-all duration-300 hover:border-[#c49c4d]/50 hover:text-[#c49c4d]">
-                    <svg xmlns="http://www.w3.org/2000/svg"
-                        class="h-4 w-4 transition-transform duration-300 group-hover:-translate-x-1" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
+                    class="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-black/50 px-4 py-1.5 text-xs font-semibold text-gray-300 transition hover:border-[#d8b76a] hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    Kembali
+                    Kembali ke Artikel Keislaman
                 </a>
+            </div>
 
-                {{-- Judul Artikel --}}
-                <h1
-                    class="mt-8 font-serif text-3xl font-bold leading-tight text-white sm:text-5xl lg:text-6xl lg:leading-[1.1] tracking-tight">
-                    {{ $article['title'] }}
-                </h1>
+            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
+                Kajian & Risalah
+            </span>
 
-                {{-- Meta Data Penulis & Tanggal --}}
-                <div class="mt-8 flex items-center justify-center gap-4 text-sm font-medium">
-                    <div class="flex items-center gap-2 text-gray-300">
-                        <svg class="h-4 w-4 text-[#c49c4d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        {{ $article['author'] }}
-                    </div>
-                    <span class="h-1 w-1 rounded-full bg-[#c49c4d]"></span>
-                    <div class="flex items-center gap-2 text-gray-400">
-                        <svg class="h-4 w-4 text-[#c49c4d]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                        <time datetime="{{ $article['published_at'] }}">{{ $article['published_at'] }}</time>
-                    </div>
+            {{-- Judul Artikel --}}
+            <h1
+                class="mt-2 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
+                Keutamaan Menjaga Salat Berjamaah di Masjid
+            </h1>
+
+            {{-- Metadata Artikel --}}
+            <div
+                class="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-400 sm:gap-6 sm:text-sm">
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#d8b76a]" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <span>Penulis: <strong class="text-gray-200">Ust. Ahmad Fuzairi</strong></span>
+                </div>
+                <span class="hidden sm:inline text-gray-600">•</span>
+                <div class="flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#d8b76a]" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span>02 September 2026</span>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
 
-        {{-- Content Section --}}
-        <section class="relative z-10 px-4 pb-20 sm:px-6 lg:px-8">
-            <div class="mx-auto max-w-4xl"> {{-- Container diperkecil sedikit agar paragraf lebih enak dibaca --}}
+    {{-- Main Content Section (Background Krem Warm Sand) --}}
+    <div class="bg-[#FBF9F5] py-10 sm:py-14 lg:py-16">
+        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 
-                {{-- Container Gambar Utama --}}
+            {{-- Gambar Utama (Cover Artikel) --}}
+            <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg">
+                <div class="relative aspect-video w-full overflow-hidden bg-stone-100">
+                    <img src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?q=80&w=1200"
+                        alt="Salat Berjamaah" class="h-full w-full object-cover">
+                </div>
+            </div>
+
+            {{-- Isi Artikel --}}
+            <div
+                class="mt-8 rounded-2xl border border-stone-200 bg-white p-6 sm:p-10 shadow-sm space-y-6 text-gray-700 leading-relaxed text-sm sm:text-base">
+
+                <p class="font-medium text-gray-900 leading-relaxed">
+                    Salat fardhu merupakan tiang agama bagi setiap muslim. Di antara amalan utama yang sangat dianjurkan
+                    oleh Rasulullah SAW bagi kaum laki-laki adalah menegakkan salat secara berjamaah di masjid.
+                </p>
+
+                <p>
+                    Keutamaan salat berjamaah amatlah besar. Rasulullah SAW bersabda dalam sebuah hadits shahih yang
+                    diriwayatkan oleh Imam Bukhari dan Muslim:
+                </p>
+
+                {{-- Quote Box Hadits / Hikmah --}}
                 <div
-                    class="-mt-24 overflow-hidden rounded-2xl border border-white/10 bg-black shadow-2xl shadow-black sm:-mt-32">
-                    <img src="{{ asset($article['thumbnail']) }}" alt="{{ $article['title'] }}"
-                        class="aspect-[16/9] w-full object-cover opacity-90">
+                    class="my-6 rounded-xl border-l-4 border-[#8c6b2d] bg-[#FBF9F5] p-5 italic text-gray-800 space-y-2">
+                    <p class="font-serif text-base sm:text-lg text-gray-900 not-italic font-bold">
+                        "Salat berjamaah lebih utama daripada salat sendirian dengan dua puluh tujuh derajat."
+                    </p>
+                    <p class="text-xs text-gray-500 not-italic">— HR. Bukhari no. 645 dan Muslim no. 650</p>
                 </div>
 
-                {{-- Isi Paragraf Artikel --}}
+                <p>
+                    Selain dilipatgandakannya pahala hingga 27 kali lipat, setiap langkah kaki seorang muslim menuju
+                    masjid untuk melaksanakan salat berjamaah akan dihitung sebagai kebaikan dan penghapus dosa-dosa
+                    kecilnya.
+                </p>
+
+                <h3 class="font-serif text-lg sm:text-xl font-bold text-gray-900 pt-2">
+                    Manfaat Sosial dan Ukhuwah Islamiyah
+                </h3>
+
+                <p>
+                    Tidak hanya bernilai pahala spiritual, salat berjamaah di masjid juga menjadi sarana untuk
+                    mempererat tali silaturahmi antar warga perumahan dan jamaah sekitar. Melalui pertemuan rutin lima
+                    waktu di rumah Allah, rasa kepedulian, kebersamaan, dan rasa saling mengenal sesama muslim akan
+                    senantiasa terjaga.
+                </p>
+
+                <p>
+                    Marilah kita senantiasa memakmurkan Masjid Al-Firdaus dengan melangkahkan kaki menuju sholat
+                    berjamaah serta mengajak keluarga dan putra-putri kita untuk mencintai rumah Allah SWT.
+                </p>
+
+                {{-- Bagian Bagikan (Share Buttons) --}}
                 <div
-                    class="mx-auto mt-16 max-w-3xl space-y-8 text-base leading-loose text-gray-300 sm:text-lg sm:leading-loose">
-                    @foreach ($article['content'] as $paragraph)
-                        <p class="tracking-wide text-left">{{ $paragraph }}</p>
-                    @endforeach
+                    class="mt-10 border-t border-stone-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                        Bagikan Artikel Ini:
+                    </span>
+                    <div class="flex items-center gap-3">
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700">
+                            WhatsApp
+                        </a>
+                        <a href="#"
+                            class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-blue-700">
+                            Facebook
+                        </a>
+                    </div>
                 </div>
 
             </div>
-        </section>
 
-        {{-- Section Artikel Terkait --}}
-        <section class="border-t border-white/5 bg-[#080808] py-20">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-                {{-- Header Artikel Terkait --}}
-                <div class="mb-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
-                        <p class="text-xs font-bold uppercase tracking-widest text-[#c49c4d]">
-                            Bacaan Lainnya
-                        </p>
-                        <h2 class="mt-2 font-serif text-3xl font-bold text-white tracking-tight">
-                            Artikel Terkait
-                        </h2>
-                    </div>
-
-                    <a href="{{ route('articles.index') }}"
-                        class="group inline-flex items-center gap-2 text-sm font-semibold text-gray-400 transition hover:text-[#c49c4d]">
-                        Lihat semua artikel
-                        <svg xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                        </svg>
-                    </a>
+            {{-- Rekomendasi Artikel Lainnya --}}
+            <div class="mt-12 sm:mt-16">
+                <div class="mb-6 text-center">
+                    <span
+                        class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-2">
+                        Risalah Lainnya
+                    </span>
+                    <h3 class="font-serif text-xl font-bold text-gray-900 sm:text-2xl">
+                        Artikel Keislaman Lainnya
+                    </h3>
                 </div>
 
-                {{-- Grid Cards Artikel Terkait --}}
-                <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-                    @foreach ($relatedArticles as $relatedArticle)
-                        <article
-                            class="group relative flex flex-col rounded-2xl border border-white/5 bg-[#111] p-3 shadow-lg transition duration-300 hover:-translate-y-1 hover:border-[#c49c4d]/30 hover:bg-[#151515]">
-                            <a href="{{ route('articles.show', $relatedArticle['slug']) }}"
-                                class="block aspect-[16/10] w-full overflow-hidden rounded-xl bg-black">
-                                <img src="{{ asset($relatedArticle['thumbnail']) }}"
-                                    alt="{{ $relatedArticle['title'] }}"
-                                    class="h-full w-full object-cover opacity-80 transition duration-500 group-hover:scale-105 group-hover:opacity-100">
+                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+
+                    {{-- Card Rekomendasi 1 --}}
+                    <div
+                        class="flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition hover:border-[#8c6b2d] hover:shadow-md">
+                        <div class="p-5">
+                            <span class="text-xs font-semibold text-[#8c6b2d]">15 Agustus 2026</span>
+                            <h4 class="mt-1 font-serif text-base font-bold text-gray-900 line-clamp-2">
+                                Adab Menyambut Bulan Suci Ramadan
+                            </h4>
+                            <p class="mt-2 text-xs text-gray-600 line-clamp-2">
+                                Persiapan ruhani dan fisik sangat diperlukan agar dapat memaksimalkan ibadah saat bulan
+                                suci tiba.
+                            </p>
+                            <a href="#"
+                                class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#8c6b2d] hover:underline">
+                                Baca Artikel →
                             </a>
+                        </div>
+                    </div>
 
-                            <div class="flex flex-1 flex-col px-3 py-5">
-                                <time datetime="{{ $relatedArticle['published_at'] }}"
-                                    class="text-xs font-medium text-gray-500">
-                                    {{ $relatedArticle['published_at'] }}
-                                </time>
+                    {{-- Card Rekomendasi 2 --}}
+                    <div
+                        class="flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition hover:border-[#8c6b2d] hover:shadow-md">
+                        <div class="p-5">
+                            <span class="text-xs font-semibold text-[#8c6b2d]">28 Juli 2026</span>
+                            <h4 class="mt-1 font-serif text-base font-bold text-gray-900 line-clamp-2">
+                                Manfaat Mengamalkan Al-Qur'an dalam Kehidupan Sehari-hari
+                            </h4>
+                            <p class="mt-2 text-xs text-gray-600 line-clamp-2">
+                                Al-Qur'an bukan hanya petunjuk ibadah, tetapi juga penerang jalan hidup dan solusi
+                                berbagai masalah.
+                            </p>
+                            <a href="#"
+                                class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#8c6b2d] hover:underline">
+                                Baca Artikel →
+                            </a>
+                        </div>
+                    </div>
 
-                                <h3
-                                    class="mt-2 font-serif text-lg font-bold leading-snug text-white group-hover:text-[#c49c4d] transition duration-300">
-                                    <a href="{{ route('articles.show', $relatedArticle['slug']) }}">
-                                        <span class="absolute inset-0"></span>
-                                        {{ $relatedArticle['title'] }}
-                                    </a>
-                                </h3>
-                            </div>
-                        </article>
-                    @endforeach
                 </div>
             </div>
-        </section>
-    </article>
+
+        </div>
+    </div>
 </x-layouts.guest>

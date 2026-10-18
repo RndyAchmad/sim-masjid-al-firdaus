@@ -1,7 +1,7 @@
 <x-layouts.guest>
     {{-- Header Banner Halaman Transparansi Keuangan Operasional --}}
     <div
-        class="relative bg-gradient-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
+        class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
         <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
                 Transparansi Ummat
@@ -14,7 +14,7 @@
                 Laporan penerimaan infak, sedekah, dan pengeluaran operasional rutin Masjid Al-Firdaus
             </p>
             <div
-                class="mx-auto mt-4 h-px w-16 bg-gradient-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20">
+                class="mx-auto mt-4 h-px w-16 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20">
             </div>
         </div>
     </div>
@@ -90,7 +90,7 @@
 
                     {{-- Card 3: Saldo Akhir Kas Utama --}}
                     <div
-                        class="rounded-2xl border border-[#8c6b2d]/30 bg-gradient-to-br from-white via-white to-[#F7F4EE] p-6 shadow-md transition-all duration-300 hover:border-[#8c6b2d] hover:shadow-xl sm:col-span-2 lg:col-span-1">
+                        class="rounded-2xl border border-[#8c6b2d]/30 bg-linear-to-br from-white via-white to-[#F7F4EE] p-6 shadow-md transition-all duration-300 hover:border-[#8c6b2d] hover:shadow-xl sm:col-span-2 lg:col-span-1">
                         <div class="flex items-center justify-between">
                             <span class="text-xs font-bold uppercase tracking-wider text-[#8c6b2d]">Saldo Kas
                                 Tersedia</span>

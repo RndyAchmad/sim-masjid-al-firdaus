@@ -29,6 +29,10 @@
                     class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Profil
                 </a>
+                <a href="{{ route('berita') }}"
+                    class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                    Berita
+                </a>
                 <a href="/kegiatan"
                     class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Kegiatan
@@ -110,6 +114,10 @@
             <a href="{{ route('profile') }}"
                 class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Profil
+            </a>
+            <a href="{{ route('berita') }}"
+                class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                Berita
             </a>
             <a href="/kegiatan"
                 class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">

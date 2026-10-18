@@ -2,8 +2,9 @@
 
 // Guest Controllers
 use App\Http\Controllers\Guest\HomeController;
-use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ProfileController as GuestProfileController;
+use App\Http\Controllers\Guest\BeritaController as GuestBeritaController;
+use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
 use App\Http\Controllers\Guest\LaporanController as GuestLaporanController;
 use App\Http\Controllers\AuthController;
@@ -22,6 +23,7 @@ use Illuminate\Support\Facades\Route;
 // Guest Routes
 Route::get('/', [HomeController::class, 'index'])->name('beranda');
 Route::get('/profile', [GuestProfileController::class, 'index'])->name('profile');
+Route::get('/berita', [GuestBeritaController::class, 'index'])->name('berita');
 Route::get('/artikel', [GuestArticleController::class, 'index'])->name('articles.index');
 Route::get('/artikel/{slug}', [GuestArticleController::class, 'show'])->name('articles.show');
 Route::get('/kegiatan', [GuestActivityController::class, 'index'])->name('activities.index');

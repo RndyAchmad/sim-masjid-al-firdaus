@@ -3,56 +3,60 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Services\MyQuranPrayerService;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class HomeController extends Controller
 {
-    public function index()
+    public function index(MyQuranPrayerService $prayerService)
     {
-        // Default data jika API gagal/lambat diakses
+        $now = Carbon::now('Asia/Jakarta');
+
         $jadwal = [
-            'Imsak'   => '--:--',
-            'Subuh'   => '--:--',
-            'Dzuhur'  => '--:--',
-            'Ashar'   => '--:--',
+            'Imsak' => '--:--',
+            'Subuh' => '--:--',
+            'Dzuhur' => '--:--',
+            'Ashar' => '--:--',
             'Maghrib' => '--:--',
-            'Isya'    => '--:--'
+            'Isya' => '--:--',
         ];
-        $tanggal = 'Gagal memuat jadwal';
+
+        $tanggal = $now->translatedFormat('l, d F Y');
         $lokasi = 'Kab. Sidoarjo';
+        $apiAvailable = false;
 
         try {
-            $year = now()->year;
-            $month = now()->format('m');
-            $day = now()->format('d');
-            
-            // ID 1628 adalah kode untuk Kab. Sidoarjo di API MyQuran Kemenag
-            // Timeout 5 detik agar halaman tidak loading selamanya jika API Kemenag down
-            $response = Http::timeout(5)->get("https://api.myquran.com/v2/sholat/jadwal/1628/{$year}/{$month}/{$day}");
-            
-            if ($response->successful()) {
-                $data = $response->json();
-                
-                if (isset($data['status']) && $data['status']) {
-                    $tanggal = $data['data']['jadwal']['tanggal'];
-                    $jadwal = [
-                        'Imsak'   => $data['data']['jadwal']['imsak'],
-                        'Subuh'   => $data['data']['jadwal']['subuh'],
-                        'Dzuhur'  => $data['data']['jadwal']['dzuhur'],
-                        'Ashar'   => $data['data']['jadwal']['ashar'],
-                        'Maghrib' => $data['data']['jadwal']['maghrib'],
-                        'Isya'    => $data['data']['jadwal']['isya'],
-                    ];
-                }
+            $result = $prayerService->getDaily($now);
+
+            if ($result && isset($result['jadwal'])) {
+                $data = $result['jadwal'];
+
+                $jadwal = [
+                    'Imsak' => $data['imsak'] ?? '--:--',
+                    'Subuh' => $data['subuh'] ?? '--:--',
+                    'Dzuhur' => $data['dzuhur'] ?? '--:--',
+                    'Ashar' => $data['ashar'] ?? '--:--',
+                    'Maghrib' => $data['maghrib'] ?? '--:--',
+                    'Isya' => $data['isya'] ?? '--:--',
+                ];
+
+                $tanggal = $data['tanggal'] ?? $tanggal;
+                $lokasi = $result['lokasi'] ?? $lokasi;
+                $apiAvailable = true;
             }
-        } catch (\Exception $e) {
-            // Catat error di storage/logs/laravel.log tanpa merusak tampilan web
-            Log::error('API Jadwal Sholat Error: ' . $e->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Gagal menampilkan jadwal di beranda', [
+                'error' => $e->getMessage(),
+            ]);
         }
 
-        // Kirim variabel ke view 'beranda'
-        return view('welcome', compact('jadwal', 'tanggal', 'lokasi'));
+        return view('welcome', compact(
+            'jadwal',
+            'tanggal',
+            'lokasi',
+            'apiAvailable'
+        ));
     }
 }

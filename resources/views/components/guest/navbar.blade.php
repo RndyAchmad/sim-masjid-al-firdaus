@@ -1,4 +1,4 @@
-<nav x-data="{ mobileMenuOpen: false, dropdownLaporanOpen: false }"
+<nav x-data="{ mobileMenuOpen: false, dropdownLaporanOpen: false, dropdownJadwalOpen: false }"
     class="sticky top-0 z-50 border-b border-gray-800 bg-black/95 backdrop-blur-md">
     <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div class="flex h-20 items-center justify-between">
@@ -33,7 +33,7 @@
                     class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Berita
                 </a>
-                <a href="/kegiatan"
+                <a href="{{ route('activities.index') }}"
                     class="text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                     Kegiatan
                 </a>
@@ -42,9 +42,39 @@
                     Artikel Keislaman
                 </a>
 
+                {{-- Dropdown Jadwal (Desktop) --}}
+                <div class="relative" @click.away="dropdownJadwalOpen = false">
+                    <button @click="dropdownJadwalOpen = !dropdownJadwalOpen; dropdownLaporanOpen = false"
+                        class="flex items-center gap-1.5 text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
+                        <span>Jadwal</span>
+                        <svg class="h-4 w-4 transition-transform duration-200"
+                            :class="{ 'rotate-180': dropdownJadwalOpen }" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div x-show="dropdownJadwalOpen" x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 translate-y-1"
+                        x-transition:enter-end="opacity-100 translate-y-0"
+                        x-transition:leave="transition ease-in duration-150"
+                        x-transition:leave-start="opacity-100 translate-y-0"
+                        x-transition:leave-end="opacity-0 translate-y-1" x-cloak
+                        class="absolute right-0 mt-3 w-60 rounded-xl border border-gray-800 bg-[#0B0B0B] p-2 shadow-xl">
+                        <a href="{{ route('jadwal.sholat') }}"
+                            class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                            Jadwal Sholat Sidoarjo
+                        </a>
+                        <a href="{{ route('jadwal.imam') }}"
+                            class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                            Jadwal Imam Sholat Jumat
+                        </a>
+                    </div>
+                </div>
+
                 {{-- Dropdown Laporan (Desktop) --}}
                 <div class="relative" @click.away="dropdownLaporanOpen = false">
-                    <button @click="dropdownLaporanOpen = !dropdownLaporanOpen"
+                    <button @click="dropdownLaporanOpen = !dropdownLaporanOpen; dropdownJadwalOpen = false"
                         class="flex items-center gap-1.5 text-sm font-medium tracking-wide text-gray-300 transition-all hover:text-[#c49c4d]">
                         <span>Laporan</span>
                         <svg class="h-4 w-4 transition-transform duration-200"
@@ -54,7 +84,6 @@
                         </svg>
                     </button>
 
-                    {{-- Submenu Dropdown --}}
                     <div x-show="dropdownLaporanOpen" x-transition:enter="transition ease-out duration-200"
                         x-transition:enter-start="opacity-0 translate-y-1"
                         x-transition:enter-end="opacity-100 translate-y-0"
@@ -72,11 +101,7 @@
                         </a>
                         <a href="{{ route('laporan.inventaris') }}"
                             class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
-                            Inventaris
-                        </a>
-                        <a href="{{ route('laporan.jadwal-imam') }}"
-                            class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
-                            Jadwal Imam Sholat Jumat
+                            Inventaris Masjid
                         </a>
                     </div>
                 </div>
@@ -123,7 +148,7 @@
                 class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Berita
             </a>
-            <a href="/kegiatan"
+            <a href="{{ route('activities.index') }}"
                 class="block rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
                 Kegiatan
             </a>
@@ -132,19 +157,44 @@
                 Artikel Keislaman
             </a>
 
-            {{-- Accordion Laporan (Mobile) --}}
-            <div x-data="{ mobileAccordionOpen: false }" class="space-y-1">
-                <button @click="mobileAccordionOpen = !mobileAccordionOpen"
+            {{-- Accordion Jadwal (Mobile) --}}
+            <div x-data="{ mobileAccordionJadwal: false }" class="space-y-1">
+                <button @click="mobileAccordionJadwal = !mobileAccordionJadwal"
                     class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
-                    <span>Laporan</span>
+                    <span>Jadwal</span>
                     <svg class="h-4 w-4 transition-transform duration-200"
-                        :class="{ 'rotate-180': mobileAccordionOpen }" fill="none" viewBox="0 0 24 24"
+                        :class="{ 'rotate-180': mobileAccordionJadwal }" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                     </svg>
                 </button>
 
-                <div x-show="mobileAccordionOpen" x-cloak
+                <div x-show="mobileAccordionJadwal" x-cloak
+                    class="pl-4 space-y-1 border-l-2 border-[#c49c4d]/30 ml-4 my-1">
+                    <a href="{{ route('jadwal.sholat') }}"
+                        class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
+                        Jadwal Sholat Sidoarjo
+                    </a>
+                    <a href="{{ route('jadwal.imam') }}"
+                        class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
+                        Jadwal Imam Sholat Jumat
+                    </a>
+                </div>
+            </div>
+
+            {{-- Accordion Laporan (Mobile) --}}
+            <div x-data="{ mobileAccordionLaporan: false }" class="space-y-1">
+                <button @click="mobileAccordionLaporan = !mobileAccordionLaporan"
+                    class="flex w-full items-center justify-between rounded-lg px-4 py-3 text-sm font-medium tracking-wide text-gray-300 transition hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]">
+                    <span>Laporan</span>
+                    <svg class="h-4 w-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': mobileAccordionLaporan }" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+
+                <div x-show="mobileAccordionLaporan" x-cloak
                     class="pl-4 space-y-1 border-l-2 border-[#c49c4d]/30 ml-4 my-1">
                     <a href="{{ route('laporan.operasional') }}"
                         class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
@@ -156,11 +206,7 @@
                     </a>
                     <a href="{{ route('laporan.inventaris') }}"
                         class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
-                        Inventaris
-                    </a>
-                    <a href="{{ route('laporan.jadwal-imam') }}"
-                        class="block rounded-lg px-4 py-2.5 text-xs font-medium text-gray-400 transition hover:text-[#c49c4d]">
-                        Jadwal Imam Sholat Jumat
+                        Inventaris Masjid
                     </a>
                 </div>
             </div>

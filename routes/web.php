@@ -6,6 +6,7 @@ use App\Http\Controllers\Guest\ProfileController as GuestProfileController;
 use App\Http\Controllers\Guest\BeritaController as GuestBeritaController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
+use App\Http\Controllers\Guest\JadwalController as GuestJadwalController;
 use App\Http\Controllers\Guest\LaporanController as GuestLaporanController;
 use App\Http\Controllers\Guest\KontakController as GuestKontakController;
 use App\Http\Controllers\AuthController;
@@ -30,10 +31,11 @@ Route::get('/artikel', [GuestArticleController::class, 'index'])->name('articles
 Route::get('/artikel/{slug}', [GuestArticleController::class, 'show'])->name('articles.show');
 Route::get('/kegiatan', [GuestActivityController::class, 'index'])->name('activities.index');
 Route::get('/kegiatan/{slug}', [GuestActivityController::class, 'show'])->name('activities.show');
+Route::get('/jadwal-imam-jumat', [GuestJadwalController::class, 'indexJadwalImam'])->name('jadwal.imam');
+Route::get('/jadwal-sholat', [GuestJadwalController::class, 'indexJadwalSholat'])->name('jadwal.sholat');
 Route::get('/laporan/keuangan-operasional', [GuestLaporanController::class, 'indexOperasional'])->name('laporan.operasional');
 Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'indexPembangunan'])->name('laporan.pembangunan');
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
-Route::get('/laporan/jadwal-imam', [GuestLaporanController::class, 'indexJadwalImam'])->name('laporan.jadwal-imam');
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 
 // Admin Routes

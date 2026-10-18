@@ -10,11 +10,13 @@
         <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-[#080806] to-transparent"></div>
 
         <div class="mx-auto flex max-w-4xl flex-col items-center text-center">
-            <p class="mb-4 text-[0.7rem] font-semibold uppercase leading-5 tracking-[0.22em] text-[#d8b76a] sm:mb-5 sm:text-xs md:text-sm">
+            <p
+                class="mb-4 text-[0.7rem] font-semibold uppercase leading-5 tracking-[0.22em] text-[#d8b76a] sm:mb-5 sm:text-xs md:text-sm">
                 Bismillahirrahmanirrahim
             </p>
 
-            <h1 class="max-w-3xl font-serif text-4xl font-bold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            <h1
+                class="max-w-3xl font-serif text-4xl font-bold leading-[1.05] text-white sm:text-5xl md:text-6xl lg:text-7xl">
                 Selamat Datang
                 <span
                     class="mt-2 block bg-linear-to-r from-[#c49c4d] via-[#f4dc9b] to-[#c49c4d] bg-clip-text text-transparent sm:mt-3">
@@ -22,11 +24,13 @@
                 </span>
             </h1>
 
-            <p class="mt-5 max-w-xl text-sm leading-7 text-gray-200 sm:mt-6 sm:text-base md:max-w-2xl md:text-lg md:leading-8">
+            <p
+                class="mt-5 max-w-xl text-sm leading-7 text-gray-200 sm:mt-6 sm:text-base md:max-w-2xl md:text-lg md:leading-8">
                 Pusat ibadah, silaturahmi, dan informasi jamaah Perumahan Taman Puspa Sari.
             </p>
 
-            <div class="mt-8 h-px w-20 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-10 sm:w-24"></div>
+            <div class="mt-8 h-px w-20 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-10 sm:w-24">
+            </div>
         </div>
     </section>
 
@@ -39,13 +43,15 @@
             <div
                 class="mb-5 flex flex-col items-center justify-between gap-4 border-b border-gray-800 pb-5 md:flex-row">
                 <div class="text-center md:text-left">
-                    <p class="mb-1 text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.22em] text-[#c49c4d] sm:text-xs">
+                    <p
+                        class="mb-1 text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.22em] text-[#c49c4d] sm:text-xs">
                         Waktu Ibadah
                     </p>
                     <h2 class="font-serif text-2xl font-bold leading-tight text-white sm:text-3xl">
                         Jadwal Sholat Hari Ini
                     </h2>
-                    <p class="mt-2 text-xs font-medium leading-6 text-gray-400 sm:text-sm" x-text="lokasi + ' - ' + tanggal">Memuat lokasi...</p>
+                    <p class="mt-2 text-xs font-medium leading-6 text-gray-400 sm:text-sm"
+                        x-text="lokasi + ' - ' + tanggal">Memuat lokasi...</p>
                 </div>
 
                 {{-- Jam Real-time --}}
@@ -55,7 +61,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
-                    <span class="font-mono text-base font-semibold tracking-[0.12em] sm:text-lg" x-text="currentTime">00:00:00</span>
+                    <span class="font-mono text-base font-semibold tracking-[0.12em] sm:text-lg"
+                        x-text="currentTime">00:00:00</span>
                 </div>
             </div>
 
@@ -67,7 +74,8 @@
                         <span
                             class="text-[0.68rem] font-semibold uppercase leading-5 tracking-[0.18em] text-gray-400 transition-colors group-hover:text-[#c49c4d] sm:text-xs"
                             x-text="nama"></span>
-                        <span class="mt-2 font-mono text-xl font-semibold tracking-wide text-white sm:text-2xl" x-text="waktu">--:--</span>
+                        <span class="mt-2 font-mono text-xl font-semibold tracking-wide text-white sm:text-2xl"
+                            x-text="waktu">--:--</span>
                     </div>
                 </template>
             </div>
@@ -157,6 +165,7 @@
     </div>
 
     {{-- Script Alpine untuk API Jadwal Sholat --}}
+
     <script>
         function jadwalSholat() {
             return {
@@ -168,53 +177,29 @@
                     'Maghrib': '--:--',
                     'Isya': '--:--'
                 },
-                tanggal: 'Memuat...',
-                lokasi: 'Kab. Sidoarjo',
-                currentTime: '00:00:00',
+
+                tanggal: @js($tanggal),
+                lokasi: @js($lokasi),
+                currentTime: '--:--:--',
 
                 initJadwal() {
                     this.updateClock();
                     setInterval(() => this.updateClock(), 1000);
-                    this.fetchJadwalAPI();
+
+                    // Data jadwal berasal dari backend Laravel.
+                    this.jadwal = @js($jadwal);
                 },
 
                 updateClock() {
-                    const now = new Date();
-                    // Format jam agar selalu 2 digit (00:00:00)
-                    this.currentTime = now.toLocaleTimeString('id-ID', {
+                    this.currentTime = new Intl.DateTimeFormat('id-ID', {
+                        timeZone: 'Asia/Jakarta',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
                         hour12: false
-                    });
-                },
-
-                async fetchJadwalAPI() {
-                    try {
-                        const today = new Date();
-                        const year = today.getFullYear();
-                        const month = String(today.getMonth() + 1).padStart(2, '0');
-                        const day = String(today.getDate()).padStart(2, '0');
-
-                        // ID 1628 adalah kode untuk Kab. Sidoarjo di API MyQuran Kemenag
-                        const response = await fetch(
-                            `https://api.myquran.com/v2/sholat/jadwal/1628/${year}/${month}/${day}`);
-                        const data = await response.json();
-
-                        if (data.status) {
-                            this.tanggal = data.data.jadwal.tanggal;
-                            this.jadwal = {
-                                'Imsak': data.data.jadwal.imsak,
-                                'Subuh': data.data.jadwal.subuh,
-                                'Dzuhur': data.data.jadwal.dzuhur,
-                                'Ashar': data.data.jadwal.ashar,
-                                'Maghrib': data.data.jadwal.maghrib,
-                                'Isya': data.data.jadwal.isya
-                            };
-                        }
-                    } catch (error) {
-                        console.error('Gagal mengambil jadwal sholat', error);
-                        this.tanggal = 'Gagal memuat jadwal';
-                    }
+                    }).format(new Date());
                 }
-            }
+            };
         }
     </script>
 </x-layouts.guest>

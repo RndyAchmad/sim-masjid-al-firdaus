@@ -100,7 +100,7 @@
                             </div>
 
                             <div class="mt-5 pt-2">
-                                <a href="#"
+                                <a href="{{ route('activities.show', ['slug' => 'tabligh-akbar-santunan-anak-yatim-piatu']) }}"
                                     class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#8c6b2d] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#6e5321]">
                                     Detail Kegiatan
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none"

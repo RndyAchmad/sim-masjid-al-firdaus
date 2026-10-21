@@ -53,7 +53,7 @@
                         <span class="text-xs font-semibold uppercase text-gray-400">
                             Nama Lengkap
                         </span>
-                        <p class="mt-1 break-words text-base font-bold text-gray-900">
+                        <p class="mt-1 wrap-break-word text-base font-bold text-gray-900">
                             {{ $user->name }}
                         </p>
                     </div>

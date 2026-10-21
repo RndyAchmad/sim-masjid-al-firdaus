@@ -77,8 +77,10 @@
                 {{-- Berita & Pengumuman --}}
                 <a href="{{ route('admin.berita.index') }}"
                     class="{{ request()->routeIs('admin.berita.*') ? 'bg-[#c49c4d] text-white' : 'text-gray-400 hover:bg-[#c49c4d]/10 hover:text-[#c49c4d]' }} flex items-center gap-3 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9.5a2.5 2.5 0 00-2.5-2.5H15" />
                     </svg>
                     Berita & Pengumuman
                 </a>
@@ -183,7 +185,7 @@
         <!-- Footer Sidebar: Logout Tetap di Bawah -->
         <div class="shrink-0 border-t border-gray-800/80 p-4">
 
-            <form method="POST" action="">
+            <form method="POST" action="{{ route('logout') }}">
                 @csrf
 
                 <button type="submit"

@@ -25,12 +25,20 @@
 
                 {{-- Input Email --}}
                 <div>
-                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Alamat Email</label>
+                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">
+                        Alamat Email
+                    </label>
+
                     <div class="mt-2">
-                        <input id="email" name="email" type="email" autocomplete="email" required
+                        <input id="email" name="email" type="email" value="{{ old('email') }}" autocomplete="email"
+                            required autofocus
                             class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-900 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d] transition-colors"
                             placeholder="admin@al-firdaus.com">
                     </div>
+
+                    @error('email')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 {{-- Input Password --}}
@@ -46,7 +54,7 @@
                 {{-- Remember Me & Forgot Password --}}
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
-                        <input id="remember-me" name="remember" type="checkbox"
+                        <input id="remember-me" name="remember" type="checkbox" value="1" @checked(old('remember'))
                             class="h-4 w-4 rounded border-gray-300 text-[#c49c4d] focus:ring-[#c49c4d]">
                         <label for="remember-me" class="ml-3 block text-sm leading-6 text-gray-600">Ingat saya</label>
                     </div>
@@ -59,7 +67,7 @@
                 {{-- Tombol Login --}}
                 <div>
                     <button type="submit"
-                        class="flex w-full justify-center rounded-xl bg-[#c49c4d] px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#a8833e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#c49c4d] transition-all">
+                        class="flex w-full justify-center rounded-xl bg-[#c49c4d] px-3 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#a8833e] focus-visible:outline focus-visible:outline-offset-2 focus-visible:outline-[#c49c4d] transition-all">
                         Masuk
                     </button>
                 </div>

@@ -41,10 +41,14 @@ Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventar
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 
 // Admin Routes
-Route::get('/admin/login', [AuthController::class, 'index'])->name('login');
-Route::post('/admin/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthController::class, 'index'])->name('login');
+    Route::post('/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+});
 
-Route::prefix('admin')->name('admin.')->group(function () {
+Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+
+Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Dashboard Route
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 

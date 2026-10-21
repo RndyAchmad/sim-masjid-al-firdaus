@@ -40,45 +40,81 @@ Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'ind
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 
-// Admin Routes
+// AUTHENTICATION ROUTES
 Route::middleware('guest')->group(function () {
-    Route::get('/login', [AuthController::class, 'index'])->name('login');
-    Route::post('/login', [AuthController::class, 'authenticate'])->name('login.authenticate');
+    Route::get('/login', [AuthController::class, 'index'])
+        ->name('login');
+
+    Route::post('/login', [AuthController::class, 'authenticate'])
+        ->middleware('throttle:5,1')
+        ->name('login.authenticate');
 });
 
-Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth')->name('logout');
+Route::post('/logout', [AuthController::class, 'logout'])
+    ->middleware('auth')
+    ->name('logout');
 
+// ADMIN ROUTES
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
-    // Dashboard Route
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Profil Masjid Routes
-    Route::get('/profile', [AdminProfilMasjidController::class, 'index'])->name('profile');
+    // DASHBOARD: SEMUA ROLE
+    Route::get('/dashboard', [DashboardController::class, 'index',])->name('dashboard');
 
-    // Kegiatan Routes
-    Route::prefix('kegiatan')->name('kegiatan.')->group(function () {
-        Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
-        Route::get('/create', [AdminKegiatanController::class, 'create'])->name('create');
-        Route::post('/', [AdminKegiatanController::class, 'store'])->name('store');
-        Route::get('/{id}', [AdminKegiatanController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [AdminKegiatanController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminKegiatanController::class, 'update'])->name('update');
-        Route::delete('/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
+    // PROFIL MASJID: SUPERADMIN, ADMIN, SEKRETARIS
+    Route::middleware('role:superadmin,admin,sekretaris')->group(function () {
+        Route::get('/profile', [AdminProfilMasjidController::class, 'index',])->name('profile');
     });
 
-    // Artikel Routes
-    Route::prefix('artikel')->name('articles.')->group(function () {
-        Route::get('/', [AdminArticleController::class, 'index'])->name('index');
-        Route::get('/create', [AdminArticleController::class, 'create'])->name('create');
-        Route::post('/', [AdminArticleController::class, 'store'])->name('store');
-        Route::get('/{id}', [AdminArticleController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [AdminArticleController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminArticleController::class, 'update'])->name('update');
-        Route::delete('/{id}', [AdminArticleController::class, 'destroy'])->name('destroy');
+    // KEGIATAN: SUPERADMIN, ADMIN
+    Route::middleware('role:superadmin,admin')->group(function () {
+        Route::prefix('kegiatan')->name('kegiatan.')->group(function () {
+            Route::get('/', [AdminKegiatanController::class, 'index'])->name('index');
+            Route::get('/create', [AdminKegiatanController::class, 'create'])->name('create');
+            Route::post('/', [AdminKegiatanController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminKegiatanController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminKegiatanController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminKegiatanController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminKegiatanController::class, 'destroy'])->name('destroy');
+        });
+
+        // ARTIKEL: SUPERADMIN, ADMIN
+        Route::prefix('artikel')->name('articles.')->group(function () {
+            Route::get('/', [AdminArticleController::class, 'index'])->name('index');
+            Route::get('/create', [AdminArticleController::class, 'create'])->name('create');
+            Route::post('/', [AdminArticleController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminArticleController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminArticleController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminArticleController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminArticleController::class, 'destroy'])->name('destroy');
+        });
+
+        // JADWAL IMAM: SUPERADMIN, ADMIN
+        Route::prefix('jadwal-imam')->name('jadwal-imam.')->group(function () {
+            Route::get('/', [AdminJadwalImamController::class, 'index'])->name('index');
+            Route::get('/create', [AdminJadwalImamController::class, 'create'])->name('create');
+            Route::get('/{id}', [AdminJadwalImamController::class, 'show'])->name('show');
+            Route::post('/', [AdminJadwalImamController::class, 'store'])->name('store');
+            Route::get('/{id}/edit', [AdminJadwalImamController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminJadwalImamController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminJadwalImamController::class, 'destroy'])->name('destroy');
+            Route::get('/export', [AdminJadwalImamController::class, 'exportToExcel'])->name('export');
+            Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
+        });
+
+        // BERITA & PENGUMUMAN: SUPERADMIN, ADMIN
+        Route::prefix('berita')->name('berita.')->group(function () {
+            Route::get('/', [AdminBeritaController::class, 'index'])->name('index');
+            Route::get('/create', [AdminBeritaController::class, 'create'])->name('create');
+            Route::post('/', [AdminBeritaController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminBeritaController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminBeritaController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminBeritaController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminBeritaController::class, 'destroy'])->name('destroy');
+        });
     });
 
-    // Inventaris Routes
-    Route::prefix('inventaris')->name('inventaris.')->group(function () {
+    // INVENTARIS: SUPERADMIN, SEKRETARIS
+    Route::middleware('role:superadmin,sekretaris')->prefix('inventaris')->name('inventaris.')->group(function () {
         Route::get('/', [AdminInventarisController::class, 'index'])->name('index');
         Route::get('/create', [AdminInventarisController::class, 'create'])->name('create');
         Route::post('/', [AdminInventarisController::class, 'store'])->name('store');
@@ -88,8 +124,9 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{id}', [AdminInventarisController::class, 'destroy'])->name('destroy');
     });
 
-    // Laporan Keuangan Routes
-    Route::prefix('laporan-keuangan')->name('laporan-keuangan.')->group(function () {
+
+    // LAPORAN KEUANGAN: SUPERADMIN, BENDAHARA
+    Route::middleware('role:superadmin,bendahara')->prefix('laporan-keuangan')->name('laporan-keuangan.')->group(function () {
         Route::get('/', [AdminLaporanKeuanganController::class, 'index'])->name('index');
         Route::get('/create', [AdminLaporanKeuanganController::class, 'create'])->name('create');
         Route::post('/', [AdminLaporanKeuanganController::class, 'store'])->name('store');
@@ -99,21 +136,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{id}', [AdminLaporanKeuanganController::class, 'destroy'])->name('destroy');
     });
 
-    // Jadwal Imam Jumat Routes
-    Route::prefix('jadwal-imam')->name('jadwal-imam.')->group(function () {
-        Route::get('/', [AdminJadwalImamController::class, 'index'])->name('index');
-        Route::get('/create', [AdminJadwalImamController::class, 'create'])->name('create');
-        Route::get('/{id}', [AdminJadwalImamController::class, 'show'])->name('show');
-        Route::post('/', [AdminJadwalImamController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [AdminJadwalImamController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminJadwalImamController::class, 'update'])->name('update');
-        Route::delete('/{id}', [AdminJadwalImamController::class, 'destroy'])->name('destroy');
-        Route::get('/export', [AdminJadwalImamController::class, 'exportToExcel'])->name('export');
-        Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
-    });
-
-    // Pembangunan Routes
-    Route::prefix('pembangunan')->name('pembangunan.')->group(function () {
+    // PEMBANGUNAN: SUPERADMIN, BENDAHARA
+    Route::middleware('role:superadmin,bendahara')->prefix('pembangunan')->name('pembangunan.')->group(function () {
         Route::get('/', [AdminPembangunanController::class, 'index'])->name('index');
         Route::get('/create', [AdminPembangunanController::class, 'create'])->name('create');
         Route::post('/', [AdminPembangunanController::class, 'store'])->name('store');
@@ -123,19 +147,8 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::delete('/{id}', [AdminPembangunanController::class, 'destroy'])->name('destroy');
     });
 
-    // Berita & Pengumuman Routes
-    Route::prefix('berita')->name('berita.')->group(function () {
-        Route::get('/', [AdminBeritaController::class, 'index'])->name('index');
-        Route::get('/create', [AdminBeritaController::class, 'create'])->name('create');
-        Route::post('/', [AdminBeritaController::class, 'store'])->name('store');
-        Route::get('/{id}', [AdminBeritaController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [AdminBeritaController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminBeritaController::class, 'update'])->name('update');
-        Route::delete('/{id}', [AdminBeritaController::class, 'destroy'])->name('destroy');
-    });
-
-    // Users Routes
-    Route::prefix('users')->name('users.')->group(function () {
+    // MANAJEMEN PENGGUNA: SUPERADMIN SAJA
+    Route::middleware('role:superadmin')->prefix('users')->name('users.')->group(function () {
         Route::get('/', [AdminUsersController::class, 'index'])->name('index');
         Route::get('/create', [AdminUsersController::class, 'create'])->name('create');
         Route::post('/', [AdminUsersController::class, 'store'])->name('store');

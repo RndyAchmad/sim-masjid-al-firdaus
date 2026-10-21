@@ -12,30 +12,58 @@
         <div>
             <label class="mb-2 block text-sm font-semibold text-gray-700">Nama Lengkap <span
                     class="text-red-500">*</span></label>
-            <input type="text" name="name" placeholder="Contoh: H. Syaiful Bahri, S.Ag." required
+            <input type="text" name="name" value="{{ old('name') }}" required maxlength="255" autocomplete="name"
+                placeholder="Contoh: H. Syaiful Bahri, S.Ag."
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+
+            @error('name')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Alamat Email --}}
         <div>
             <label class="mb-2 block text-sm font-semibold text-gray-700">Alamat Email <span
                     class="text-red-500">*</span></label>
-            <input type="email" name="email" placeholder="contoh: syaiful@masjidalfirdaus.or.id" required
+            <input type="email" id="email" name="email" value="{{ old('email') }}" maxlength="255" autocomplete="email"
+                placeholder="contoh: syaiful@masjidalfirdaus.or.id" required
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+
+            @error('email')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Role / Hak Akses --}}
         <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Role / Hak Akses <span
-                    class="text-red-500">*</span></label>
+            <label class="mb-2 block text-sm font-semibold text-gray-700">
+                Role / Hak Akses <span class="text-red-500">*</span>
+            </label>
+
             <select name="role" required
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
                 <option value="">-- Pilih Role --</option>
-                <option value="super_admin">Super Admin (Akses Penuh Seluruh Sistem)</option>
-                <option value="sekretaris">Sekretaris (Pengelolaan Berita, Kegiatan, & Konten)</option>
-                <option value="bendahara">Bendahara (Pengelolaan Kas & Laporan Keuangan)</option>
-                <option value="admin">Pengurus / Modrator Umum</option>
+
+                <option value="superadmin" @selected(old('role') === 'superadmin')>
+                    Superadmin — Akses Penuh
+                </option>
+
+                <option value="admin" @selected(old('role') === 'admin')>
+                    Admin — Kegiatan, Artikel, Jadwal Imam, dan Berita
+                </option>
+
+                <option value="bendahara" @selected(old('role') === 'bendahara')>
+                    Bendahara — Laporan Keuangan dan Pembangunan
+                </option>
+
+                <option value="sekretaris" @selected(old('role') === 'sekretaris')>
+                    Sekretaris — Inventaris
+                </option>
             </select>
+
+            @error('role')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Grid Kata Sandi --}}
@@ -43,8 +71,13 @@
             <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">Kata Sandi <span
                         class="text-red-500">*</span></label>
-                <input type="password" name="password" placeholder="Minimal 8 karakter" required
+                <input type="password" id="password" name="password" minlength="8" autocomplete="new-password"
+                    placeholder="Minimal 8 karakter" required
                     class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+
+                @error('password')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
             <div>
                 <label class="mb-2 block text-sm font-semibold text-gray-700">Konfirmasi Kata Sandi <span

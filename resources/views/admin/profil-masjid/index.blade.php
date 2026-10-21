@@ -2,180 +2,516 @@
     <x-slot name="title">Profil Masjid</x-slot>
 
     <div class="space-y-6">
-        {{-- Header Page Info --}}
-        <div class="flex flex-col gap-1">
-            <h2 class="text-xl font-bold text-gray-900">Pengaturan Profil Masjid</h2>
-            <p class="text-sm text-gray-500">
-                Perbarui informasi tentang masjid, visi, misi, dan struktur organisasi yang akan ditampilkan kepada
-                jamaah.
+
+        {{-- Header --}}
+        <div>
+            <h2 class="text-xl font-bold text-gray-900">
+                Pengaturan Profil Masjid
+            </h2>
+            <p class="mt-1 text-sm text-gray-500">
+                Perbarui informasi, gambar, visi, misi, dan struktur organisasi masjid.
+                Semua informasi wajib diisi.
             </p>
         </div>
 
-        {{-- Form Container (Memenuhi Ruang Kanan-Kiri) --}}
-        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm p-6 sm:p-8">
-            <form action="#" method="POST" enctype="multipart/form-data" class="space-y-8">
+        {{-- Form Profil --}}
+        <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:p-8">
+
+            <form
+                action="{{ route('admin.profile.update') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                class="space-y-8"
+            >
                 @csrf
                 @method('PUT')
 
-                {{-- 1. Tentang Masjid --}}
+                {{-- Error Summary --}}
+                @if ($errors->any())
+                    <div class="rounded-xl border border-red-200 bg-red-50 p-4">
+                        <p class="font-semibold text-red-700">
+                            Periksa kembali data berikut:
+                        </p>
+
+                        <ul class="mt-2 list-inside list-disc space-y-1 text-sm text-red-600">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
+                {{-- 1. Deskripsi Masjid --}}
                 <div>
-                    <label for="tentang" class="block text-sm font-semibold text-gray-800 mb-2">
-                        1. Tentang Masjid
+                    <label for="description" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Tentang Masjid <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="tentang" name="tentang" rows="5"
-                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d] transition-colors"
-                        placeholder="Ceritakan sejarah atau profil singkat Masjid Al-Firdaus..."></textarea>
+
+                    <textarea
+                        id="description"
+                        name="description"
+                        rows="5"
+                        required
+                        maxlength="10000"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm transition focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                        placeholder="Ceritakan sejarah atau profil singkat Masjid Al-Firdaus..."
+                    >{{ old('description', $profile?->description) }}</textarea>
+
+                    @error('description')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <hr class="border-gray-100">
 
-                {{-- 2. Visi --}}
+                {{-- 2. Gambar Masjid --}}
                 <div>
-                    <label for="visi" class="block text-sm font-semibold text-gray-800 mb-2">
-                        2. Visi
+                    <label for="images" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Gambar Masjid <span class="text-red-500">*</span>
                     </label>
-                    <textarea id="visi" name="visi" rows="3"
-                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d] transition-colors"
-                        placeholder="Contoh: Menjadi pusat ibadah dan pembinaan umat yang makmur..."></textarea>
+
+                    @if ($profile?->images)
+                        <div class="mb-4">
+                            <p class="mb-2 text-sm text-gray-500">Gambar saat ini</p>
+
+                            <img
+                                src="{{ asset('storage/' . $profile->images) }}"
+                                alt="Gambar Masjid Al-Firdaus"
+                                class="max-h-64 w-auto rounded-xl border border-gray-200 bg-gray-50 object-contain shadow-sm"
+                            >
+                        </div>
+                    @endif
+
+                    <input
+                        type="file"
+                        id="images"
+                        name="images"
+                        accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                        @required(!$profile?->images)
+                        onchange="previewUpload(this, 'images-preview-container', 'images-preview')"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3 text-sm text-gray-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:font-semibold file:text-gray-700 hover:file:bg-gray-200 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                    >
+
+                    <p class="mt-2 text-xs text-gray-500">
+                        Format JPG, JPEG, atau PNG. Maksimal 2 MB.
+                        @if ($profile?->images)
+                            Kosongkan jika tidak ingin mengganti gambar.
+                        @else
+                            Gambar wajib diunggah.
+                        @endif
+                    </p>
+
+                    <div id="images-preview-container" class="mt-4 hidden">
+                        <p class="mb-2 text-sm font-medium text-gray-700">
+                            Preview gambar baru
+                        </p>
+
+                        <img
+                            id="images-preview"
+                            src=""
+                            alt="Preview Gambar Masjid"
+                            class="max-h-64 w-auto rounded-xl border border-gray-200 bg-gray-50 object-contain shadow-sm"
+                        >
+                    </div>
+
+                    @error('images')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <hr class="border-gray-100">
 
-                {{-- 3. Misi (Dynamic Points) --}}
+                {{-- 3. Visi --}}
                 <div>
-                    <div class="flex items-center justify-between mb-3">
+                    <label for="vision" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Visi Masjid <span class="text-red-500">*</span>
+                    </label>
+
+                    <textarea
+                        id="vision"
+                        name="vision"
+                        rows="3"
+                        required
+                        maxlength="5000"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm transition focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                        placeholder="Masukkan visi masjid..."
+                    >{{ old('vision', $profile?->vision) }}</textarea>
+
+                    @error('vision')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <hr class="border-gray-100">
+
+                {{-- 4. Misi --}}
+                <div>
+                    <div class="mb-3 flex items-center justify-between gap-3">
                         <label class="block text-sm font-semibold text-gray-800">
-                            3. Misi
+                            Misi Masjid <span class="text-red-500">*</span>
                         </label>
-                        <button type="button" onclick="tambahMisi()"
-                            class="inline-flex items-center gap-1.5 text-sm font-medium text-[#c49c4d] hover:text-[#a8833e] transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
+
+                        <button
+                            type="button"
+                            onclick="tambahMisi()"
+                            class="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-[#a8833e] transition hover:bg-amber-50"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-4 w-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M12 4v16m8-8H4"
+                                />
                             </svg>
                             Tambah Poin
                         </button>
                     </div>
 
-                    {{-- Container untuk list misi --}}
+                    @php
+                        $daftarMisi = old('mission', $profile?->mission ?? ['']);
+
+                        if (!is_array($daftarMisi) || count($daftarMisi) === 0) {
+                            $daftarMisi = [''];
+                        }
+                    @endphp
+
                     <div id="misi-container" class="space-y-3">
-                        {{-- Row Input Default (Pertama) --}}
-                        <div class="flex items-center gap-3">
-                            <div class="flex-1">
-                                <input type="text" name="misi[]"
-                                    class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d] transition-colors"
-                                    placeholder="Masukkan poin misi...">
+                        @foreach ($daftarMisi as $misi)
+                            <div class="mission-row flex items-start gap-3">
+                                <div class="flex-1">
+                                    <input
+                                        type="text"
+                                        name="mission[]"
+                                        value="{{ $misi }}"
+                                        required
+                                        maxlength="500"
+                                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                                        placeholder="Masukkan poin misi..."
+                                    >
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onclick="hapusMisi(this)"
+                                    class="rounded-xl p-3 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                                    title="Hapus poin misi"
+                                    aria-label="Hapus poin misi"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        class="h-5 w-5"
+                                        fill="none"
+                                        viewBox="0 0 24 24"
+                                        stroke="currentColor"
+                                    >
+                                        <path
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="1.8"
+                                            d="M6 7h12m-10 0 1 13h6l1-13M9 7V4h6v3m-5 4v5m4-5v5"
+                                        />
+                                    </svg>
+                                </button>
                             </div>
-                            <button type="button" onclick="hapusMisi(this)"
-                                class="rounded-xl p-3 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors"
-                                title="Hapus baris">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
+                        @endforeach
                     </div>
+
+                    <p class="mt-2 text-xs text-gray-500">
+                        Minimal satu poin misi. Setiap poin wajib diisi dan maksimal 500 karakter.
+                    </p>
+
+                    @error('mission')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+
+                    @error('mission.*')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <hr class="border-gray-100">
 
-                {{-- 4. Struktur Organisasi (Gambar) --}}
+                {{-- 5. Struktur Organisasi --}}
                 <div>
-                    <label class="block text-sm font-semibold text-gray-800 mb-2">
-                        4. Struktur Organisasi
+                    <label for="gambar_struktur" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Struktur Organisasi <span class="text-red-500">*</span>
                     </label>
-                    <div
-                        class="mt-2 flex justify-center rounded-2xl border border-dashed border-gray-300 bg-gray-50/50 px-6 py-10 hover:bg-gray-50 transition-colors">
-                        <div class="text-center w-full">
-                            <svg class="mx-auto h-12 w-12 text-gray-400" viewBox="0 0 24 24" fill="currentColor"
-                                aria-hidden="true">
-                                <path fill-rule="evenodd"
-                                    d="M1.5 6a2.25 2.25 0 012.25-2.25h16.5A2.25 2.25 0 0122.5 6v12a2.25 2.25 0 01-2.25 2.25H3.75A2.25 2.25 0 011.5 18V6zM3 16.06V18c0 .414.336.75.75.75h16.5A.75.75 0 0021 18v-1.94l-2.69-2.689a1.5 1.5 0 00-2.12 0l-.88.879.97.97a.75.75 0 11-1.06 1.06l-5.16-5.159a1.5 1.5 0 00-2.12 0L3 16.061zm10.125-7.81a1.125 1.125 0 112.25 0 1.125 1.125 0 01-2.25 0z"
-                                    clip-rule="evenodd" />
-                            </svg>
-                            <div class="mt-4 flex text-sm leading-6 text-gray-600 justify-center">
-                                <label for="gambar_struktur"
-                                    class="relative cursor-pointer rounded-md bg-white font-semibold text-[#c49c4d] focus-within:outline-none focus-within:ring-2 focus-within:ring-[#c49c4d] focus-within:ring-offset-2 hover:text-[#a8833e]">
-                                    <span>Unggah Gambar baru</span>
-                                    <input id="gambar_struktur" name="gambar_struktur" type="file" class="sr-only"
-                                        accept="image/*" onchange="previewImage(this)">
-                                </label>
-                                <p class="pl-1">atau tarik dan lepas di sini</p>
-                            </div>
-                            <p class="text-xs leading-5 text-gray-500 mt-1">PNG, JPG, JPEG maksimal 2MB</p>
 
-                            {{-- Image Preview Container (Hidden by default) --}}
-                            <div id="image-preview-container" class="hidden mt-4">
-                                <img id="image-preview" src="#" alt="Preview"
-                                    class="mx-auto max-h-56 rounded-xl shadow-sm border border-gray-200">
+                    @if ($profile?->structure)
+                        <div class="mb-4">
+                            <p class="mb-2 text-sm text-gray-500">
+                                Struktur organisasi saat ini
+                            </p>
+
+                            <img
+                                src="{{ asset('storage/' . $profile->structure) }}"
+                                alt="Struktur Organisasi Masjid Al-Firdaus"
+                                class="max-h-72 w-auto rounded-xl border border-gray-200 bg-gray-50 object-contain shadow-sm"
+                            >
+                        </div>
+                    @endif
+
+                    <div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-5 transition hover:border-[#c49c4d]">
+                        <div class="flex flex-col items-center gap-3 text-center">
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                class="h-10 w-10 text-gray-400"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                            >
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="1.5"
+                                    d="M12 16V4m0 0L7 9m5-5 5 5M4 16v4h16v-4"
+                                />
+                            </svg>
+
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700">
+                                    Unggah Struktur Organisasi
+                                </p>
+
+                                <p class="mt-1 text-xs text-gray-500">
+                                    Format JPG, JPEG, atau PNG. Maksimal 2 MB.
+                                </p>
                             </div>
+
+                            <input
+                                type="file"
+                                id="gambar_struktur"
+                                name="structure"
+                                accept=".jpg,.jpeg,.png,image/jpeg,image/png"
+                                @required(!$profile?->structure)
+                                onchange="previewUpload(this, 'structure-preview-container', 'structure-preview')"
+                                class="block w-full max-w-md rounded-xl border border-gray-300 bg-white p-3 text-sm text-gray-700 shadow-sm file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:font-semibold file:text-gray-700 hover:file:bg-gray-200 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                            >
+
+                            @if ($profile?->structure)
+                                <p class="mt-2 text-xs text-gray-500">
+                                    Kosongkan jika tidak ingin mengganti gambar saat ini.
+                                </p>
+                            @else
+                                <p class="mt-2 text-xs text-red-500">
+                                    Gambar struktur organisasi wajib diunggah.
+                                </p>
+                            @endif
                         </div>
                     </div>
+
+                    <div id="structure-preview-container" class="mt-4 hidden">
+                        <p class="mb-2 text-sm font-medium text-gray-700">
+                            Preview gambar baru
+                        </p>
+
+                        <img
+                            id="structure-preview"
+                            src=""
+                            alt="Preview Struktur Organisasi"
+                            class="max-h-72 w-auto rounded-xl border border-gray-200 bg-gray-50 object-contain shadow-sm"
+                        >
+                    </div>
+
+                    @error('structure')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
-                {{-- Action Buttons --}}
-                <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
-                    <button type="button"
-                        class="rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition-all">
+                <hr class="border-gray-100">
+
+                {{-- 6. Alamat --}}
+                <div>
+                    <label for="address" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Alamat Masjid <span class="text-red-500">*</span>
+                    </label>
+
+                    <textarea
+                        id="address"
+                        name="address"
+                        rows="3"
+                        required
+                        maxlength="1000"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                        placeholder="Masukkan alamat lengkap masjid..."
+                    >{{ old('address', $profile?->address) }}</textarea>
+
+                    @error('address')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- 7. Nomor Kontak --}}
+                <div>
+                    <label for="contact_number" class="mb-2 block text-sm font-semibold text-gray-800">
+                        Nomor Kontak <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        type="tel"
+                        inputmode="numeric"
+                        pattern="[0-9]+"
+                        id="contact_number"
+                        name="contact_number"
+                        value="{{ old('contact_number', $profile?->contact_number) }}"
+                        required
+                        maxlength="25"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                        placeholder="Contoh: 081234567890"
+                        title="Nomor kontak hanya boleh berisi angka."
+                    >
+
+                    @error('contact_number')
+                        <p class="mt-2 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Tombol Aksi --}}
+                <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-6 sm:flex-row sm:justify-end">
+                    <a
+                        href="{{ route('admin.profile') }}"
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition hover:bg-gray-50"
+                    >
                         Batal
-                    </button>
-                    <button type="submit"
-                        class="rounded-xl bg-[#c49c4d] px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-[#a8833e] focus:outline-none focus:ring-2 focus:ring-[#c49c4d] focus:ring-offset-2 transition-all">
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="inline-flex items-center justify-center rounded-xl bg-[#c49c4d] px-6 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8833e] focus:outline-none focus:ring-2 focus:ring-[#c49c4d] focus:ring-offset-2"
+                    >
                         Simpan Perubahan
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
 
-    {{-- Script untuk interaksi form --}}
+    {{-- Script Form --}}
     <script>
         function tambahMisi() {
             const container = document.getElementById('misi-container');
-            const rowHTML = `
-                <div class="flex items-center gap-3 mt-3">
-                    <div class="flex-1">
-                        <input type="text" name="misi[]" 
-                            class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d] transition-colors" 
-                            placeholder="Masukkan poin misi...">
-                    </div>
-                    <button type="button" onclick="hapusMisi(this)" class="rounded-xl p-3 text-gray-400 hover:bg-red-50 hover:text-red-600 transition-colors" title="Hapus baris">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
+
+            const row = document.createElement('div');
+            row.className = 'mission-row flex items-start gap-3';
+
+            row.innerHTML = `
+                <div class="flex-1">
+                    <input
+                        type="text"
+                        name="mission[]"
+                        required
+                        maxlength="500"
+                        class="block w-full rounded-xl border border-gray-300 bg-white p-3.5 text-sm text-gray-700 shadow-sm focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                        placeholder="Masukkan poin misi..."
+                    >
                 </div>
+
+                <button
+                    type="button"
+                    class="rounded-xl p-3 text-gray-400 transition hover:bg-red-50 hover:text-red-600"
+                    title="Hapus poin misi"
+                    aria-label="Hapus poin misi"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M6 7h12m-10 0 1 13h6l1-13M9 7V4h6v3m-5 4v5m4-5v5" />
+                    </svg>
+                </button>
             `;
-            container.insertAdjacentHTML('beforeend', rowHTML);
+
+            row.querySelector('button').addEventListener('click', function () {
+                hapusMisi(this);
+            });
+
+            container.appendChild(row);
+            row.querySelector('input').focus();
         }
 
         function hapusMisi(button) {
             const container = document.getElementById('misi-container');
-            if (container.children.length > 1) {
-                button.parentElement.remove();
-            } else {
-                alert('Minimal harus ada 1 poin misi.');
+
+            if (container.querySelectorAll('.mission-row').length <= 1) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Misi wajib diisi',
+                        text: 'Minimal harus ada satu poin misi.',
+                        confirmButtonColor: '#c49c4d'
+                    });
+                } else {
+                    alert('Minimal harus ada satu poin misi.');
+                }
+
+                return;
             }
+
+            button.closest('.mission-row').remove();
         }
 
-        function previewImage(input) {
-            const previewContainer = document.getElementById('image-preview-container');
-            const previewImage = document.getElementById('image-preview');
+        function previewUpload(input, containerId, imageId) {
+            const previewContainer = document.getElementById(containerId);
+            const preview = document.getElementById(imageId);
 
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImage.src = e.target.result;
-                    previewContainer.classList.remove('hidden');
-                }
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                previewImage.src = '#';
+            if (!input.files || !input.files[0]) {
+                preview.src = '';
                 previewContainer.classList.add('hidden');
+                return;
             }
+
+            const file = input.files[0];
+            const allowedTypes = ['image/jpeg', 'image/png'];
+            const maxSize = 2 * 1024 * 1024;
+
+            if (!allowedTypes.includes(file.type)) {
+                input.value = '';
+                preview.src = '';
+                previewContainer.classList.add('hidden');
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format Tidak Valid',
+                    text: 'Pilih gambar berformat JPG, JPEG, atau PNG.',
+                    confirmButtonColor: '#c49c4d'
+                });
+
+                return;
+            }
+
+            if (file.size > maxSize) {
+                input.value = '';
+                preview.src = '';
+                previewContainer.classList.add('hidden');
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Ukuran Terlalu Besar',
+                    text: 'Ukuran gambar maksimal 2 MB.',
+                    confirmButtonColor: '#c49c4d'
+                });
+
+                return;
+            }
+
+            if (preview.dataset.objectUrl) {
+                URL.revokeObjectURL(preview.dataset.objectUrl);
+            }
+
+            const objectUrl = URL.createObjectURL(file);
+
+            preview.src = objectUrl;
+            preview.dataset.objectUrl = objectUrl;
+            previewContainer.classList.remove('hidden');
         }
     </script>
 </x-layouts.admin>

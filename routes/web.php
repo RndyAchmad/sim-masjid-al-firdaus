@@ -63,6 +63,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // PROFIL MASJID: SUPERADMIN, ADMIN, SEKRETARIS
     Route::middleware('role:superadmin,admin,sekretaris')->group(function () {
         Route::get('/profile', [AdminProfilMasjidController::class, 'index',])->name('profile');
+        Route::put('/profile', [AdminProfilMasjidController::class, 'update'])->name('profile.update');
     });
 
     // KEGIATAN: SUPERADMIN, ADMIN

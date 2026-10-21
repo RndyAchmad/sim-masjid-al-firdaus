@@ -33,11 +33,12 @@
 
         @if ($backUrl)
             <a href="{{ $backUrl }}" title="Kembali" class="group flex h-9 w-9 shrink-0 items-center justify-center
-                               rounded-lg border border-gray-200 bg-gray-50
-                               text-gray-600 transition-all hover:border-[#c49c4d]
-                               hover:bg-[#c49c4d] hover:text-white">
+                                       rounded-lg border border-gray-200 bg-gray-50
+                                       text-gray-600 transition-all hover:border-[#c49c4d]
+                                       hover:bg-[#c49c4d] hover:text-white">
                 <svg class="h-5 w-5 transition-transform
-                                    group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            group-hover:-translate-x-0.5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </a>
@@ -130,18 +131,17 @@
             </div>
             {{-- Logout --}}
             <div class="border-t border-gray-100 p-2">
-                <form action="{{ route('logout') }}" method="POST">
+                <form class="logoutForm" action="{{ route('logout') }}" method="POST">
                     @csrf
 
-                    <button type="submit" class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5
-                   text-sm font-medium text-red-600
-                   transition hover:bg-red-50">
+                    <button type="button" class="logoutButton flex w-full items-center gap-3 rounded-lg px-3 py-2.5
+                        text-sm font-medium text-red-600 transition hover:bg-red-50">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor" stroke-width="1.8">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6
-                       a2.25 2.25 0 00-2.25 2.25v13.5A2.25
-                       2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15
-                       M18 15l3-3m0 0l-3-3m3 3H9" />
+                                    a2.25 2.25 0 00-2.25 2.25v13.5A2.25
+                                    2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15
+                                    M18 15l3-3m0 0l-3-3m3 3H9" />
                         </svg>
 
                         <span>Keluar</span>

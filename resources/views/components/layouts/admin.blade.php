@@ -69,31 +69,62 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('[data-confirm]').forEach((form) => {
+            const alertConfig = {
+                confirmButtonColor: '#dc2626',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'rounded-2xl',
+                    confirmButton: 'rounded-lg px-5 py-2.5',
+                    cancelButton: 'rounded-lg px-5 py-2.5'
+                }
+            };
+
+            // Konfirmasi form dengan atribut data-confirm
+            document.querySelectorAll('form[data-confirm]').forEach((form) => {
                 form.addEventListener('submit', async (event) => {
                     event.preventDefault();
 
-                    const title = form.dataset.confirmTitle
-                        || 'Yakin ingin melanjutkan?';
-
-                    const text = form.dataset.confirm
-                        || 'Tindakan ini tidak dapat dibatalkan.';
-
                     const result = await Swal.fire({
+                        ...alertConfig,
                         icon: 'warning',
-                        title: title,
-                        text: text,
+                        title: form.dataset.confirmTitle
+                            || 'Yakin ingin melanjutkan?',
+                        text: form.dataset.confirm
+                            || 'Tindakan ini tidak dapat dibatalkan.',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, lanjutkan',
                         cancelButtonText: 'Batal',
-                        confirmButtonColor: '#dc2626',
-                        cancelButtonColor: '#6b7280',
                         reverseButtons: true,
-                        focusCancel: true,
+                        focusCancel: true
                     });
 
                     if (result.isConfirmed) {
-                        form.submit();
+                        HTMLFormElement.prototype.submit.call(form);
+                    }
+                });
+            });
+
+            // Konfirmasi logout
+            document.querySelectorAll('.logoutButton').forEach((button) => {
+                button.addEventListener('click', async () => {
+                    const form = button.closest('.logoutForm');
+
+                    if (!form) return;
+
+                    const result = await Swal.fire({
+                        ...alertConfig,
+                        icon: 'question',
+                        title: 'Konfirmasi Logout',
+                        text: 'Apakah Anda yakin ingin keluar dari akun ini?',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, Keluar',
+                        cancelButtonText: 'Batal',
+                        reverseButtons: true,
+                        focusCancel: true
+                    });
+
+                    if (result.isConfirmed) {
+                        HTMLFormElement.prototype.submit.call(form);
                     }
                 });
             });

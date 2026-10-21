@@ -9,7 +9,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Tambahkan Alpine.js jika belum ada di file app.js kamu -->
-    <!-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
 
 <!-- x-data="sidebarOpen: false" digunakan untuk mengontrol sidebar di mode HP -->

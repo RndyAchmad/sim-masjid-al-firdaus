@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
@@ -93,21 +94,59 @@ class UsersController extends Controller
             ->with('success', 'Pengguna baru berhasil ditambahkan.');
     }
 
-    public function show(string $id)
+    public function show(string $id): View
     {
-        return view('admin.users.show', compact('id'));
+        $user = User::findOrFail($id);
+
+        return view('admin.users.show', compact('user'));
     }
 
-    public function edit(string $id)
+    public function edit(string $id): View
     {
-        return view('admin.users.edit', compact('id'));
+        $user = User::findOrFail($id);
+
+        return view('admin.users.edit', compact('user'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, string $id): RedirectResponse
     {
-        // Logika update pengguna
-    }
+        $user = User::findOrFail($id);
 
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users', 'email')->ignore($user->id),
+            ],
+            'role' => ['required', Rule::enum(UserRole::class)],
+            'password' => ['nullable', 'string', 'min:8', 'confirmed'],
+        ], [
+            'name.required' => 'Nama lengkap wajib diisi.',
+            'email.required' => 'Alamat email wajib diisi.',
+            'email.email' => 'Format alamat email tidak valid.',
+            'email.unique' => 'Alamat email sudah digunakan pengguna lain.',
+            'role.required' => 'Role pengguna wajib dipilih.',
+            'role.enum' => 'Role pengguna tidak valid.',
+            'password.min' => 'Kata sandi minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
+        ]);
+
+        // Password tidak diubah jika kolomnya kosong.
+        if (filled($validated['password'] ?? null)) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()
+            ->route('admin.users.index')
+            ->with('success', 'Data pengguna berhasil diperbarui.');
+    }
 
     public function destroy(string $id): RedirectResponse
     {

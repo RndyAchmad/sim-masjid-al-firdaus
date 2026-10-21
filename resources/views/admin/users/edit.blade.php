@@ -2,7 +2,7 @@
     <x-slot name="title">Edit Pengguna</x-slot>
     <x-slot name="backUrl">{{ route('admin.users.index') }}</x-slot>
 
-    <form action="{{ route('admin.users.update', $user->id ?? 1) }}" method="POST"
+    <form action="{{ route('admin.users.update', $user->id) }}" method="POST"
         class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs space-y-6 max-w-3xl">
         @csrf
         @method('PUT')
@@ -13,34 +13,52 @@
         <div>
             <label class="mb-2 block text-sm font-semibold text-gray-700">Nama Lengkap <span
                     class="text-red-500">*</span></label>
-            <input type="text" name="name" value="{{ old('name', $user->name ?? 'H. Syaiful Bahri, S.Ag.') }}" required
+            <input type="text" id="name" name="name" value="{{ old('name', $user->name) }}" required maxlength="255"
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+            @error('name')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Alamat Email --}}
         <div>
             <label class="mb-2 block text-sm font-semibold text-gray-700">Alamat Email <span
                     class="text-red-500">*</span></label>
-            <input type="email" name="email"
-                value="{{ old('email', $user->email ?? 'syaiful.bahri@masjidalfirdaus.or.id') }}" required
+            <input type="email" id="email" name="email" value="{{ old('email', $user->email) }}" required
+                maxlength="255"
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+            @error('email')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Role / Hak Akses --}}
+        @php
+            $currentRole = old(
+                'role',
+                $user->role instanceof \App\Enums\UserRole
+                ? $user->role->value
+                : $user->role
+            );
+        @endphp
+
         <div>
-            <label class="mb-2 block text-sm font-semibold text-gray-700">Role / Hak Akses <span
-                    class="text-red-500">*</span></label>
-            <select name="role" required
+            <label for="role" class="mb-2 block text-sm font-semibold text-gray-700">
+                Role / Hak Akses <span class="text-red-500">*</span>
+            </label>
+
+            <select id="role" name="role" required
                 class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                <option value="super_admin" {{ ($user->role ?? 'super_admin') === 'super_admin' ? 'selected' : '' }}>Super
-                    Admin (Akses Penuh Seluruh Sistem)</option>
-                <option value="sekretaris" {{ ($user->role ?? '') === 'sekretaris' ? 'selected' : '' }}>Sekretaris
-                    (Pengelolaan Berita, Kegiatan, & Konten)</option>
-                <option value="bendahara" {{ ($user->role ?? '') === 'bendahara' ? 'selected' : '' }}>Bendahara
-                    (Pengelolaan Kas & Laporan Keuangan)</option>
-                <option value="admin" {{ ($user->role ?? '') === 'admin' ? 'selected' : '' }}>Pengurus / Moderator Umum
-                </option>
+                @foreach (\App\Enums\UserRole::cases() as $role)
+                    <option value="{{ $role->value }}" @selected($currentRole === $role->value)>
+                        {{ $role->label() }}
+                    </option>
+                @endforeach
             </select>
+
+            @error('role')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         {{-- Uji Ubah Password (Opsional) --}}
@@ -55,11 +73,17 @@
                     <label class="mb-2 block text-sm font-semibold text-gray-700">Kata Sandi Baru</label>
                     <input type="password" name="password" placeholder="Minimal 8 karakter"
                         class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="mb-2 block text-sm font-semibold text-gray-700">Konfirmasi Kata Sandi Baru</label>
                     <input type="password" name="password_confirmation" placeholder="Ulangi kata sandi baru"
                         class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+                    @error('password')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
         </div>

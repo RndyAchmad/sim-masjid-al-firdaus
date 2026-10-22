@@ -95,7 +95,7 @@
                     </a>
 
                     @if (!auth()->user()->is($user))
-                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" data-confirm
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
                             data-confirm-title="Hapus pengguna?"
                             data-confirm="Akun {{ $user->name }} akan dihapus. Tindakan ini tidak dapat dibatalkan.">
                             @csrf

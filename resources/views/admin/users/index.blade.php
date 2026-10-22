@@ -126,7 +126,7 @@
 
                                         {{-- Hapus --}}
                                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST"
-                                            data-confirm data-confirm-title="Hapus pengguna?"
+                                            data-confirm-title="Hapus pengguna?"
                                             data-confirm="Pengguna {{ $user->name }} akan dihapus. Tindakan ini tidak dapat dibatalkan.">
                                             @csrf
                                             @method('DELETE')

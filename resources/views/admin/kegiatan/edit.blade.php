@@ -1,6 +1,6 @@
 <x-layouts.admin>
     <x-slot name="title">Edit Kegiatan</x-slot>
-    <x-slot name="backUrl">{{ route('admin.kegiatan.show', $kegiatan->id) }}</x-slot>
+    <x-slot name="backUrl">{{ route('admin.kegiatan.index') }}</x-slot>
 
     @php
         $scheduleType = $kegiatan->schedule_type instanceof \BackedEnum
@@ -226,7 +226,7 @@
                         Perbarui Kegiatan
                     </button>
 
-                    <a href="{{ route('admin.kegiatan.show', $kegiatan->id) }}"
+                    <a href="{{ route('admin.kegiatan.index')}}"
                         class="w-full rounded-xl border border-gray-300 py-2.5 text-center text-sm font-semibold text-gray-600 transition hover:bg-gray-50">
                         Batal
                     </a>

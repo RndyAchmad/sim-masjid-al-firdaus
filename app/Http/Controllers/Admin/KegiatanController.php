@@ -7,6 +7,7 @@ use App\Enums\ScheduleDay;
 use App\Http\Controllers\Controller;
 use App\Models\ActivitySchedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -180,30 +181,130 @@ class KegiatanController extends Controller
      */
     public function show(string $id)
     {
-        return view('admin.kegiatan.show');
+        $kegiatan = ActivitySchedule::findOrFail($id);
+
+        return view('admin.kegiatan.show', compact('kegiatan'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        return view('admin.kegiatan.edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(string $id)
     {
-        //
+        $kegiatan = ActivitySchedule::findOrFail($id);
+
+        // Hapus poster dari storage jika tersedia.
+        if ($kegiatan->image_poster) {
+            Storage::disk('public')->delete($kegiatan->image_poster);
+        }
+
+        $kegiatan->delete();
+
+        return redirect()
+            ->route('admin.kegiatan.index')
+            ->with('success', 'Kegiatan berhasil dihapus.');
+    }
+
+    public function edit(string $id)
+    {
+        $kegiatan = ActivitySchedule::findOrFail($id);
+
+        return view('admin.kegiatan.edit', compact('kegiatan'));
+    }
+
+    public function update(Request $request, string $id)
+    {
+        $kegiatan = ActivitySchedule::findOrFail($id);
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'tipe' => ['required', 'string', 'max:100'],
+            'speaker' => ['nullable', 'string', 'max:255'],
+
+            'schedule_type' => [
+                'required',
+                Rule::enum(ActivityScheduleType::class),
+            ],
+
+            'day_of_week' => [
+                'nullable',
+                'required_if:schedule_type,weekly,biweekly',
+                Rule::enum(ScheduleDay::class),
+            ],
+
+            'date' => [
+                'nullable',
+                'required_if:schedule_type,once',
+                'date',
+            ],
+
+            'time' => ['required', 'date_format:H:i'],
+            'location' => ['required', 'string', 'max:255'],
+            'excerpt' => ['nullable', 'string', 'max:1000'],
+            'description' => ['nullable', 'string'],
+
+            'image_poster' => [
+                'nullable',
+                'image',
+                'mimes:jpg,jpeg,png,webp',
+                'max:2048',
+            ],
+        ], [
+            'name.required' => 'Nama kegiatan wajib diisi.',
+            'tipe.required' => 'Tipe kegiatan wajib diisi.',
+            'schedule_type.required' => 'Jenis jadwal wajib dipilih.',
+            'day_of_week.required_if' => 'Hari kegiatan wajib dipilih untuk jadwal rutin.',
+            'date.required_if' => 'Tanggal kegiatan wajib diisi untuk jadwal sekali.',
+            'date.date' => 'Format tanggal kegiatan tidak valid.',
+            'time.required' => 'Jam kegiatan wajib diisi.',
+            'time.date_format' => 'Format jam harus jam dan menit.',
+            'location.required' => 'Lokasi kegiatan wajib diisi.',
+            'image_poster.image' => 'File poster harus berupa gambar.',
+            'image_poster.mimes' => 'Poster harus berformat JPG, JPEG, PNG, atau WEBP.',
+            'image_poster.max' => 'Ukuran poster maksimal 2 MB.',
+        ]);
+
+        // Buat slug baru hanya jika nama kegiatan berubah.
+        if ($kegiatan->name !== $validated['name']) {
+            $baseSlug = Str::slug($validated['name']) ?: 'kegiatan';
+            $slug = $baseSlug;
+            $counter = 1;
+
+            while (
+                ActivitySchedule::where('slug', $slug)
+                    ->where('id', '!=', $kegiatan->id)
+                    ->exists()
+            ) {
+                $slug = $baseSlug . '-' . $counter;
+                $counter++;
+            }
+
+            $validated['slug'] = $slug;
+        }
+
+        // Sesuaikan tanggal dan hari berdasarkan jenis jadwal.
+        if ($validated['schedule_type'] === 'once') {
+            $validated['day_of_week'] = null;
+        } else {
+            $validated['date'] = null;
+        }
+
+        // Pastikan deskripsi tetap memiliki nilai jika kolom database NOT NULL.
+        $validated['description'] = $validated['description'] ?? '';
+
+        // Ganti poster hanya jika pengguna mengunggah gambar baru.
+        if ($request->hasFile('image_poster')) {
+            $posterBaru = $request->file('image_poster')
+                ->store('activity-posters', 'public');
+
+            if ($kegiatan->image_poster) {
+                Storage::disk('public')->delete($kegiatan->image_poster);
+            }
+
+            $validated['image_poster'] = $posterBaru;
+        }
+
+        $kegiatan->update($validated);
+
+        return redirect()
+            ->route('admin.kegiatan.index', $kegiatan->id)
+            ->with('success', 'Kegiatan berhasil diperbarui.');
     }
 }

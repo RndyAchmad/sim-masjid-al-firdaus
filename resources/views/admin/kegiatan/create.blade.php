@@ -1,114 +1,238 @@
 <x-layouts.admin>
-    <x-slot name="title">Tambah Kegiatan Baru</x-slot>
+    <x-slot name="title">Tambah Kegiatan</x-slot>
     <x-slot name="backUrl">{{ route('admin.kegiatan.index') }}</x-slot>
 
-    <form action="{{ route('admin.kegiatan.store') }}" method="POST" enctype="multipart/form-data"
-        class="grid grid-cols-1 gap-6 lg:grid-cols-3" x-data="{ jenis: 'event' }">
-        @csrf
+    <div class="max-w-3xl space-y-6">
+        <form action="{{ route('admin.kegiatan.store') }}" method="POST" enctype="multipart/form-data" x-data="{
+                nama: @js(old('name', '')),
+                jadwal: @js(old('schedule_type', 'once')),
+                get slug() {
+                    return this.nama
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
+                }
+            }" class="space-y-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            @csrf
 
-        {{-- Kolom Kiri: Form Utama Konten --}}
-        <div class="space-y-6 lg:col-span-2">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Informasi Kegiatan</h3>
+            {{-- Nama Kegiatan --}}
+            <div>
+                <label for="name" class="mb-2 block text-sm font-medium text-gray-700">
+                    Nama Kegiatan <span class="text-red-500">*</span>
+                </label>
 
-                {{-- Tipe Kegiatan --}}
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Tipe Kegiatan <span
-                            class="text-red-500">*</span></label>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label class="flex items-center gap-3 border rounded-xl p-3.5 cursor-pointer transition"
-                            :class="jenis === 'event' ? 'border-[#c49c4d] bg-[#c49c4d]/5' : 'border-gray-300'">
-                            <input type="radio" name="type" value="event" x-model="jenis"
-                                class="text-[#c49c4d] focus:ring-[#c49c4d]">
-                            <span class="text-sm font-semibold text-gray-900">Event Khusus / PHBI</span>
-                        </label>
-                        <label class="flex items-center gap-3 border rounded-xl p-3.5 cursor-pointer transition"
-                            :class="jenis === 'rutin' ? 'border-[#c49c4d] bg-[#c49c4d]/5' : 'border-gray-300'">
-                            <input type="radio" name="type" value="rutin" x-model="jenis"
-                                class="text-[#c49c4d] focus:ring-[#c49c4d]">
-                            <span class="text-sm font-semibold text-gray-900">Kegiatan Rutin</span>
-                        </label>
-                    </div>
-                </div>
+                <input type="text" id="name" name="name" x-model="nama" required maxlength="255"
+                    placeholder="Contoh: Kajian Rutin Ahad Pagi" value="{{ old('name') }}"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('name') @enderror">
 
-                {{-- Nama Kegiatan --}}
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Nama / Judul Kegiatan <span
-                            class="text-red-500">*</span></label>
-                    <input type="text" name="title" placeholder="Contoh: Peringatan Maulid Nabi Muhammad SAW 1448 H"
-                        required
-                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                </div>
-
-                {{-- Dynamic Field (Tanggal VS Jadwal Rutin) + Penceramah --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div x-show="jenis === 'event'">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Tanggal Pelaksanaan</label>
-                        <input type="date" name="event_date"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                    </div>
-
-                    <div x-show="jenis === 'rutin'">
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Keterangan Jadwal Rutin</label>
-                        <input type="text" name="routine_day" placeholder="Contoh: Setiap Ahad Ke-2"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                    </div>
-
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Penceramah / Pengisi Acara</label>
-                        <input type="text" name="speaker" placeholder="Contoh: KH. Anwar Zahid"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                    </div>
-                </div>
-
-                {{-- Jam Mulai & Lokasi --}}
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Jam Mulai</label>
-                        <input type="time" name="start_time"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                    </div>
-                    <div>
-                        <label class="mb-2 block text-sm font-semibold text-gray-700">Lokasi / Tempat</label>
-                        <input type="text" name="location" value="Ruang Utama Masjid Al-Firdaus"
-                            class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
-                    </div>
-                </div>
-
-                {{-- Deskripsi --}}
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Deskripsi / Rincian Acara</label>
-                    <textarea rows="4" name="description" placeholder="Tuliskan rincian kegiatan..."
-                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"></textarea>
-                </div>
+                @error('name')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
             </div>
-        </div>
 
-        {{-- Kolom Kanan: Pamflet & Aksi Simpan --}}
-        <div class="space-y-6">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Pamflet & Aksi</h3>
+            {{-- Slug --}}
+            <div>
+                <label class="mb-2 block text-sm font-medium text-gray-700">
+                    Slug
+                </label>
 
-                {{-- Upload Gambar Pamflet / Banner --}}
-                <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Pamflet / Poster Kegiatan</label>
-                    <input type="file" name="image" accept="image/*"
-                        class="w-full rounded-xl border border-gray-300 p-2 text-sm text-gray-600 focus:border-[#c49c4d] focus:outline-none">
-                    <p class="mt-1 text-xs text-gray-400">Format: JPG, PNG, WEBP (Maks 2MB)</p>
+                <div class="rounded-xl border border-gray-200 bg-gray-50 px-4 py-3">
+                    <p class="break-all text-sm text-gray-600" x-text="slug || 'slug-kegiatan'"></p>
                 </div>
 
-                {{-- Aksi Simpan --}}
-                <div class="pt-2 flex flex-col gap-3">
-                    <button type="submit"
-                        class="w-full rounded-xl bg-[#c49c4d] py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-[#a8833e]">
-                        Simpan & Publikasikan
-                    </button>
-                    <a href="{{ route('admin.kegiatan.index') }}"
-                        class="w-full text-center rounded-xl border border-gray-300 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50">
-                        Batal
-                    </a>
-                </div>
+                <p class="mt-1 text-xs text-gray-500">
+                    Slug dibuat otomatis berdasarkan nama kegiatan.
+                </p>
             </div>
-        </div>
-    </form>
+
+            {{-- Jenis Kegiatan --}}
+            <div>
+                <label for="tipe" class="mb-2 block text-sm font-medium text-gray-700">
+                    Jenis Kegiatan <span class="text-red-500">*</span>
+                </label>
+
+                <input type="text" id="tipe" name="tipe" list="daftar-tipe" required maxlength="100"
+                    value="{{ old('tipe') }}" placeholder="Contoh: kajian, shalat jumat, event akbar"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('tipe') @enderror">
+
+                <datalist id="daftar-tipe">
+                    <option value="kajian">
+                    <option value="shalat jumat">
+                    <option value="event akbar">
+                </datalist>
+
+                @error('tipe')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Excerpt --}}
+            <div>
+                <label for="excerpt" class="mb-2 block text-sm font-medium text-gray-700">
+                    Ringkasan Kegiatan
+                </label>
+
+                <textarea id="excerpt" name="excerpt" rows="3" maxlength="1000"
+                    placeholder="Tuliskan ringkasan singkat kegiatan..."
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('excerpt') @enderror">{{ old('excerpt') }}</textarea>
+
+                @error('excerpt')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Pola Jadwal --}}
+            <div>
+                <label for="schedule_type" class="mb-2 block text-sm font-medium text-gray-700">
+                    Pola Jadwal <span class="text-red-500">*</span>
+                </label>
+
+                <select id="schedule_type" name="schedule_type" x-model="jadwal" required
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('schedule_type') @enderror">
+                    @foreach (\App\Enums\ActivityScheduleType::cases() as $jenisJadwal)
+                        <option value="{{ $jenisJadwal->value }}" @selected(old('schedule_type', 'once') === $jenisJadwal->value)>
+                            {{ $jenisJadwal->label() }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('schedule_type')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Tanggal Kegiatan --}}
+            <div x-show="jadwal === 'once'" x-cloak>
+                <label for="date" class="mb-2 block text-sm font-medium text-gray-700">
+                    Tanggal Kegiatan <span class="text-red-500">*</span>
+                </label>
+
+                <input type="date" id="date" name="date" value="{{ old('date') }}" x-bind:required="jadwal === 'once'"
+                    x-bind:disabled="jadwal !== 'once'"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('date') @enderror">
+
+                @error('date')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+
+            {{-- Hari Kegiatan --}}
+            <div x-show="jadwal === 'weekly' || jadwal === 'biweekly'" x-cloak>
+                <label for="day_of_week" class="mb-2 block text-sm font-medium text-gray-700">
+                    Hari Kegiatan <span class="text-red-500">*</span>
+                </label>
+
+                <select id="day_of_week" name="day_of_week"
+                    x-bind:required="jadwal === 'weekly' || jadwal === 'biweekly'"
+                    x-bind:disabled="jadwal !== 'weekly' && jadwal !== 'biweekly'"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('day_of_week') @enderror">
+                    <option value="">Pilih hari</option>
+
+                    @foreach (\App\Enums\ScheduleDay::cases() as $hari)
+                        <option value="{{ $hari->value }}" @selected(old('day_of_week') === $hari->value)>
+                            {{ $hari->label() }}
+                        </option>
+                    @endforeach
+                </select>
+
+                @error('day_of_week')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Pemateri --}}
+            <div>
+                <label for="speaker" class="mb-2 block text-sm font-medium text-gray-700">
+                    Pemateri
+                </label>
+
+                <input type="text" id="speaker" name="speaker" maxlength="255" value="{{ old('speaker') }}"
+                    placeholder="Nama ustaz atau pemateri"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('speaker') @enderror">
+
+                @error('speaker')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Waktu --}}
+            <div>
+                <label for="time" class="mb-2 block text-sm font-medium text-gray-700">
+                    Waktu Kegiatan <span class="text-red-500">*</span>
+                </label>
+
+                <input type="time" id="time" name="time" value="{{ old('time') }}" required
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('time') @enderror">
+
+                @error('time')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Lokasi --}}
+            <div>
+                <label for="location" class="mb-2 block text-sm font-medium text-gray-700">
+                    Lokasi <span class="text-red-500">*</span>
+                </label>
+
+                <input type="text" id="location" name="location" maxlength="255" value="{{ old('location') }}" required
+                    placeholder="Contoh: Masjid Al-Firdaus"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('location') @enderror">
+
+                @error('location')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Deskripsi --}}
+            <div>
+                <label for="description" class="mb-2 block text-sm font-medium text-gray-700">
+                    Deskripsi Lengkap
+                </label>
+
+                <textarea id="description" name="description" rows="5"
+                    placeholder="Informasi lengkap mengenai kegiatan..."
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20 @error('description') @enderror">{{ old('description') }}</textarea>
+
+                @error('description')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Poster --}}
+            <div>
+                <label for="image_poster" class="mb-2 block text-sm font-medium text-gray-700">
+                    Poster Kegiatan
+                </label>
+
+                <input type="file" id="image_poster" name="image_poster"
+                    accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-sm file:mr-4 file:rounded-lg file:border-0 file:bg-gray-100 file:px-4 file:py-2 file:text-sm file:font-medium file:text-gray-700 @error('image_poster') @enderror">
+
+                <p class="mt-1 text-xs text-gray-500">
+                    Format JPG, JPEG, PNG, atau WEBP. Maksimal 2 MB.
+                </p>
+
+                @error('image_poster')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Tombol --}}
+            <div class="flex flex-col-reverse gap-3 border-t border-gray-100 pt-5 sm:flex-row sm:justify-end">
+                <a href="{{ route('admin.kegiatan.index') }}"
+                    class="rounded-xl border border-gray-300 px-5 py-3 text-center text-sm font-medium text-gray-700 transition hover:bg-gray-50">
+                    Batal
+                </a>
+
+                <button type="submit"
+                    class="rounded-xl bg-[#c49c4d] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#a8833e]">
+                    Simpan Kegiatan
+                </button>
+            </div>
+        </form>
+    </div>
 </x-layouts.admin>

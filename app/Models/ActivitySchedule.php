@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'name',
     'tipe',
+    'slug',
+    'excerpt',
     'speaker',
     'schedule_type',
     'day_of_week',

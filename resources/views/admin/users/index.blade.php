@@ -154,9 +154,31 @@
                     </tbody>
                 </table>
             </div>
-            <div class="border-t border-gray-100 px-6 py-4">
-                {{ $users->links() }}
+
+            {{-- Pagination --}}
+            <div
+                class="flex flex-col gap-3 border-t border-gray-100 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+
+                {{-- Informasi Jumlah Data --}}
+                <p class="text-sm text-gray-500">
+                    Menampilkan
+                    <span class="font-semibold text-gray-700">
+                        {{ $users->firstItem() ?? 0 }}–{{ $users->lastItem() ?? 0 }}
+                    </span>
+                    dari
+                    <span class="font-semibold text-gray-700">
+                        {{ $users->total() }}
+                    </span>
+                    user
+                </p>
+
+                {{-- Navigasi Halaman --}}
+                <div>
+                    {{ $users->links() }}
+                </div>
+
             </div>
+
         </div>
     </div>
 </x-layouts.admin>

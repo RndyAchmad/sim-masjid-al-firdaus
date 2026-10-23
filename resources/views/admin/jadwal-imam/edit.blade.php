@@ -38,7 +38,6 @@
                             @error('tanggal')
                                 border-red-500 focus:border-red-500 focus:ring-red-500
                             @else
-                                border-gray-300 focus:border-[#c49c4d] focus:ring-[#c49c4d]
                             @enderror"
                         :class="errorMessage ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                     >

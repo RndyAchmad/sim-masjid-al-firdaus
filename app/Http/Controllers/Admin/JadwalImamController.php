@@ -37,7 +37,7 @@ class JadwalImamController extends Controller
                 });
             })
             ->when($bulan, function ($query) use ($bulan) {
-                $tanggal = \Carbon\Carbon::createFromFormat('Y-m', $bulan);
+                $tanggal = Carbon::createFromFormat('Y-m', $bulan);
 
                 $query->whereYear('date', $tanggal->year)
                     ->whereMonth('date', $tanggal->month);

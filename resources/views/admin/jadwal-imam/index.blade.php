@@ -212,4 +212,84 @@
         {{-- Modal Export Excel --}}
         @include('admin.jadwal-imam.modal.export')
     </div>
+
+    @if (session()->has('overwrite_file'))
+        <form id="overwriteForm" action="{{ route('admin.jadwal-imam.import') }}" method="POST" class="hidden">
+            @csrf
+
+            <input type="hidden" name="overwrite_token" value="{{ session('overwrite_file') }}">
+
+            <input type="hidden" name="action" id="overwriteAction" value="cancel">
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', async () => {
+                const form = document.getElementById('overwriteForm');
+                const actionInput = document.getElementById('overwriteAction');
+
+                if (!form || !actionInput || typeof Swal === 'undefined') {
+                    return;
+                }
+
+                const tanggal = @json(
+                    collect(session('overwrite_dates', []))
+                        ->map(fn($item) => \Carbon\Carbon::parse($item)->translatedFormat('d F Y'))
+                        ->values()
+                );
+
+                const daftarTanggal = tanggal.length
+                    ? `
+                        <div style="
+                            max-height: 160px;
+                            overflow-y: auto;
+                            text-align: left;
+                            border: 1px solid #e5e7eb;
+                            border-radius: 8px;
+                            padding: 12px;
+                            margin-top: 12px;
+                        ">
+                            <p style="font-weight: 600; font-size: 12px; margin-bottom: 8px;">
+                                Tanggal yang sudah memiliki jadwal
+                            </p>
+                            ${tanggal.map(t => `<div style="padding: 3px 0;">• ${t}</div>`).join('')}
+                        </div>
+                    `
+                    : '';
+
+                const result = await Swal.fire({
+                    icon: 'warning',
+                    title: 'Jadwal Sudah Ada',
+                    html: `
+                        <p>Beberapa tanggal pada file import sudah memiliki jadwal di database.</p>
+                        <p style="margin-top: 8px;">
+                            Apakah Anda ingin menimpa jadwal yang sudah ada?
+                        </p>
+                        ${daftarTanggal}
+                        <p style="font-size: 12px; color: #6b7280; margin-top: 12px;">
+                            Data imam dan muadzin pada tanggal yang sama akan diganti
+                            sesuai isi file import.
+                        </p>
+                    `,
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, Timpa',
+                    cancelButtonText: 'Batal',
+                    confirmButtonColor: '#c49c4d',
+                    cancelButtonColor: '#6b7280',
+                    reverseButtons: true,
+                    focusCancel: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    customClass: {
+                        popup: 'rounded-2xl',
+                        confirmButton: 'rounded-lg px-5 py-2.5',
+                        cancelButton: 'rounded-lg px-5 py-2.5'
+                    }
+                });
+
+                actionInput.value = result.isConfirmed ? 'overwrite' : 'cancel';
+
+                form.submit();
+            });
+        </script>
+    @endif
 </x-layouts.admin>

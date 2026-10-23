@@ -3,10 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Imports\FridayScheduleImport;
+use App\Imports\FridaySchedulePreviewImport;
 use App\Models\FridaySchedule;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
+use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException as ExcelValidationException;
 
 class JadwalImamController extends Controller
 {
@@ -254,8 +261,121 @@ class JadwalImamController extends Controller
         );
     }
 
+
     public function importFromExcel(Request $request)
     {
-        // Logic to import data from Excel
+        // Tombol Batal pada konfirmasi overwrite.
+        if ($request->input('action') === 'cancel') {
+            $path = $request->input('overwrite_token');
+
+            if ($path && str_starts_with($path, 'friday-imports/')) {
+                Storage::disk('local')->delete($path);
+            }
+
+            return redirect()
+                ->route('admin.jadwal-imam.index')
+                ->with('success', 'Import dibatalkan.');
+        }
+
+        // Tombol Iya: lanjutkan import dan timpa jadwal yang ada.
+        if ($request->input('action') === 'overwrite') {
+            $path = $request->input('overwrite_token');
+
+            if (
+                !$path ||
+                !str_starts_with($path, 'friday-imports/') ||
+                !Storage::disk('local')->exists($path)
+            ) {
+                return redirect()
+                    ->route('admin.jadwal-imam.index')
+                    ->withErrors(['file' => 'File import tidak ditemukan. Silakan unggah ulang.']);
+            }
+
+            try {
+                Excel::import(
+                    new FridayScheduleImport(true),
+                    Storage::disk('local')->path($path)
+                );
+
+                Storage::disk('local')->delete($path);
+
+                $jumlah = session('imported_count', 0);
+
+                return redirect()
+                    ->route('admin.jadwal-imam.index')
+                    ->with('success', "Import berhasil. {$jumlah} jadwal diproses.");
+            } catch (ValidationException $e) {
+                Storage::disk('local')->delete($path);
+                throw $e;
+            } catch (\Throwable $e) {
+                report($e);
+
+                Storage::disk('local')->delete($path);
+
+                return redirect()
+                    ->route('admin.jadwal-imam.index')
+                    ->withErrors([
+                        'file' => 'Import gagal. Periksa kembali format dan isi file.',
+                    ]);
+            }
+        }
+
+        // Tahap pertama: validasi file yang diunggah.
+        $request->validate([
+            'file' => ['required', 'file', 'extensions:xlsx,xls,csv', 'max:5120'],
+        ], [
+            'file.required' => 'Silakan pilih file Excel atau CSV.',
+            'file.extensions' => 'File harus berformat XLSX, XLS, atau CSV.',
+            'file.max' => 'Ukuran file maksimal 5 MB.',
+        ]);
+
+        $file = $request->file('file');
+        $path = $file->storeAs(
+            'friday-imports',
+            Str::uuid() . '.' . $file->getClientOriginalExtension(),
+            'local'
+        );
+
+        try {
+            $preview = new FridaySchedulePreviewImport();
+
+            Excel::import(
+                $preview,
+                Storage::disk('local')->path($path)
+            );
+
+            if (!empty($preview->existingDates)) {
+                return redirect()
+                    ->route('admin.jadwal-imam.index')
+                    ->with('overwrite_file', $path)
+                    ->with('overwrite_dates', $preview->existingDates);
+            }
+
+            Excel::import(
+                new FridayScheduleImport(),
+                Storage::disk('local')->path($path)
+            );
+
+            Storage::disk('local')->delete($path);
+
+            $jumlah = session('imported_count', 0);
+
+            return redirect()
+                ->route('admin.jadwal-imam.index')
+                ->with('success', "Berhasil mengimpor {$jumlah} jadwal imam Jumat.");
+        } catch (ValidationException $e) {
+            Storage::disk('local')->delete($path);
+            throw $e;
+        } catch (\Throwable $e) {
+            report($e);
+
+            Storage::disk('local')->delete($path);
+
+            return redirect()
+                ->route('admin.jadwal-imam.index')
+                ->withErrors([
+                    'file' => 'File gagal diproses. Periksa format, header, dan isi file.',
+                ]);
+        }
     }
 }

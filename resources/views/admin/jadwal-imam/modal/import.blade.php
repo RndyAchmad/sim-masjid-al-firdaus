@@ -1,4 +1,5 @@
-<div id="importModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/50 p-4">
+<div id="importModal"
+    class="fixed inset-0 z-50 {{ $errors->has('file') ? 'flex' : 'hidden' }} items-center justify-center bg-black/50 p-4">
     <div class="w-full max-w-lg rounded-xl bg-white p-6 shadow-xl">
         <div class="mb-5 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-gray-900">
@@ -26,9 +27,10 @@
                            hover:file:bg-gray-200">
 
                 @error('file')
-                    <p class="mt-1 text-sm text-red-600">
+                    <div id="file-error-message"
+                        class="mt-2 whitespace-pre-line rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 transition-opacity duration-500">
                         {{ $message }}
-                    </p>
+                    </div>
                 @enderror
 
                 <p class="mt-2 text-xs text-gray-500">
@@ -75,6 +77,17 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         const modal = document.getElementById('importModal');
+        const errorMessage = document.getElementById('file-error-message');
+
+        if (errorMessage) {
+            setTimeout(() => {
+                errorMessage.classList.add('opacity-0');
+
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 500);
+            }, 10000);
+        }
 
         if (!modal) return;
 

@@ -86,7 +86,6 @@
                             <th class="px-6 py-4">Tanggal Jumat</th>
                             <th class="px-6 py-4">Imam Sholat</th>
                             <th class="px-6 py-4">Muadzin</th>
-                            <th class="px-6 py-4">Khatib</th>
                             <th class="px-6 py-4 text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -98,7 +97,6 @@
                                 {{-- Tanggal --}}
                                 <td class="whitespace-nowrap px-6 py-4 font-medium text-gray-900">
                                     <div class="flex items-center gap-2">
-                                        <span class="h-2 w-2 rounded-full bg-[#c49c4d]"></span>
                                         {{ $item->date?->locale('id')->translatedFormat('l, d F Y') ?? '-' }}
                                     </div>
                                 </td>
@@ -111,11 +109,6 @@
                                 {{-- Muadzin --}}
                                 <td class="whitespace-nowrap px-6 py-4">
                                     {{ $item->muadzin ?: '-' }}
-                                </td>
-
-                                {{-- Khatib --}}
-                                <td class="whitespace-nowrap px-6 py-4">
-                                    {{ $item->khatib ?: '-' }}
                                 </td>
 
                                 {{-- Aksi --}}
@@ -217,6 +210,6 @@
         @include('admin.jadwal-imam.modal.import')
 
         {{-- Modal Export Excel --}}
-        @include('admin.jadwal-imam.modal.export');
+        @include('admin.jadwal-imam.modal.export')
     </div>
 </x-layouts.admin>

@@ -10,6 +10,7 @@
 
     <!-- Tambahkan Alpine.js jika belum ada di file app.js kamu -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 </head>
 
 <!-- x-data="sidebarOpen: false" digunakan untuk mengontrol sidebar di mode HP -->
@@ -130,6 +131,7 @@
             });
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </body>
 
 </html>

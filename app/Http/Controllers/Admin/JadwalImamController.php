@@ -46,6 +46,7 @@ class JadwalImamController extends Controller
         return view('admin.jadwal-imam.show', compact('id'));
     }
 
+
     public function create()
     {
         return view('admin.jadwal-imam.create');
@@ -53,7 +54,44 @@ class JadwalImamController extends Controller
 
     public function store(Request $request)
     {
-        // / Simpan data baru ke database
+        $validated = $request->validate([
+            'tanggal' => [
+                'required',
+                'date_format:Y-m-d',
+                'unique:friday_schedules,date',
+                function ($attribute, $value, $fail) {
+                    try {
+                        if (!Carbon::createFromFormat('!Y-m-d', $value)->isFriday()) {
+                            $fail('Tanggal jadwal harus jatuh pada hari Jumat.');
+                        }
+                    } catch (\Throwable $e) {
+                        $fail('Tanggal yang dimasukkan tidak valid.');
+                    }
+                },
+            ],
+            'imam' => ['required', 'string', 'max:255'],
+            'muadzin' => ['nullable', 'string', 'max:255'],
+            'khatib' => ['nullable', 'string', 'max:255'],
+        ], [
+            'tanggal.required' => 'Tanggal sholat Jumat wajib dipilih.',
+            'tanggal.date_format' => 'Format tanggal tidak valid.',
+            'tanggal.unique' => 'Jadwal imam untuk tanggal tersebut sudah tersedia.',
+            'imam.required' => 'Nama imam sholat wajib diisi.',
+            'imam.max' => 'Nama imam maksimal 255 karakter.',
+            'muadzin.max' => 'Nama muadzin maksimal 255 karakter.',
+            'khatib.max' => 'Nama khatib maksimal 255 karakter.',
+        ]);
+
+        FridaySchedule::create([
+            'date' => $validated['tanggal'],
+            'imam' => $validated['imam'],
+            'muadzin' => $validated['muadzin'] ?? null,
+            'khatib' => $validated['khatib'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('admin.jadwal-imam.index')
+            ->with('success', 'Jadwal imam Jumat berhasil ditambahkan.');
     }
 
     public function edit($id)

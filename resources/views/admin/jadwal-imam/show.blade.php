@@ -2,42 +2,80 @@
     <x-slot name="title">Detail Jadwal Imam Jumat</x-slot>
     <x-slot name="backUrl">{{ route('admin.jadwal-imam.index') }}</x-slot>
 
+    @php
+        $tanggalJumat = $jadwal->date
+            ? \Carbon\Carbon::parse($jadwal->date)->locale('id')
+            : null;
+    @endphp
+
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Kolom Utama: Rincian Data -->
+
+        {{-- Kolom Utama: Rincian Data --}}
         <div class="space-y-6 lg:col-span-2">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
+            <div class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+
                 <div class="flex items-center justify-between border-b border-gray-100 pb-4">
                     <div>
                         <span
                             class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-[#c49c4d]">
-                            <span class="h-1.5 w-1.5 rounded-full bg-[#c49c4d]"></span> Jadwal Rutin
+                            <span class="h-1.5 w-1.5 rounded-full bg-[#c49c4d]"></span>
+                            Jadwal Sholat Jumat
                         </span>
-                        <h2 class="mt-2 text-lg font-bold text-gray-900">Jumat, 16 Oktober 2026</h2>
+
+                        <h2 class="mt-2 text-lg font-bold text-gray-900">
+                            {{ $tanggalJumat?->translatedFormat('l, d F Y') ?? '-' }}
+                        </h2>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    <div class="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Imam Sholat</p>
-                        <p class="mt-1 text-base font-bold text-gray-800">{{ $jadwal->imam ?? 'Ustadz H. Ahmad Fauzi' }}
+                <div class="grid grid-cols-1 gap-4 pt-2 sm:grid-cols-2">
+
+                    {{-- Imam --}}
+                    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                        <p class="text-xs font-semibold uppercase text-gray-400">
+                            Imam Sholat
+                        </p>
+                        <p class="mt-1 text-base font-bold text-gray-800">
+                            {{ $jadwal->imam ?: '-' }}
                         </p>
                     </div>
 
-                    <div class="rounded-xl bg-gray-50 p-4 border border-gray-100">
-                        <p class="text-xs font-semibold uppercase text-gray-400">Muadzin</p>
-                        <p class="mt-1 text-base font-bold text-gray-800">{{ $jadwal->muadzin ?? 'Bpk. Ridwan' }}</p>
+                    {{-- Muadzin --}}
+                    <div class="rounded-xl border border-gray-100 bg-gray-50 p-4">
+                        <p class="text-xs font-semibold uppercase text-gray-400">
+                            Muadzin
+                        </p>
+                        <p class="mt-1 text-base font-bold text-gray-800">
+                            {{ $jadwal->muadzin ?: '-' }}
+                        </p>
                     </div>
+
+                    {{-- Khatib --}}
+                    {{-- <div class="rounded-xl border border-gray-100 bg-gray-50 p-4 sm:col-span-2">
+                        <p class="text-xs font-semibold uppercase text-gray-400">
+                            Khatib
+                        </p>
+                        <p class="mt-1 text-base font-bold text-gray-800">
+                            {{ $jadwal->khatib ?: '-' }}
+                        </p>
+                    </div> --}}
+
                 </div>
             </div>
         </div>
 
-        <!-- Kolom Samping: Panel Aksi -->
+        {{-- Kolom Samping: Panel Aksi --}}
         <div class="space-y-6">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Opsi Pengelolaan</h3>
+            <div class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+
+                <h3 class="border-b border-gray-100 pb-3 font-bold text-gray-900">
+                    Opsi Pengelolaan
+                </h3>
 
                 <div class="space-y-2">
-                    <a href="{{ route('admin.jadwal-imam.edit', $jadwal->id ?? 1) }}"
+
+                    {{-- Edit Jadwal --}}
+                    <a href="{{ route('admin.jadwal-imam.edit', $jadwal->id) }}"
                         class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49c4d] py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8833e]">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -46,10 +84,13 @@
                         Edit Jadwal
                     </a>
 
-                    <form action="{{ route('admin.jadwal-imam.destroy', $jadwal->id ?? 1) }}" method="POST"
-                        onsubmit="return confirm('Yakin ingin menghapus jadwal ini?');">
+                    {{-- Hapus Jadwal --}}
+                    <form action="{{ route('admin.jadwal-imam.destroy', $jadwal->id) }}" method="POST"
+                        data-confirm-title="Hapus jadwal imam?"
+                        data-confirm="Jadwal Jumat {{ $jadwal->date?->format('d-m-Y') }} akan dihapus. Tindakan ini tidak dapat dibatalkan.">
                         @csrf
                         @method('DELETE')
+
                         <button type="submit"
                             class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -59,8 +100,16 @@
                             Hapus Jadwal
                         </button>
                     </form>
+
+                    {{-- Kembali --}}
+                    <a href="{{ route('admin.jadwal-imam.index') }}"
+                        class="flex w-full items-center justify-center rounded-xl border border-gray-300 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50">
+                        Kembali ke Daftar
+                    </a>
+
                 </div>
             </div>
         </div>
+
     </div>
 </x-layouts.admin>

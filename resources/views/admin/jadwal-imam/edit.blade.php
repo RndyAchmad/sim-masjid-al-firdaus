@@ -2,64 +2,163 @@
     <x-slot name="title">Edit Jadwal Imam Jumat</x-slot>
     <x-slot name="backUrl">{{ route('admin.jadwal-imam.index') }}</x-slot>
 
-    <form action="{{ route('admin.jadwal-imam.update', $jadwal->id ?? 1) }}" method="POST"
-        x-data="jadwalForm('{{ old('tanggal', $jadwal->tanggal ?? '2026-10-16') }}')" @submit="validateSubmit($event)"
-        class="grid grid-cols-1 gap-6 lg:grid-cols-3">
+    <form
+        action="{{ route('admin.jadwal-imam.update', $jadwal->id) }}"
+        method="POST"
+        x-data="jadwalForm(@js(old('tanggal', $jadwal->date?->format('Y-m-d'))))"
+        @submit="validateSubmit($event)"
+        class="grid grid-cols-1 gap-6 lg:grid-cols-3"
+    >
         @csrf
         @method('PUT')
 
-        <!-- Kolom Kiri: Form Utama -->
+        {{-- Kolom Kiri: Form Utama --}}
         <div class="space-y-6 lg:col-span-2">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Informasi Petugas</h3>
+            <div class="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
+                <h3 class="border-b border-gray-100 pb-3 font-bold text-gray-900">
+                    Informasi Petugas Sholat Jumat
+                </h3>
+
+                {{-- Tanggal --}}
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Tanggal (Wajib Hari Jumat)</label>
-                    <input type="date" name="tanggal" x-model="tanggal" @change="checkFriday" required
-                        class="w-full rounded-xl border px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-1"
-                        :class="errorMessage ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-[#c49c4d] focus:ring-[#c49c4d]'">
+                    <label for="tanggal" class="mb-2 block text-sm font-semibold text-gray-700">
+                        Tanggal Sholat Jumat <span class="text-red-500">*</span>
+                    </label>
 
-                    <!-- Pesan Error / Petunjuk -->
-                    <p x-show="errorMessage" x-text="errorMessage" class="mt-1 text-xs text-red-500 font-medium"
-                        x-cloak></p>
-                    <p x-show="!errorMessage" class="mt-1 text-xs text-gray-400">Pilih tanggal kalender yang jatuh tepat
-                        pada hari Jumat.</p>
+                    <input
+                        type="date"
+                        id="tanggal"
+                        name="tanggal"
+                        x-model="tanggal"
+                        @change="checkFriday()"
+                        required
+                        aria-describedby="tanggal-error tanggal-help"
+                        class="w-full rounded-xl border px-4 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-1
+                            @error('tanggal')
+                                border-red-500 focus:border-red-500 focus:ring-red-500
+                            @else
+                                border-gray-300 focus:border-[#c49c4d] focus:ring-[#c49c4d]
+                            @enderror"
+                        :class="errorMessage ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+                    >
+
+                    <p
+                        id="tanggal-error"
+                        x-show="errorMessage"
+                        x-text="errorMessage"
+                        class="mt-1.5 text-xs font-medium text-red-500"
+                        x-cloak
+                    ></p>
+
+                    @error('tanggal')
+                        <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                    @enderror
+
+                    <p id="tanggal-help" class="mt-1.5 text-xs text-gray-400">
+                        Pilih tanggal yang jatuh tepat pada hari Jumat.
+                    </p>
                 </div>
 
+                {{-- Imam --}}
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Nama Imam Sholat</label>
-                    <input type="text" name="imam" value="{{ old('imam', $jadwal->imam ?? 'Ustadz H. Ahmad Fauzi') }}"
-                        placeholder="Contoh: Ustadz H. Ahmad Fauzi" required
-                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+                    <label for="imam" class="mb-2 block text-sm font-semibold text-gray-700">
+                        Nama Imam Sholat <span class="text-red-500">*</span>
+                    </label>
+
+                    <input
+                        type="text"
+                        id="imam"
+                        name="imam"
+                        value="{{ old('imam', $jadwal->imam) }}"
+                        maxlength="255"
+                        placeholder="Contoh: Ustadz H. Ahmad Fauzi"
+                        required
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                    >
+
+                    @error('imam')
+                        <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
 
+                {{-- Muadzin --}}
                 <div>
-                    <label class="mb-2 block text-sm font-semibold text-gray-700">Nama Muadzin</label>
-                    <input type="text" name="muadzin" value="{{ old('muadzin', $jadwal->muadzin ?? 'Bpk. Ridwan') }}"
+                    <label for="muadzin" class="mb-2 block text-sm font-semibold text-gray-700">
+                        Nama Muadzin
+                    </label>
+
+                    <input
+                        type="text"
+                        id="muadzin"
+                        name="muadzin"
+                        value="{{ old('muadzin', $jadwal->muadzin) }}"
+                        maxlength="255"
                         placeholder="Contoh: Bpk. Ridwan"
-                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]">
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                    >
+
+                    @error('muadzin')
+                        <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                    @enderror
                 </div>
+
+                {{-- Khatib --}}
+                {{-- <div>
+                    <label for="khatib" class="mb-2 block text-sm font-semibold text-gray-700">
+                        Nama Khatib
+                    </label>
+
+                    <input
+                        type="text"
+                        id="khatib"
+                        name="khatib"
+                        value="{{ old('khatib', $jadwal->khatib) }}"
+                        maxlength="255"
+                        placeholder="Contoh: Ustadz H. Muhammad"
+                        class="w-full rounded-xl border border-gray-300 px-4 py-2.5 text-sm text-gray-800 focus:border-[#c49c4d] focus:outline-none focus:ring-1 focus:ring-[#c49c4d]"
+                    >
+
+                    @error('khatib')
+                        <p class="mt-1.5 text-xs font-medium text-red-500">{{ $message }}</p>
+                    @enderror
+                </div> --}}
+
             </div>
         </div>
 
-        <!-- Kolom Kanan: Pengaturan & Aksi -->
+        {{-- Kolom Kanan: Pengaturan & Aksi --}}
         <div class="space-y-6">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Aksi & Informasi</h3>
+            <div class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
 
-                <div class="rounded-xl bg-amber-50 p-4 border border-amber-100 space-y-1">
-                    <p class="text-xs font-semibold text-[#c49c4d]">Catatan Kalender</p>
-                    <p class="text-xs text-gray-600">Sistem akan menolak penyimpanan jika tanggal yang dipilih bukan
-                        hari Jumat.</p>
+                <h3 class="border-b border-gray-100 pb-3 font-bold text-gray-900">
+                    Aksi & Informasi
+                </h3>
+
+                <div class="space-y-1 rounded-xl border border-amber-100 bg-amber-50 p-4">
+                    <p class="text-xs font-semibold text-[#a8833e]">
+                        Ketentuan Kalender
+                    </p>
+                    <p class="text-xs leading-relaxed text-gray-600">
+                        Tanggal jadwal harus hari Jumat. Setiap tanggal hanya boleh memiliki satu jadwal imam.
+                    </p>
                 </div>
 
-                <div class="pt-2 flex flex-col sm:flex-row lg:flex-col gap-3">
-                    <button type="submit" :disabled="!!errorMessage"
-                        class="w-full rounded-xl bg-[#c49c4d] py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8833e] disabled:opacity-50 disabled:cursor-not-allowed">
+                <div class="flex flex-col gap-3 pt-2 sm:flex-row lg:flex-col">
+                    <button
+                        type="submit"
+                        :disabled="!tanggal || !!errorMessage"
+                        class="w-full rounded-xl bg-[#c49c4d] py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8833e] disabled:cursor-not-allowed disabled:opacity-50"
+                    >
                         Perbarui Jadwal
                     </button>
-                    <a href="{{ route('admin.jadwal-imam.index') }}"
-                        class="w-full text-center rounded-xl border border-gray-300 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-gray-50">Batal</a>
+
+                    <a
+                        href="{{ route('admin.jadwal-imam.index') }}"
+                        class="w-full rounded-xl border border-gray-300 py-2.5 text-center text-sm font-semibold text-gray-600 transition hover:bg-gray-50"
+                    >
+                        Batal
+                    </a>
                 </div>
             </div>
         </div>
@@ -69,7 +168,7 @@
         <script>
             document.addEventListener('alpine:init', () => {
                 Alpine.data('jadwalForm', (initialDate) => ({
-                    tanggal: initialDate,
+                    tanggal: initialDate ?? '',
                     errorMessage: '',
 
                     init() {
@@ -77,28 +176,40 @@
                     },
 
                     checkFriday() {
+                        this.errorMessage = '';
+
                         if (!this.tanggal) {
-                            this.errorMessage = 'Tanggal wajib diisi.';
                             return;
                         }
 
-                        // Konstruksi tanggal lokal untuk menghindari pergeseran jam/UTC
                         const parts = this.tanggal.split('-');
-                        const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
 
-                        // Day index 5 = Jumat (0: Minggu, 1: Senin, ..., 5: Jumat, 6: Sabtu)
+                        const dateObj = new Date(
+                            Number(parts[0]),
+                            Number(parts[1]) - 1,
+                            Number(parts[2])
+                        );
+
+                        if (
+                            dateObj.getFullYear() !== Number(parts[0]) ||
+                            dateObj.getMonth() !== Number(parts[1]) - 1 ||
+                            dateObj.getDate() !== Number(parts[2])
+                        ) {
+                            this.errorMessage = 'Tanggal yang dipilih tidak valid.';
+                            return;
+                        }
+
                         if (dateObj.getDay() !== 5) {
-                            this.errorMessage = 'Tanggal yang Anda pilih bukan hari Jumat! Silakan pilih tanggal hari Jumat.';
-                        } else {
-                            this.errorMessage = '';
+                            this.errorMessage =
+                                'Tanggal yang dipilih bukan hari Jumat. Silakan pilih tanggal hari Jumat.';
                         }
                     },
 
-                    validateSubmit(e) {
+                    validateSubmit(event) {
                         this.checkFriday();
-                        if (this.errorMessage) {
-                            e.preventDefault();
-                            alert(this.errorMessage);
+
+                        if (!this.tanggal || this.errorMessage) {
+                            event.preventDefault();
                         }
                     }
                 }));

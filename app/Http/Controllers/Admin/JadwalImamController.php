@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\FridaySchedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class JadwalImamController extends Controller
 {
@@ -43,7 +44,9 @@ class JadwalImamController extends Controller
 
     public function show($id)
     {
-        return view('admin.jadwal-imam.show', compact('id'));
+        $jadwal = FridaySchedule::findOrFail($id);
+
+        return view('admin.jadwal-imam.show', compact('jadwal'));
     }
 
 
@@ -96,20 +99,65 @@ class JadwalImamController extends Controller
 
     public function edit($id)
     {
-        return view('admin.jadwal-imam.edit', compact('id'));
+        $jadwal = FridaySchedule::findOrFail($id);
+
+        return view('admin.jadwal-imam.edit', compact('jadwal'));
     }
 
     public function update(Request $request, $id)
     {
-        // Update data berdasarkan ID
+        $jadwal = FridaySchedule::findOrFail($id);
+
+        $validated = $request->validate([
+            'tanggal' => [
+                'required',
+                'date_format:Y-m-d',
+                Rule::unique('friday_schedules', 'date')->ignore($jadwal->id),
+                function ($attribute, $value, $fail) {
+                    try {
+                        if (!Carbon::createFromFormat('!Y-m-d', $value)->isFriday()) {
+                            $fail('Tanggal jadwal harus jatuh pada hari Jumat.');
+                        }
+                    } catch (\Throwable $e) {
+                        $fail('Tanggal yang dimasukkan tidak valid.');
+                    }
+                },
+            ],
+            'imam' => ['required', 'string', 'max:255'],
+            'muadzin' => ['nullable', 'string', 'max:255'],
+            'khatib' => ['nullable', 'string', 'max:255'],
+        ], [
+            'tanggal.required' => 'Tanggal sholat Jumat wajib dipilih.',
+            'tanggal.date_format' => 'Format tanggal tidak valid.',
+            'tanggal.unique' => 'Jadwal imam untuk tanggal tersebut sudah tersedia.',
+            'imam.required' => 'Nama imam sholat wajib diisi.',
+            'imam.max' => 'Nama imam maksimal 255 karakter.',
+            'muadzin.max' => 'Nama muadzin maksimal 255 karakter.',
+            'khatib.max' => 'Nama khatib maksimal 255 karakter.',
+        ]);
+
+        $jadwal->update([
+            'date' => $validated['tanggal'],
+            'imam' => $validated['imam'],
+            'muadzin' => $validated['muadzin'] ?? null,
+            'khatib' => $validated['khatib'] ?? null,
+        ]);
+
+        return redirect()
+            ->route('admin.jadwal-imam.index')
+            ->with('success', 'Jadwal imam Jumat berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
-        // Hapus data dari database berdasarkan ID
+        $jadwal = FridaySchedule::findOrFail($id);
+
+        $jadwal->delete();
+
+        return redirect()
+            ->route('admin.jadwal-imam.index')
+            ->with('success', 'Jadwal imam Jumat berhasil dihapus.');
     }
-
-
 
     public function exportToExcel(Request $request)
     {
@@ -205,7 +253,6 @@ class JadwalImamController extends Controller
             ]
         );
     }
-
 
     public function importFromExcel(Request $request)
     {

@@ -109,27 +109,9 @@
                                 {{-- Judul & Thumbnail --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <div
-                                            class="h-12 w-16 shrink-0 overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
-                                            @if ($item->thumbnail)
-                                                <img src="{{ asset('storage/' . $item->thumbnail) }}" alt="{{ $item->title }}"
-                                                    class="h-full w-full object-cover" loading="lazy">
-                                            @else
-                                                <div class="flex h-full items-center justify-center text-gray-400">
-                                                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                                            d="M4 16l4-4a2 2 0 012.8 0l2.2 2.2 2.2-2.2a2 2 0 012.8 0L20 16M5 20h14a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v14a1 1 0 001 1z" />
-                                                    </svg>
-                                                </div>
-                                            @endif
-                                        </div>
-
                                         <div class="max-w-sm min-w-0">
                                             <p class="font-semibold text-gray-900">
                                                 {{ $item->title }}
-                                            </p>
-                                            <p class="mt-1 line-clamp-1 text-xs text-gray-400">
-                                                {{ $item->excerpt ?: 'Tidak ada ringkasan berita.' }}
                                             </p>
                                         </div>
                                     </div>

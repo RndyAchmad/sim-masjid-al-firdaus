@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Model;
 #[Fillable([
     'title',
     'slug',
+    'author',
     'category',
     'excerpt',
     'content',

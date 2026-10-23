@@ -116,7 +116,7 @@
                     @endif
 
                     {{-- Isi Artikel --}}
-                    <div class="prose prose-gray mt-8 max-w-none whitespace-pre-line break-words text-base leading-8 text-gray-700">{!! nl2br(e($article->content)) !!}</div>
+                    <div class="prose prose-gray mt-8 max-w-none whitespace-pre-line wrap-break-word text-base leading-8 text-gray-700">{!! nl2br(e($article->content)) !!}</div>
 
                     {{-- Bagikan Artikel --}}
                     <div class="mt-10 border-t border-gray-200 pt-6">

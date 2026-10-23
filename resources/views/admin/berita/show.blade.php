@@ -2,53 +2,121 @@
     <x-slot name="title">Detail Berita / Pengumuman</x-slot>
     <x-slot name="backUrl">{{ route('admin.berita.index') }}</x-slot>
 
+    @php
+        $status = $berita->status instanceof \App\Enums\PublicationStatus
+            ? $berita->status->value
+            : $berita->status;
+
+        $labelStatus = $berita->status instanceof \App\Enums\PublicationStatus
+            ? $berita->status->label()
+            : ucfirst((string) $berita->status);
+    @endphp
+
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <!-- Kolom Utama: Isi Berita -->
+
+        {{-- Kolom utama --}}
         <div class="space-y-6 lg:col-span-2">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
-                <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-                    <span
-                        class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span> Diterbitkan
+            <div class="space-y-5 rounded-2xl border border-gray-200 bg-white p-6 shadow-xs">
+
+                {{-- Status dan tanggal --}}
+                <div class="flex flex-wrap items-center gap-3 border-b border-gray-100 pb-4">
+                    @if ($status === 'published')
+                        <span
+                            class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                            {{ $labelStatus }}
+                        </span>
+                    @elseif ($status === 'draft')
+                        <span
+                            class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                            <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span>
+                            {{ $labelStatus }}
+                        </span>
+                    @else
+                        <span
+                            class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
+                            <span class="h-1.5 w-1.5 rounded-full bg-gray-400"></span>
+                            {{ $labelStatus }}
+                        </span>
+                    @endif
+
+                    <span class="text-xs text-gray-400">
+                        {{ $berita->published_at
+    ? $berita->published_at->translatedFormat('d F Y')
+    : 'Tanggal publikasi belum ditentukan' }}
                     </span>
-                    <span class="text-xs text-gray-400">• 14 Oktober 2026</span>
                 </div>
 
-                <h1 class="text-xl font-bold text-gray-900">Penyaluran Bantuan Sembako untuk Dhuafa Bulan Ini</h1>
+                {{-- Judul --}}
+                <h1 class="text-xl font-bold leading-relaxed text-gray-900 sm:text-2xl">
+                    {{ $berita->title }}
+                </h1>
 
-                <div class="overflow-hidden rounded-xl bg-gray-100 border border-gray-200 h-64 w-full">
-                    <img src="https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800" alt="Cover Berita"
-                        class="h-full w-full object-cover">
+                {{-- Thumbnail --}}
+                @if ($berita->thumbnail)
+                    <div class="w-full overflow-hidden rounded-xl border border-gray-200 bg-gray-100">
+                        <img src="{{ asset('storage/' . $berita->thumbnail) }}" alt="Thumbnail {{ $berita->title }}"
+                            class="max-h-112.5 w-full object-contain">
+                    </div>
+                @endif
+
+                {{-- Ringkasan --}}
+                @if ($berita->excerpt)
+                    <div class="rounded-xl border-l-4 border-[#c49c4d] bg-gray-50 p-4">
+                        <p class="text-sm font-medium leading-relaxed text-gray-700">
+                            {{ $berita->excerpt }}
+                        </p>
+                    </div>
+                @endif
+
+                {{-- Isi berita --}}
+                <div class="whitespace-pre-line wrap-break-word text-sm leading-7 text-gray-700">{{ $berita->content }}
                 </div>
 
-                <div class="prose max-w-none text-sm text-gray-700 leading-relaxed space-y-3 pt-2">
-                    <p class="font-medium text-gray-900">Alhamdulillah, kegiatan penyaluran bantuan sembako bulanan
-                        telah sukses diselenggarakan oleh Sie Sosial Masjid Al-Firdaus.</p>
-                    <p>Bantuan ini bersumber dari infaq dan sedekah terikat jamaah yang dikumpulkan sepanjang bulan ini.
-                        Sebanyak 50 paket sembako berupa beras, minyak goreng, gula, dan bahan pokok lainnya disalurkan
-                        langsung kepada keluarga penerima manfaat di lingkungan sekitar masjid.</p>
-                </div>
             </div>
         </div>
 
-        <!-- Kolom Samping: Informasi Penulis & Aksi -->
+        {{-- Kolom samping --}}
         <div class="space-y-6">
-            <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-xs space-y-4">
-                <h3 class="font-bold text-gray-900 border-b border-gray-100 pb-3">Metadata & Opsi</h3>
+            <div class="space-y-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-xs">
+                <h3 class="border-b border-gray-100 pb-3 font-bold text-gray-900">
+                    Metadata & Opsi
+                </h3>
 
-                <div class="space-y-2 text-xs text-gray-600">
-                    <div class="flex justify-between py-1 border-b border-gray-50">
-                        <span class="text-gray-400">Penulis / Redaksi:</span>
-                        <span class="font-semibold text-gray-800">Haji Ridwan</span>
+                <div class="space-y-3 text-sm">
+                    <div class="flex flex-col gap-1 border-b border-gray-50 pb-3">
+                        <span class="text-xs text-gray-400">Penulis</span>
+                        <span class="wrap-break-word font-semibold text-gray-800">
+                            {{ $berita->author }}
+                        </span>
                     </div>
-                    <div class="flex justify-between py-1 border-b border-gray-50">
-                        <span class="text-gray-400">Tanggal Rilis:</span>
-                        <span class="font-semibold text-gray-800">14 Okt 2026</span>
+
+                    <div class="flex flex-col gap-1 border-b border-gray-50 pb-3">
+                        <span class="text-xs text-gray-400">Tanggal Publikasi</span>
+                        <span class="font-semibold text-gray-800">
+                            {{ $berita->published_at
+    ? $berita->published_at->translatedFormat('d F Y')
+    : '-' }}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-1 border-b border-gray-50 pb-3">
+                        <span class="text-xs text-gray-400">Terakhir Diperbarui</span>
+                        <span class="font-semibold text-gray-800">
+                            {{ $berita->updated_at->translatedFormat('d F Y, H:i') }}
+                        </span>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <span class="text-xs text-gray-400">Slug</span>
+                        <span class="break-all font-mono text-xs text-gray-600">
+                            {{ $berita->slug }}
+                        </span>
                     </div>
                 </div>
 
-                <div class="pt-2 space-y-2">
-                    <a href="{{ route('admin.berita.edit', 1) }}"
+                <div class="space-y-2 border-t border-gray-100 pt-4">
+                    <a href="{{ route('admin.berita.edit', $berita->id) }}"
                         class="flex w-full items-center justify-center gap-2 rounded-xl bg-[#c49c4d] py-2.5 text-sm font-semibold text-white shadow-xs transition hover:bg-[#a8833e]">
                         <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -57,10 +125,12 @@
                         Edit Berita
                     </a>
 
-                    <form action="{{ route('admin.berita.destroy', 1) }}" method="POST"
-                        onsubmit="return confirm('Yakin ingin menghapus berita ini?');">
+                    <form action="{{ route('admin.berita.destroy', $berita->id) }}" method="POST"
+                        data-confirm-title="Hapus berita?"
+                        data-confirm="Berita ini akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.">
                         @csrf
                         @method('DELETE')
+
                         <button type="submit"
                             class="flex w-full items-center justify-center gap-2 rounded-xl border border-red-200 bg-red-50 py-2.5 text-sm font-semibold text-red-600 transition hover:bg-red-100">
                             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

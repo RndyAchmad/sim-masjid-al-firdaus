@@ -70,7 +70,7 @@
                         >
                     </div>
                 @else
-                    <div class="flex aspect-video w-full items-center justify-center bg-gradient-to-br from-amber-50 to-amber-100">
+                    <div class="flex aspect-video w-full items-center justify-center bg-linear-to-br from-amber-50 to-amber-100">
                         <div class="text-center text-amber-700">
                             <i class="fa-regular fa-newspaper text-5xl"></i>
                             <p class="mt-3 text-sm font-medium">Berita Masjid Al-Firdaus</p>
@@ -117,7 +117,7 @@
                     @endif
 
                     {{-- Isi berita --}}
-                    <div class="prose prose-gray mt-8 max-w-none whitespace-pre-line break-words text-base leading-8 text-gray-700">
+                    <div class="prose prose-gray mt-8 max-w-none whitespace-pre-line wrap-break-word text-base leading-8 text-gray-700">
                         {!! nl2br(e($berita->content)) !!}
                     </div>
 
@@ -163,7 +163,7 @@
                                 rel="noopener noreferrer"
                                 aria-label="Buka Instagram"
                                 title="Buka Instagram"
-                                class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-tr from-[#feda75] via-[#d62976] to-[#962fbf] text-white transition hover:-translate-y-1 hover:shadow-md"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-tr from-[#feda75] via-[#d62976] to-[#962fbf] text-white transition hover:-translate-y-1 hover:shadow-md"
                             >
                                 <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path fill-rule="evenodd"

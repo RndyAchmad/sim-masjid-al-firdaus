@@ -93,13 +93,13 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::prefix('jadwal-imam')->name('jadwal-imam.')->group(function () {
             Route::get('/', [AdminJadwalImamController::class, 'index'])->name('index');
             Route::get('/create', [AdminJadwalImamController::class, 'create'])->name('create');
-            Route::get('/{id}', [AdminJadwalImamController::class, 'show'])->name('show');
+            Route::get('/export', [AdminJadwalImamController::class, 'exportToExcel'])->name('export');
+            Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
             Route::post('/', [AdminJadwalImamController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminJadwalImamController::class, 'show'])->name('show');
             Route::get('/{id}/edit', [AdminJadwalImamController::class, 'edit'])->name('edit');
             Route::put('/{id}', [AdminJadwalImamController::class, 'update'])->name('update');
             Route::delete('/{id}', [AdminJadwalImamController::class, 'destroy'])->name('destroy');
-            Route::get('/export', [AdminJadwalImamController::class, 'exportToExcel'])->name('export');
-            Route::post('/import', [AdminJadwalImamController::class, 'importFromExcel'])->name('import');
         });
 
         // BERITA & PENGUMUMAN: SUPERADMIN, ADMIN

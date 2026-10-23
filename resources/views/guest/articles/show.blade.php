@@ -1,188 +1,293 @@
+@php
+    $urlArtikel = route('articles.show', ['slug' => $article->slug]);
+    $urlAbsolut = url($urlArtikel);
+    $judulArtikel = $article->title;
+@endphp
+
 <x-layouts.guest>
-    {{-- Header Banner Detail Artikel (Gelap Elegan) --}}
-    <div
-        class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-10 sm:py-14 border-b border-gray-800">
-        <div class="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
+    <section class="min-h-screen bg-gray-50 pb-16">
+
+        {{-- Breadcrumb --}}
+        <div class="border-b border-gray-200 bg-white">
+            <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
+                <nav class="flex flex-wrap items-center gap-2 text-sm text-gray-500">
+                    <a href="{{ url('/') }}" class="transition hover:text-amber-700">
+                        Beranda
+                    </a>
+
+                    <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor"
+                        stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+
+                    <a href="{{ route('articles.index') }}" class="transition hover:text-amber-700">
+                        Artikel Keislaman
+                    </a>
+
+                    <svg class="h-3 w-3 text-gray-400" fill="none" stroke="currentColor"
+                        stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+
+                    <span class="max-w-xs truncate font-medium text-gray-800 sm:max-w-md">
+                        {{ $article->title }}
+                    </span>
+                </nav>
+            </div>
+        </div>
+
+        <div class="mx-auto max-w-5xl px-4 pt-8 sm:px-6 lg:px-8">
 
             {{-- Tombol Kembali --}}
-            <div class="mb-4 flex justify-center sm:mb-6">
+            <a href="{{ route('articles.index') }}"
+                class="mb-8 inline-flex items-center gap-2 text-sm font-semibold text-gray-600 transition hover:text-amber-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali ke Artikel
+            </a>
+
+            {{-- Artikel Utama --}}
+            <article class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+
+                {{-- Thumbnail --}}
+                @if ($article->thumbnail)
+                    <div class="aspect-video w-full overflow-hidden bg-gray-100">
+                        <img
+                            src="{{ asset('storage/' . $article->thumbnail) }}"
+                            alt="{{ $article->title }}"
+                            fetchpriority="high"
+                            class="h-full w-full object-cover">
+                    </div>
+                @else
+                    <div class="flex aspect-video w-full items-center justify-center bg-linear-to-br from-amber-50 to-amber-100">
+                        <div class="text-center text-amber-700">
+                            <i class="fa-regular fa-newspaper text-5xl"></i>
+                            <p class="mt-3 text-sm font-medium">Artikel Masjid Al-Firdaus</p>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="p-5 sm:p-8 lg:p-10">
+
+                    {{-- Label --}}
+                    <div class="mb-5">
+                        <span class="inline-flex items-center gap-2 rounded-full bg-amber-50 px-4 py-2 text-xs font-bold uppercase tracking-wider text-amber-800">
+                            <i class="fa-solid fa-book-open"></i>
+                            {{ $article->category ?: 'Artikel Keislaman' }}
+                        </span>
+                    </div>
+
+                    {{-- Judul --}}
+                    <h1 class="text-2xl font-extrabold leading-tight tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+                        {{ $article->title }}
+                    </h1>
+
+                    {{-- Metadata --}}
+                    <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-3 border-b border-gray-200 pb-6 text-sm text-gray-500">
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-regular fa-calendar text-amber-700"></i>
+                            {{ $article->created_at?->locale('id')->translatedFormat('d F Y') ?? '-' }}
+                        </span>
+
+                        @if ($article->author)
+                            <span class="inline-flex items-center gap-2">
+                                <i class="fa-regular fa-user text-amber-700"></i>
+                                {{ $article->author }}
+                            </span>
+                        @endif
+
+                        @if ($article->category)
+                            <span class="inline-flex items-center gap-2">
+                                <i class="fa-solid fa-tag text-amber-700"></i>
+                                {{ $article->category }}
+                            </span>
+                        @endif
+                    </div>
+
+                    {{-- Ringkasan --}}
+                    @if ($article->excerpt)
+                        <div class="mt-7 rounded-r-xl border-l-4 border-amber-500 bg-amber-50/70 px-5 py-4">
+                            <p class="text-base leading-relaxed text-gray-700 sm:text-lg">
+                                {{ $article->excerpt }}
+                            </p>
+                        </div>
+                    @endif
+
+                    {{-- Isi Artikel --}}
+                    <div class="prose prose-gray mt-8 max-w-none whitespace-pre-line break-words text-base leading-8 text-gray-700">{!! nl2br(e($article->content)) !!}</div>
+
+                    {{-- Bagikan Artikel --}}
+                    <div class="mt-10 border-t border-gray-200 pt-6">
+                        <p class="mb-4 text-sm font-bold text-gray-800">
+                            Bagikan artikel ini
+                        </p>
+
+                        <div class="flex flex-wrap items-center gap-3">
+
+                            {{-- WhatsApp --}}
+                            <a href="https://wa.me/?text={{ urlencode($judulArtikel . ' ' . $urlAbsolut) }}"
+                                target="_blank" rel="noopener noreferrer"
+                                aria-label="Bagikan ke WhatsApp" title="Bagikan ke WhatsApp"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white transition hover:-translate-y-1 hover:bg-[#1DA851] hover:shadow-md">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M18.403 5.633A10.457 10.457 0 0010.834 2C5.086 2 4.14 6.32 4.14 8.784c0 1.554.414 3.003 1.201 4.252L4 19.5l6.702-1.314a10.4 10.4 0 004.887 1.225h.004c5.744 0 10.418-4.665 10.418-10.414 0-2.78-1.082-5.393-3.006-7.362zM14.595 16.92a8.735 8.735 0 01-4.463-1.225l-.32-.191-3.33.653.667-3.235-.208-.332a8.683 8.683 0 01-1.332-4.685c0-4.8 3.908-8.707 8.712-8.707 2.324 0 4.505.906 6.143 2.547a8.653 8.653 0 012.548 6.14c0 4.802-3.908 8.71-8.708 8.71zm4.772-7.534c-.261-.131-1.543-.761-1.782-.849-.239-.088-.413-.131-.587.131-.174.262-.674.848-.826 1.022-.152.174-.304.196-.565.065-.261-.131-1.102-.406-2.1-1.296-.777-.692-1.301-1.547-1.453-1.808-.152-.261-.016-.402.114-.533.117-.117.261-.304.392-.456.131-.152.174-.261.261-.435.087-.174.043-.326-.022-.457-.065-.131-.587-1.414-.804-1.936-.212-.511-.428-.442-.587-.45l-.5-.008c-.174 0-.456.065-.695.326-.239.261-.913.892-.913 2.176 0 1.284.935 2.525 1.065 2.699.13.174 1.839 2.808 4.456 3.938.622.268 1.107.428 1.485.549.623.199 1.19.171 1.638.104.5-.075 1.543-.631 1.761-1.241.218-.61.218-1.132.152-1.241-.066-.109-.239-.174-.5-.305z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+
+                            {{-- Facebook --}}
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($urlAbsolut) }}"
+                                target="_blank" rel="noopener noreferrer"
+                                aria-label="Bagikan ke Facebook" title="Bagikan ke Facebook"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#1877F2] text-white transition hover:-translate-y-1 hover:bg-[#0C63D4] hover:shadow-md">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
+                                </svg>
+                            </a>
+
+                            {{-- Instagram --}}
+                            <a href="https://www.instagram.com/"
+                                target="_blank" rel="noopener noreferrer"
+                                aria-label="Buka Instagram" title="Buka Instagram"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-linear-to-tr from-[#feda75] via-[#d62976] to-[#962fbf] text-white transition hover:-translate-y-1 hover:shadow-md">
+                                <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </a>
+
+                            {{-- Salin Tautan --}}
+                            <button type="button" id="copyArtikelLink"
+                                data-url="{{ $urlAbsolut }}"
+                                aria-label="Salin tautan artikel" title="Salin tautan artikel"
+                                class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-gray-300 bg-white text-gray-600 transition hover:-translate-y-1 hover:border-amber-500 hover:text-amber-700 hover:shadow-md">
+                                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {{-- Notifikasi --}}
+                        <div id="copyArtikelMessage"
+                            class="mt-3 hidden items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                            <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                            <span>Tautan artikel berhasil disalin!</span>
+                        </div>
+
+                        <p class="mt-3 text-xs leading-relaxed text-gray-500">
+                            Bagikan artikel ini kepada keluarga, sahabat, dan jamaah lainnya.
+                        </p>
+                    </div>
+                </div>
+            </article>
+
+            {{-- Artikel Lainnya --}}
+            @if ($articlesLainnya->isNotEmpty())
+                <section class="mt-12">
+                    <div class="mb-6">
+                        <h2 class="text-xl font-extrabold text-gray-900 sm:text-2xl">
+                            Artikel Keislaman Lainnya
+                        </h2>
+                        <p class="mt-2 text-sm text-gray-500">
+                            Temukan tulisan lainnya untuk menambah wawasan keislaman.
+                        </p>
+                    </div>
+
+                    <div class="grid gap-6 sm:grid-cols-2">
+                        @foreach ($articlesLainnya as $item)
+                            <a href="{{ route('articles.show', ['slug' => $item->slug]) }}"
+                                class="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white transition duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-lg">
+
+                                @if ($item->thumbnail)
+                                    <div class="aspect-video overflow-hidden bg-gray-100">
+                                        <img
+                                            src="{{ asset('storage/' . $item->thumbnail) }}"
+                                            alt="{{ $item->title }}"
+                                            loading="lazy"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105">
+                                    </div>
+                                @else
+                                    <div class="flex aspect-video items-center justify-center bg-amber-50 text-amber-700">
+                                        <i class="fa-regular fa-newspaper text-4xl"></i>
+                                    </div>
+                                @endif
+
+                                <div class="flex flex-1 flex-col p-5">
+                                    <p class="mb-3 flex flex-wrap items-center gap-2 text-xs text-gray-500">
+                                        <i class="fa-regular fa-calendar text-amber-700"></i>
+                                        {{ $item->created_at?->locale('id')->translatedFormat('d F Y') ?? '-' }}
+
+                                        @if ($item->category)
+                                            <span class="rounded-full bg-amber-50 px-2 py-1 text-amber-800">
+                                                {{ $item->category }}
+                                            </span>
+                                        @endif
+                                    </p>
+
+                                    <h3 class="line-clamp-2 text-lg font-bold leading-snug text-gray-900 transition group-hover:text-amber-700">
+                                        {{ $item->title }}
+                                    </h3>
+
+                                    @if ($item->excerpt)
+                                        <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-gray-600">
+                                            {{ $item->excerpt }}
+                                        </p>
+                                    @endif
+
+                                    <span class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-bold text-amber-700">
+                                        Baca artikel
+                                        <i class="fa-solid fa-arrow-right transition group-hover:translate-x-1"></i>
+                                    </span>
+                                </div>
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            {{-- Tombol Semua Artikel --}}
+            <div class="mt-12 flex justify-center border-t border-gray-200 pt-8">
                 <a href="{{ route('articles.index') }}"
-                    class="inline-flex items-center gap-2 rounded-full border border-gray-700 bg-black/50 px-4 py-1.5 text-xs font-semibold text-gray-300 transition hover:border-[#d8b76a] hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                        stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                    Kembali ke Artikel Keislaman
+                    class="inline-flex items-center justify-center gap-3 rounded-xl bg-amber-700 px-7 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-amber-800 hover:shadow-md">
+                    <i class="fa-solid fa-book-open"></i>
+                    Lihat Semua Artikel
+                    <i class="fa-solid fa-arrow-right"></i>
                 </a>
             </div>
-
-            <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
-                Kajian & Risalah
-            </span>
-
-            {{-- Judul Artikel --}}
-            <h1
-                class="mt-2 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
-                Keutamaan Menjaga Salat Berjamaah di Masjid
-            </h1>
-
-            {{-- Metadata Artikel --}}
-            <div
-                class="mt-4 flex flex-wrap items-center justify-center gap-3 text-xs text-gray-400 sm:gap-6 sm:text-sm">
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#d8b76a]" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    <span>Penulis: <strong class="text-gray-200">Ust. Ahmad Fuzairi</strong></span>
-                </div>
-                <span class="hidden sm:inline text-gray-600">•</span>
-                <div class="flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#d8b76a]" fill="none"
-                        viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                    </svg>
-                    <span>02 September 2026</span>
-                </div>
-            </div>
         </div>
-    </div>
+    </section>
 
-    {{-- Main Content Section (Background Krem Warm Sand) --}}
-    <div class="bg-[#FBF9F5] py-10 sm:py-14 lg:py-16">
-        <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+    {{-- Script Salin Tautan --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const copyButton = document.getElementById('copyArtikelLink');
+            const copyMessage = document.getElementById('copyArtikelMessage');
 
-            {{-- Gambar Utama (Cover Artikel) --}}
-            <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-lg">
-                <div class="relative aspect-video w-full overflow-hidden bg-stone-100">
-                    <img src="https://images.unsplash.com/photo-1584551246679-0daf3d275d0f?q=80&w=1200"
-                        alt="Salat Berjamaah" class="h-full w-full object-cover">
-                </div>
-            </div>
+            if (!copyButton || !copyMessage) return;
 
-            {{-- Isi Artikel --}}
-            <div
-                class="mt-8 rounded-2xl border border-stone-200 bg-white p-6 sm:p-10 shadow-sm space-y-6 text-gray-700 leading-relaxed text-sm sm:text-base">
+            let timeoutId;
 
-                <p class="font-medium text-gray-900 leading-relaxed">
-                    Salat fardhu merupakan tiang agama bagi setiap muslim. Di antara amalan utama yang sangat dianjurkan
-                    oleh Rasulullah SAW bagi kaum laki-laki adalah menegakkan salat secara berjamaah di masjid.
-                </p>
+            copyButton.addEventListener('click', async function () {
+                const url = this.dataset.url;
 
-                <p>
-                    Keutamaan salat berjamaah amatlah besar. Rasulullah SAW bersabda dalam sebuah hadits shahih yang
-                    diriwayatkan oleh Imam Bukhari dan Muslim:
-                </p>
+                try {
+                    await navigator.clipboard.writeText(url);
 
-                {{-- Quote Box Hadits / Hikmah --}}
-                <div
-                    class="my-6 rounded-xl border-l-4 border-[#8c6b2d] bg-[#FBF9F5] p-5 italic text-gray-800 space-y-2">
-                    <p class="font-serif text-base sm:text-lg text-gray-900 not-italic font-bold">
-                        "Salat berjamaah lebih utama daripada salat sendirian dengan dua puluh tujuh derajat."
-                    </p>
-                    <p class="text-xs text-gray-500 not-italic">— HR. Bukhari no. 645 dan Muslim no. 650</p>
-                </div>
+                    copyMessage.classList.remove('hidden');
+                    copyMessage.classList.add('flex');
 
-                <p>
-                    Selain dilipatgandakannya pahala hingga 27 kali lipat, setiap langkah kaki seorang muslim menuju
-                    masjid untuk melaksanakan salat berjamaah akan dihitung sebagai kebaikan dan penghapus dosa-dosa
-                    kecilnya.
-                </p>
+                    clearTimeout(timeoutId);
 
-                <h3 class="font-serif text-lg sm:text-xl font-bold text-gray-900 pt-2">
-                    Manfaat Sosial dan Ukhuwah Islamiyah
-                </h3>
-
-                <p>
-                    Tidak hanya bernilai pahala spiritual, salat berjamaah di masjid juga menjadi sarana untuk
-                    mempererat tali silaturahmi antar warga perumahan dan jamaah sekitar. Melalui pertemuan rutin lima
-                    waktu di rumah Allah, rasa kepedulian, kebersamaan, dan rasa saling mengenal sesama muslim akan
-                    senantiasa terjaga.
-                </p>
-
-                <p>
-                    Marilah kita senantiasa memakmurkan Masjid Al-Firdaus dengan melangkahkan kaki menuju sholat
-                    berjamaah serta mengajak keluarga dan putra-putri kita untuk mencintai rumah Allah SWT.
-                </p>
-
-                {{-- Bagian Bagikan (Share Buttons) --}}
-                <div
-                    class="mt-10 border-t border-stone-100 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                    <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
-                        Bagikan Artikel Ini:
-                    </span>
-                    <div class="flex items-center gap-3">
-                        <a href="#"
-                            class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700">
-                            WhatsApp
-                        </a>
-                        <a href="#"
-                            class="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-blue-700">
-                            Facebook
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-
-            {{-- Rekomendasi Artikel Lainnya --}}
-            <div class="mt-12 sm:mt-16">
-                <div class="mb-6 text-center">
-                    <span
-                        class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-2">
-                        Risalah Lainnya
-                    </span>
-                    <h3 class="font-serif text-xl font-bold text-gray-900 sm:text-2xl">
-                        Artikel Keislaman Lainnya
-                    </h3>
-                </div>
-
-                <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-
-                    {{-- Card Rekomendasi 1 --}}
-                    <div
-                        class="flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition hover:border-[#8c6b2d] hover:shadow-md">
-                        <div class="p-5">
-                            <span class="text-xs font-semibold text-[#8c6b2d]">15 Agustus 2026</span>
-                            <h4 class="mt-1 font-serif text-base font-bold text-gray-900 line-clamp-2">
-                                Adab Menyambut Bulan Suci Ramadan
-                            </h4>
-                            <p class="mt-2 text-xs text-gray-600 line-clamp-2">
-                                Persiapan ruhani dan fisik sangat diperlukan agar dapat memaksimalkan ibadah saat bulan
-                                suci tiba.
-                            </p>
-                            <a href="#"
-                                class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#8c6b2d] hover:underline">
-                                Baca Artikel →
-                            </a>
-                        </div>
-                    </div>
-
-                    {{-- Card Rekomendasi 2 --}}
-                    <div
-                        class="flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition hover:border-[#8c6b2d] hover:shadow-md">
-                        <div class="p-5">
-                            <span class="text-xs font-semibold text-[#8c6b2d]">28 Juli 2026</span>
-                            <h4 class="mt-1 font-serif text-base font-bold text-gray-900 line-clamp-2">
-                                Manfaat Mengamalkan Al-Qur'an dalam Kehidupan Sehari-hari
-                            </h4>
-                            <p class="mt-2 text-xs text-gray-600 line-clamp-2">
-                                Al-Qur'an bukan hanya petunjuk ibadah, tetapi juga penerang jalan hidup dan solusi
-                                berbagai masalah.
-                            </p>
-                            <a href="#"
-                                class="mt-4 inline-flex items-center gap-1 text-xs font-bold text-[#8c6b2d] hover:underline">
-                                Baca Artikel →
-                            </a>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-        </div>
-    </div>
+                    timeoutId = setTimeout(() => {
+                        copyMessage.classList.remove('flex');
+                        copyMessage.classList.add('hidden');
+                    }, 3000);
+                } catch (error) {
+                    window.prompt('Salin tautan artikel berikut:', url);
+                }
+            });
+        });
+    </script>
 </x-layouts.guest>

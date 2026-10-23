@@ -3,22 +3,38 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
-use App\Services\ArticleService;
+use App\Models\Article;
 use Illuminate\View\View;
 
 class ArticleController extends Controller
 {
-    public function __construct(private readonly ArticleService $articleService)
-    {
-    }
-
     public function index(): View
     {
-        return view('guest.articles.index');
+        $articles = Article::query()
+            ->where('status', 'published')
+            ->latest()
+            ->paginate(9);
+
+        return view('guest.articles.index', compact('articles'));
     }
 
     public function show(string $slug): View
     {
-        return view('guest.articles.show');
+        $article = Article::query()
+            ->where('slug', $slug)
+            ->where('status', 'published')
+            ->firstOrFail();
+
+        $articlesLainnya = Article::query()
+            ->where('status', 'published')
+            ->where('id', '!=', $article->id)
+            ->latest()
+            ->take(4)
+            ->get();
+
+        return view('guest.articles.show', compact(
+            'article',
+            'articlesLainnya'
+        ));
     }
 }

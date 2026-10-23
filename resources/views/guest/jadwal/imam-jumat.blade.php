@@ -25,48 +25,68 @@
 
             {{-- 1. SECTION HIGHLIGHT PETUGAS JUMAT MINGGU INI --}}
             <section>
-                <div class="mb-8 text-center max-w-3xl mx-auto">
+                <div class="mx-auto mb-8 max-w-3xl text-center">
                     <span
-                        class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-3">
+                        class="mb-3 inline-flex items-center gap-2 rounded-full border border-[#6e5321] bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm">
                         Pekan Ini
                     </span>
+
                     <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
                         Petugas Sholat Jumat Terdekat
                     </h2>
+
                     <p class="mt-2 text-xs text-gray-600 sm:text-sm md:text-base">
-                        Jadwal pelayanan sholat Jumat untuk tanggal 23 Oktober 2026.
+                        Informasi petugas Jumat berdasarkan jadwal yang telah ditetapkan.
                     </p>
                 </div>
 
-                {{-- Highlight Card --}}
                 <div
-                    class="overflow-hidden rounded-2xl border border-[#8c6b2d]/30 bg-linear-to-br from-white via-white to-[#F7F4EE] p-6 sm:p-8 shadow-md">
-                    <div class="grid grid-cols-1 gap-6 md:grid-cols-3 items-center">
-                        <div class="border-b md:border-b-0 md:border-r border-stone-200 pb-4 md:pb-0 md:pr-6">
-                            <span class="text-xs font-bold uppercase tracking-wider text-[#8c6b2d]">Hari /
-                                Tanggal</span>
-                            <p class="mt-1 font-serif text-lg font-bold text-gray-900 sm:text-xl">
-                                Jumat, 23 Okt 2026
-                            </p>
-                            <span
-                                class="inline-flex mt-2 items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
-                                Berlangsung Pekan Ini
-                            </span>
-                        </div>
+                    class="overflow-hidden rounded-2xl border border-[#8c6b2d]/30 bg-gradient-to-br from-white via-white to-[#F7F4EE] p-6 shadow-md sm:p-8">
+                    @if ($jadwalTerdekat)
+                        <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
+                            <div class="border-b border-stone-200 pb-4 md:border-b-0 md:border-r md:pb-0 md:pr-6">
+                                <span class="text-xs font-bold uppercase tracking-wider text-[#8c6b2d]">
+                                    Hari / Tanggal
+                                </span>
 
-                        <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Imam Sholat</span>
-                            <p class="mt-1 text-sm sm:text-base font-bold text-gray-900">
-                                Ust. H. Muhammad Ridwan
+                                <p class="mt-1 font-serif text-lg font-bold text-gray-900 sm:text-xl">
+                                    {{ \Carbon\Carbon::parse($jadwalTerdekat->date)->locale('id')->translatedFormat('l, d F Y') }}
+                                </p>
+
+                                <span
+                                    class="mt-2 inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700">
+                                    Jadwal Terdekat
+                                </span>
+                            </div>
+
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    Imam Sholat
+                                </span>
+                                <p class="mt-1 text-sm font-bold text-gray-900 sm:text-base">
+                                    {{ $jadwalTerdekat->imam }}
+                                </p>
+                            </div>
+
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-gray-400">
+                                    Muadzin
+                                </span>
+                                <p class="mt-1 text-sm font-bold text-gray-900 sm:text-base">
+                                    {{ $jadwalTerdekat->muadzin ?: 'Belum ditentukan' }}
+                                </p>
+                            </div>
+                        </div>
+                    @else
+                        <div class="py-6 text-center">
+                            <p class="font-semibold text-gray-800">
+                                Belum ada jadwal Jumat mendatang.
+                            </p>
+                            <p class="mt-1 text-sm text-gray-500">
+                                Silakan periksa kembali di lain waktu.
                             </p>
                         </div>
-                        <div>
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-400">Muadzin</span>
-                            <p class="mt-1 text-sm sm:text-base font-bold text-gray-900">
-                                Bpk. M. Fajar Al-Fatih
-                            </p>
-                        </div>
-                    </div>
+                    @endif
                 </div>
             </section>
 
@@ -83,24 +103,54 @@
                             Agenda Bulanan
                         </span>
                         <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                            Daftar Imam & Muadzin Jumat Bulan Ini
+                            Daftar Imam & Muadzin Jumat Bulan
+                            {{ $namaBulan }} {{ $tahun }}
                         </h2>
                     </div>
 
                     {{-- Filter Bulan & Tahun --}}
-                    <div class="flex items-center gap-2">
-                        <select
-                            class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm">
-                            <option value="10">Oktober</option>
-                            <option value="09">September</option>
-                            <option value="08">Agustus</option>
+                    <form action="{{ url()->current() }}" method="GET"
+                        class="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
+                        <select name="bulan" onchange="this.form.submit()"
+                            class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm"
+                            aria-label="Pilih bulan">
+                            @foreach ([
+                                    1 => 'Januari',
+                                    2 => 'Februari',
+                                    3 => 'Maret',
+                                    4 => 'April',
+                                    5 => 'Mei',
+                                    6 => 'Juni',
+                                    7 => 'Juli',
+                                    8 => 'Agustus',
+                                    9 => 'September',
+                                    10 => 'Oktober',
+                                    11 => 'November',
+                                    12 => 'Desember',
+                                ] as $nomorBulan => $labelBulan)
+                                <option value="{{ $nomorBulan }}" @selected($bulan === $nomorBulan)>
+                                    {{ $labelBulan }}
+                                </option>
+                            @endforeach
                         </select>
-                        <select
-                            class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm">
-                            <option value="2026">2026</option>
-                            <option value="2025">2025</option>
+
+                        <select name="tahun" onchange="this.form.submit()"
+                            class="rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm"
+                            aria-label="Pilih tahun">
+                            @foreach ($tahunTersedia as $opsiTahun)
+                                <option value="{{ $opsiTahun }}" @selected((int) $tahun === (int) $opsiTahun)>
+                                    {{ $opsiTahun }}
+                                </option>
+                            @endforeach
                         </select>
-                    </div>
+
+                        <noscript>
+                            <button type="submit"
+                                class="rounded-xl bg-[#8c6b2d] px-4 py-2 text-sm font-semibold text-white">
+                                Tampilkan
+                            </button>
+                        </noscript>
+                    </form>
                 </div>
 
                 {{-- Tabel Jadwal Responsif --}}
@@ -116,77 +166,46 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-stone-100 bg-white font-sans">
+                                @forelse ($jadwalImam as $jadwal)
+                                    @php
+                                        $tanggalJadwal = \Carbon\Carbon::parse($jadwal->date);
+                                        $adalahHariIni = $tanggalJadwal->isToday();
+                                    @endphp
 
-                                {{-- Baris 1 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-stone-500 font-medium">
-                                        02 Okt 2026
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 font-semibold text-gray-900">
-                                        Ust. H. Abdullah Faqih, Lc.
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 text-gray-600">
-                                        Bpk. Zainal Arifin
-                                    </td>
-                                </tr>
+                                    <tr
+                                        class="transition hover:bg-stone-50/80 {{ $adalahHariIni ? 'bg-amber-50/50' : '' }}">
+                                        <td
+                                            class="whitespace-nowrap px-4 py-3.5 font-medium sm:px-6 sm:py-4 {{ $adalahHariIni ? 'text-[#8c6b2d] font-bold' : 'text-stone-500' }}">
+                                            {{ $tanggalJadwal->locale('id')->translatedFormat('d M Y') }}
 
-                                {{-- Baris 2 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-stone-500 font-medium">
-                                        09 Okt 2026
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 font-semibold text-gray-900">
-                                        Ust. Muhammad Ridwan
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 text-gray-600">
-                                        Bpk. H. Sutrisno
-                                    </td>
-                                </tr>
+                                            @if ($adalahHariIni)
+                                                <span
+                                                    class="ml-1 rounded bg-[#8c6b2d]/10 px-1.5 py-0.5 text-[10px] font-bold uppercase text-[#8c6b2d]">
+                                                    Hari Ini
+                                                </span>
+                                            @endif
+                                        </td>
 
-                                {{-- Baris 3 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-stone-500 font-medium">
-                                        16 Okt 2026
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 font-semibold text-gray-900">
-                                        Ust. Drs. H. M. Sholeh, M.Pd.I
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 text-gray-600">
-                                        Bpk. Rahmat Hidayat
-                                    </td>
-                                </tr>
+                                        <td class="px-4 py-3.5 font-semibold text-gray-900 sm:px-6 sm:py-4">
+                                            {{ $jadwal->imam }}
+                                        </td>
 
-                                {{-- Baris 4 (Pekan Ini) --}}
-                                <tr class="bg-amber-50/30 transition hover:bg-stone-50/80">
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-[#8c6b2d] font-bold">
-                                        23 Okt 2026 <span
-                                            class="text-[10px] uppercase bg-[#8c6b2d]/10 text-[#8c6b2d] px-1.5 py-0.5 rounded ml-1">Ini</span>
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 font-semibold text-gray-900">
-                                        Ust. H. Muhammad Ridwan
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 text-gray-600">
-                                        Bpk. M. Fajar Al-Fatih
-                                    </td>
-                                </tr>
-
-                                {{-- Baris 5 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-stone-500 font-medium">
-                                        30 Okt 2026
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 font-semibold text-gray-900">
-                                        Ust. H. Ahmad Fuzairi, S.Pd.I
-                                    </td>
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4 text-gray-600">
-                                        Bpk. Wahyu Prasetyo
-                                    </td>
-                                </tr>
-
+                                        <td class="px-4 py-3.5 text-gray-600 sm:px-6 sm:py-4">
+                                            {{ $jadwal->muadzin ?: 'Belum ditentukan' }}
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-10 text-center">
+                                            <p class="font-semibold text-gray-700">
+                                                Belum ada jadwal untuk {{ $namaBulan }} {{ $tahun }}.
+                                            </p>
+                                            <p class="mt-1 text-sm text-gray-500">
+                                                Silakan pilih bulan atau tahun lainnya.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>

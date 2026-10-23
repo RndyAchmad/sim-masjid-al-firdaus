@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
 use App\Services\MyQuranPrayerService;
+use App\Models\FridaySchedule;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -11,9 +12,60 @@ use Throwable;
 
 class JadwalController extends Controller
 {
-    public function indexJadwalImam()
+    public function indexJadwalImam(Request $request)
     {
-        return view('guest.jadwal.imam-jumat');
+        $bulan = (int) $request->query('bulan', now()->month);
+        $tahun = (int) $request->query('tahun', now()->year);
+
+        // Validasi bulan dan tahun
+        if ($bulan < 1 || $bulan > 12) {
+            $bulan = now()->month;
+        }
+
+        if ($tahun < 2020 || $tahun > 2100) {
+            $tahun = now()->year;
+        }
+
+        // Jadwal Jumat berdasarkan bulan dan tahun yang dipilih
+        $jadwalImam = FridaySchedule::query()
+            ->whereYear('date', $tahun)
+            ->whereMonth('date', $bulan)
+            ->orderBy('date')
+            ->get();
+
+        // Jadwal Jumat terdekat, termasuk hari ini jika tersedia
+        $jadwalTerdekat = FridaySchedule::query()
+            ->whereDate('date', '>=', today())
+            ->orderBy('date')
+            ->first();
+
+        // Daftar tahun untuk filter
+        $tahunTersedia = FridaySchedule::query()
+            ->selectRaw('YEAR(date) as tahun')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->pluck('tahun');
+
+        if (!$tahunTersedia->contains(now()->year)) {
+            $tahunTersedia->prepend(now()->year);
+        }
+
+        if (!$tahunTersedia->contains($tahun)) {
+            $tahunTersedia->push($tahun);
+        }
+
+        $namaBulan = Carbon::createFromDate($tahun, $bulan, 1)
+            ->locale('id')
+            ->translatedFormat('F');
+
+        return view('guest.jadwal.imam-jumat', compact(
+            'jadwalImam',
+            'jadwalTerdekat',
+            'bulan',
+            'tahun',
+            'tahunTersedia',
+            'namaBulan'
+        ));
     }
 
     public function indexJadwalSholat(

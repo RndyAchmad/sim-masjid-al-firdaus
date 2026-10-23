@@ -36,34 +36,12 @@ class JadwalController extends Controller
                 'integer',
                 'between:1,12',
             ],
-            'day' => [
-                'sometimes',
-                'required',
-                'integer',
-                'between:1,31',
-            ],
         ]);
 
+        // Periode untuk tabel jadwal bulanan.
         $year = (int) ($validated['year'] ?? $now->year);
         $month = (int) ($validated['month'] ?? $now->month);
-        $day = (int) ($validated['day'] ?? $now->day);
 
-        // Tolak tanggal tidak valid, misalnya 31 Februari.
-        try {
-            $selectedDate = Carbon::createSafe(
-                $year,
-                $month,
-                $day,
-                0,
-                0,
-                0,
-                'Asia/Jakarta'
-            );
-        } catch (Throwable $e) {
-            abort(422, 'Tanggal jadwal sholat tidak valid.');
-        }
-
-        $targetDate = $selectedDate->format('Y-m-d');
         $formattedMonth = sprintf('%02d', $month);
 
         $jadwalBulanan = [];
@@ -71,51 +49,60 @@ class JadwalController extends Controller
         $lokasi = 'Kab. Sidoarjo';
         $dataAvailable = false;
 
+        /*
+        |--------------------------------------------------------------------------
+        | 1. Ambil jadwal bulanan sesuai filter
+        |--------------------------------------------------------------------------
+        */
         try {
-            // Data bulanan memakai cache yang sama untuk semua halaman.
             $apiData = $prayerService->getMonthly($year, $month);
 
             if ($apiData) {
                 $jadwalBulanan = $apiData['jadwal'] ?? [];
                 $lokasi = $apiData['lokasi'] ?? $lokasi;
                 $dataAvailable = !empty($jadwalBulanan);
-
-                foreach ($jadwalBulanan as $item) {
-                    $itemDate = $this->extractDate($item);
-
-                    if ($itemDate === $targetDate) {
-                        $jadwalHariIni = $item;
-                        break;
-                    }
-                }
-            }
-
-            // Jangan pernah memakai baris pertama sebagai pengganti
-            // tanggal yang tidak ditemukan.
-            if (!$jadwalHariIni) {
-                $dailyData = $prayerService->getDaily($selectedDate);
-
-                if ($dailyData) {
-                    $dailySchedule = $dailyData['jadwal'] ?? [];
-
-                    if ($this->extractDate($dailySchedule) === $targetDate) {
-                        $jadwalHariIni = $dailySchedule;
-                        $lokasi = $dailyData['lokasi'] ?? $lokasi;
-                    }
-                }
             }
         } catch (Throwable $e) {
-            Log::error('Gagal memuat halaman jadwal sholat', [
-                'date' => $targetDate,
+            Log::error('Gagal memuat jadwal sholat bulanan', [
+                'year' => $year,
+                'month' => $month,
                 'error' => $e->getMessage(),
             ]);
         }
 
-        $isToday = $targetDate === $now->toDateString();
+        /*
+        |--------------------------------------------------------------------------
+        | 2. Ambil jadwal hari ini secara terpisah dari filter
+        |--------------------------------------------------------------------------
+        */
+        try {
+            $todayData = $prayerService->getDaily($now);
 
-        $activePrayer = (
-            $isToday && $jadwalHariIni
-        )
+            if ($todayData) {
+                $dailySchedule = $todayData['jadwal'] ?? null;
+                $todayDate = $now->toDateString();
+
+                if (
+                    is_array($dailySchedule) &&
+                    $this->extractDate($dailySchedule) === $todayDate
+                ) {
+                    $jadwalHariIni = $dailySchedule;
+                    $lokasi = $todayData['lokasi'] ?? $lokasi;
+                }
+            }
+        } catch (Throwable $e) {
+            Log::error('Gagal memuat jadwal sholat hari ini', [
+                'date' => $now->toDateString(),
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | 3. Tentukan waktu sholat aktif hanya untuk hari ini
+        |--------------------------------------------------------------------------
+        */
+        $activePrayer = $jadwalHariIni
             ? $this->determineActivePrayer(
                 $jadwalHariIni,
                 $now->format('H:i')
@@ -129,11 +116,12 @@ class JadwalController extends Controller
             'lokasi' => $lokasi,
             'year' => $year,
             'month' => $formattedMonth,
-            'day' => $day,
+            'day' => $now->day,
             'dataAvailable' => $dataAvailable,
-            'selectedDate' => $targetDate,
+            'selectedDate' => $now->toDateString(),
         ]);
     }
+
 
     /**
      * Mendapatkan tanggal ISO dari baris jadwal API.

@@ -77,47 +77,79 @@
             {{-- 2. TABEL SHOLAT BULANAN --}}
             <section class="space-y-6">
 
+
                 {{-- Form Filter Periode --}}
                 <div class="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
                     <div>
                         <span
-                            class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-2">
+                            class="mb-2 inline-flex items-center gap-2 rounded-full border border-[#6e5321] bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm">
                             Agenda Bulanan
                         </span>
+
                         <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                             Jadwal Sholat Sebulan
                         </h2>
                     </div>
 
-                    <form method="GET" action="{{ route('jadwal.sholat') }}" class="flex items-center gap-2">
-                        <select name="month" onchange="this.form.submit()"
+                    <form method="GET" action="{{ route('jadwal.sholat') }}" class="flex items-center gap-2"
+                        id="filterJadwalSholat">
+                        <select name="month" id="filterMonth"
                             class="rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm">
                             @foreach([
-                                    '01' => 'Januari',
-                                    '02' => 'Februari',
-                                    '03' => 'Maret',
-                                    '04' => 'April',
-                                    '05' => 'Mei',
-                                    '06' => 'Juni',
-                                    '07' => 'Juli',
-                                    '08' => 'Agustus',
-                                    '09' => 'September',
-                                    '10' => 'Oktober',
-                                    '11' => 'November',
-                                    '12' => 'Desember'
+                                    1 => 'Januari',
+                                    2 => 'Februari',
+                                    3 => 'Maret',
+                                    4 => 'April',
+                                    5 => 'Mei',
+                                    6 => 'Juni',
+                                    7 => 'Juli',
+                                    8 => 'Agustus',
+                                    9 => 'September',
+                                    10 => 'Oktober',
+                                    11 => 'November',
+                                    12 => 'Desember',
                                 ] as $num => $title)
-                                <option value="{{ $num }}" {{ $month == $num ? 'selected' : '' }}>{{ $title }}</option>
+                                <option value="{{ $num }}" {{ (int) $month === $num ? 'selected' : '' }}>
+                                    {{ $title }}
+                                </option>
                             @endforeach
                         </select>
 
-                        <select name="year" onchange="this.form.submit()"
+                        <select name="year" id="filterYear"
                             class="rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm">
-                            @foreach([date('Y') - 1, date('Y'), date('Y') + 1] as $y)
-                                <option value="{{ $y }}" {{ $year == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @foreach([
+                                    now('Asia/Jakarta')->year - 1,
+                                    now('Asia/Jakarta')->year,
+                                    now('Asia/Jakarta')->year + 1,
+                                ] as $y)
+                                <option value="{{ $y }}" {{ (int) $year === $y ? 'selected' : '' }}>
+                                    {{ $y }}
+                                </option>
                             @endforeach
                         </select>
                     </form>
                 </div>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('filterJadwalSholat');
+                        const month = document.getElementById('filterMonth');
+                        const year = document.getElementById('filterYear');
+
+                        if (!form || !month || !year) {
+                            return;
+                        }
+
+                        month.addEventListener('change', function () {
+                            form.requestSubmit();
+                        });
+
+                        year.addEventListener('change', function () {
+                            form.requestSubmit();
+                        });
+                    });
+                </script>
+
 
                 {{-- Tabel Data --}}
                 <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md">
@@ -143,46 +175,47 @@
 
                             <tbody class="divide-y divide-stone-100 font-mono">
                                 @forelse($jadwalBulanan as $item)
-                                                                    @php
-                                                                        $today = now('Asia/Jakarta')->toDateString();
+                                                            @php
+                                                                $today = now('Asia/Jakarta')->toDateString();
 
-                                                                        $itemDate = $item['date'] ?? null;
+                                                                $itemDate = $item['date'] ?? null;
 
-                                                                        // Jika API menggunakan format tanggal DD/MM/YYYY
-                                                                        if (empty($itemDate) && !empty($item['tanggal'])) {
-                                                                            if (preg_match('/(\d{2})\/(\d{2})\/(\d{4})/', $item['tanggal'], $matches)) {
-                                                                                $itemDate = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
-                                                                            }
-                                                                        }
+                                                                // Jika API menggunakan format tanggal DD/MM/YYYY
+                                                                if (empty($itemDate) && !empty($item['tanggal'])) {
+                                                                    if (preg_match('/(\d{2})\/(\d{2})\/(\d{4})/', $item['tanggal'], $matches)) {
+                                                                        $itemDate = $matches[3] . '-' . $matches[2] . '-' . $matches[1];
+                                                                    }
+                                                                }
 
-                                                                        $isToday = $itemDate === $today;
-                                                                    @endphp
-                                                                    <tr class="{{ $isToday
-                                                                                ? 'bg-amber-100 font-bold'
-                                                                                : 'bg-white hover:bg-stone-50'
-                                                                        }} transition-colors duration-200">
-                                                                        <td class="sticky left-0 z-10 whitespace-nowrap {{ $isToday
-                                                                                ? 'bg-amber-100 text-amber-900 border-l-4 border-amber-600'
-                                                                                : 'bg-white text-gray-900'
-                                                                            }} px-4 py-3.5 text-left font-sans font-semibold shadow-sm sm:px-6">
-                                                                            <div class="flex items-center gap-1.5">
-                                                                                @if($isToday)
-                                                                                    <span class="h-2 w-2 rounded-full bg-amber-600"></span>
-                                                                                @endif
-                                                                                <span>{{ $item['tanggal'] ?? '' }}</span>
-                                                                            </div>
-                                                                        </td>
+                                                                $isToday = $itemDate === $today;
+                                                            @endphp
+                                                            <tr class="{{ $isToday
+                                    ? 'bg-amber-100 font-bold'
+                                    : 'bg-white hover:bg-stone-50'
+                                                                                                    }} transition-colors duration-200">
+                                                                <td
+                                                                    class="sticky left-0 z-10 whitespace-nowrap {{ $isToday
+                                    ? 'bg-amber-100 text-amber-900 border-l-4 border-amber-600'
+                                    : 'bg-white text-gray-900'
+                                                                                                        }} px-4 py-3.5 text-left font-sans font-semibold shadow-sm sm:px-6">
+                                                                    <div class="flex items-center gap-1.5">
+                                                                        @if($isToday)
+                                                                            <span class="h-2 w-2 rounded-full bg-amber-600"></span>
+                                                                        @endif
+                                                                        <span>{{ $item['tanggal'] ?? '' }}</span>
+                                                                    </div>
+                                                                </td>
 
-                                                                        <td class="px-3 py-3.5 text-gray-400">{{ $item['imsak'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['subuh'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 text-gray-400">{{ $item['terbit'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 text-gray-600">{{ $item['dhuha'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 font-bold text-[#8c6b2d]">{{ $item['dzuhur'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['ashar'] ?? '-' }}</td>
-                                                                        <td class="px-3 py-3.5 font-bold text-emerald-700">{{ $item['maghrib'] ?? '-' }}
-                                                                        </td>
-                                                                        <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['isya'] ?? '-' }}</td>
-                                                                    </tr>
+                                                                <td class="px-3 py-3.5 text-gray-400">{{ $item['imsak'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['subuh'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 text-gray-400">{{ $item['terbit'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 text-gray-600">{{ $item['dhuha'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 font-bold text-[#8c6b2d]">{{ $item['dzuhur'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['ashar'] ?? '-' }}</td>
+                                                                <td class="px-3 py-3.5 font-bold text-emerald-700">{{ $item['maghrib'] ?? '-' }}
+                                                                </td>
+                                                                <td class="px-3 py-3.5 font-semibold text-gray-800">{{ $item['isya'] ?? '-' }}</td>
+                                                            </tr>
                                 @empty
                                     <tr>
                                         <td colspan="9" class="py-12 text-center text-gray-500 font-sans">

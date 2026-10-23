@@ -41,7 +41,7 @@
                 </div>
 
                 <div
-                    class="overflow-hidden rounded-2xl border border-[#8c6b2d]/30 bg-gradient-to-br from-white via-white to-[#F7F4EE] p-6 shadow-md sm:p-8">
+                    class="overflow-hidden rounded-2xl border border-[#8c6b2d]/30 bg-linear-to-br from-white via-white to-[#F7F4EE] p-6 shadow-md sm:p-8">
                     @if ($jadwalTerdekat)
                         <div class="grid grid-cols-1 items-center gap-6 md:grid-cols-3">
                             <div class="border-b border-stone-200 pb-4 md:border-b-0 md:border-r md:pb-0 md:pr-6">

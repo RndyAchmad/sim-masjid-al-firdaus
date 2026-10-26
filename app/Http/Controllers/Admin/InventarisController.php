@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Enums\InventoryCondition;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;

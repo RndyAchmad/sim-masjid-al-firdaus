@@ -180,7 +180,7 @@ class InventarisController extends Controller
                     'Kode inventaris gagal dibuat setelah beberapa percobaan.'
                 );
             }
-        } catch (\Throwable $exception) {
+        } catch (Throwable $exception) {
             // Hapus foto jika penyimpanan data gagal.
             if ($imagePath !== null) {
                 Storage::disk('public')->delete($imagePath);

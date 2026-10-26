@@ -1,301 +1,345 @@
 <x-layouts.guest>
-    {{-- Header Banner Halaman Laporan Inventaris --}}
-    <div
-        class="relative bg-linear-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20 border-b border-gray-800">
+    <div class="relative border-b border-gray-800 bg-linear-to-b from-black via-[#080806] to-[#121212] py-12 sm:py-16 md:py-20">
         <div class="mx-auto max-w-7xl px-4 text-center sm:px-6 lg:px-8">
             <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#d8b76a] sm:text-xs">
                 Aset & Fasilitas Masjid
             </span>
-            <h1
-                class="mt-2 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl">
+
+            <h1 class="mt-3 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl">
                 Laporan Inventaris Masjid
             </h1>
-            <p class="mt-2 text-xs text-gray-400 sm:mt-3 sm:text-sm md:text-base">
-                Daftar sarana, prasarana, dan fasilitas barang milik Masjid Al-Firdaus
+
+            <p class="mx-auto mt-3 max-w-2xl text-sm leading-relaxed text-gray-400 sm:text-base">
+                Informasi sarana, prasarana, dan kondisi barang milik Masjid Al-Firdaus.
             </p>
-            <div
-                class="mx-auto mt-4 h-px w-16 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent sm:mt-6 sm:w-20">
-            </div>
+
+            <div class="mx-auto mt-6 h-px w-20 bg-linear-to-r from-transparent via-[#d8b76a] to-transparent"></div>
         </div>
     </div>
 
-    {{-- Main Content Section (Background Krem Sejuk / Off-White) --}}
-    <div class="bg-[#FBF9F5] py-12 sm:py-16 lg:py-20">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-12 sm:space-y-16">
+    <div class="min-h-screen bg-[#FBF9F5] py-10 sm:py-14 lg:py-16">
+        <div class="mx-auto max-w-7xl space-y-10 px-4 sm:px-6 lg:px-8">
 
-            {{-- 1. SECTION RINGKASAN ASET INVENTARIS --}}
+            {{-- Ringkasan Inventaris --}}
             <section>
-                {{-- Header Section (Rata Tengah) --}}
-                <div class="mb-8 text-center max-w-3xl mx-auto">
-                    <span
-                        class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-3">
+                <div class="mx-auto mb-7 max-w-3xl text-center">
+                    <span class="mb-3 inline-flex rounded-full border border-[#6e5321] bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white">
                         Pemeliharaan & Pengelolaan
                     </span>
-                    <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl lg:text-4xl">
+
+                    <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                         Ringkasan Kondisi Barang
                     </h2>
-                    <p class="mt-2 text-xs text-gray-600 sm:text-sm md:text-base">
-                        Statistik ketersediaan dan status kelayakan fasilitas pendukung jamaah.
+
+                    <p class="mt-2 text-sm text-gray-600">
+                        Rekapitulasi kondisi inventaris berdasarkan data yang tercatat.
                     </p>
                 </div>
 
-                {{-- Card Grid Ringkasan Barang --}}
-                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
 
-                    {{-- Card 1: Total Jenis Barang --}}
-                    <div
-                        class="rounded-2xl border border-stone-200 bg-white p-6 shadow-md transition-all duration-300 hover:border-[#8c6b2d] hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Total Jenis
-                                Barang</span>
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-[#8c6b2d]/10 text-[#8c6b2d] border border-[#8c6b2d]/20">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    {{-- Total Inventaris --}}
+                    <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                Total Jenis Barang
+                            </span>
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#8c6b2d]/20 bg-[#8c6b2d]/10 text-[#8c6b2d]">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
                                 </svg>
                             </div>
                         </div>
-                        <p class="mt-4 font-mono text-2xl font-bold text-gray-900 sm:text-3xl">
-                            48 <span class="text-xs font-normal text-gray-500 font-sans">Item</span>
+
+                        <p class="mt-5 font-mono text-3xl font-bold text-gray-900">
+                            {{ number_format($totalInventaris, 0, ',', '.') }}
+                            <span class="font-sans text-xs font-normal text-gray-500">jenis</span>
                         </p>
-                        <p class="mt-2 text-xs text-gray-500 font-medium">
-                            Barang terdata di sistem
-                        </p>
+
+                        <p class="mt-2 text-xs text-gray-500">Barang terdata di sistem</p>
                     </div>
 
-                    {{-- Card 2: Kondisi Baik --}}
-                    <div
-                        class="rounded-2xl border border-stone-200 bg-white p-6 shadow-md transition-all duration-300 hover:border-emerald-500 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Kondisi Baik</span>
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    {{-- Kondisi Baik --}}
+                    <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                Kondisi Baik
+                            </span>
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-600">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
-                        <p class="mt-4 font-mono text-2xl font-bold text-gray-900 sm:text-3xl">
-                            42 <span class="text-xs font-normal text-gray-500 font-sans">Item</span>
+
+                        <p class="mt-5 font-mono text-3xl font-bold text-gray-900">
+                            {{ number_format($totalBaik, 0, ',', '.') }}
+                            <span class="font-sans text-xs font-normal text-gray-500">jenis</span>
                         </p>
-                        <p class="mt-2 text-xs text-emerald-600 font-medium">
-                            Berfungsi secara optimal
-                        </p>
+
+                        <p class="mt-2 text-xs text-emerald-600">Dalam kondisi baik</p>
                     </div>
 
-                    {{-- Card 3: Perlu Perbaikan --}}
-                    <div
-                        class="rounded-2xl border border-stone-200 bg-white p-6 shadow-md transition-all duration-300 hover:border-amber-500 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Perlu
-                                Perbaikan</span>
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 border border-amber-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    {{-- Perlu Perbaikan --}}
+                    <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                Perlu Perbaikan
+                            </span>
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-blue-100 bg-blue-50 text-blue-600">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M14.7 6.3a4 4 0 00-5.6 5.6l-5.4 5.4a2 2 0 102.8 2.8l5.4-5.4a4 4 0 005.6-5.6l-2.5 2.5-2.8-2.8 2.5-2.5z"/>
                                 </svg>
                             </div>
                         </div>
-                        <p class="mt-4 font-mono text-2xl font-bold text-gray-900 sm:text-3xl">
-                            4 <span class="text-xs font-normal text-gray-500 font-sans">Item</span>
+
+                        <p class="mt-5 font-mono text-3xl font-bold text-gray-900">
+                            {{ number_format($totalPerbaikan, 0, ',', '.') }}
+                            <span class="font-sans text-xs font-normal text-gray-500">jenis</span>
                         </p>
-                        <p class="mt-2 text-xs text-amber-600 font-medium">
-                            Membutuhkan pemeliharaan
-                        </p>
+
+                        <p class="mt-2 text-xs text-blue-600">Memerlukan pemeliharaan</p>
                     </div>
 
-                    {{-- Card 4: Rusak / Ganti --}}
-                    <div
-                        class="rounded-2xl border border-stone-200 bg-white p-6 shadow-md transition-all duration-300 hover:border-rose-500 hover:shadow-xl">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">Rusak / Ganti</span>
-                            <div
-                                class="flex h-10 w-10 items-center justify-center rounded-xl bg-rose-50 text-rose-600 border border-rose-100">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    {{-- Rusak atau Hilang --}}
+                    <div class="rounded-2xl border border-stone-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:p-6">
+                        <div class="flex items-center justify-between gap-3">
+                            <span class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                Rusak / Hilang
+                            </span>
+
+                            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-600">
+                                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"
+                                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
                         </div>
-                        <p class="mt-4 font-mono text-2xl font-bold text-gray-900 sm:text-3xl">
-                            2 <span class="text-xs font-normal text-gray-500 font-sans">Item</span>
-                        </p>
-                        <p class="mt-2 text-xs text-rose-600 font-medium">
-                            Dalam proses pengadaan ulang
-                        </p>
-                    </div>
 
+                        <p class="mt-5 font-mono text-3xl font-bold text-gray-900">
+                            {{ number_format($totalRusakHilang, 0, ',', '.') }}
+                            <span class="font-sans text-xs font-normal text-gray-500">jenis</span>
+                        </p>
+
+                        <p class="mt-2 text-xs text-rose-600">Perlu penanganan lebih lanjut</p>
+                    </div>
                 </div>
             </section>
 
-            {{-- Separator Pembatas --}}
-            <div class="border-t border-stone-200/80"></div>
+            <div class="border-t border-stone-200"></div>
 
-            {{-- 2. SECTION TABEL DAFTAR INVENTARIS --}}
+            {{-- Daftar Inventaris --}}
             <section>
-                {{-- Header & Filter --}}
-                <div class="mb-8 flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
-                    <div>
-                        <span
-                            class="inline-flex items-center gap-2 rounded-full bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white shadow-sm border border-[#6e5321] mb-2">
-                            Daftar Fasilitas
-                        </span>
-                        <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                            Daftar Inventaris Terdata
-                        </h2>
-                    </div>
+                <div class="mb-6">
+                    <span class="mb-2 inline-flex rounded-full border border-[#6e5321] bg-[#8c6b2d] px-3.5 py-1 text-xs font-semibold text-white">
+                        Daftar Fasilitas
+                    </span>
 
-                    {{-- Filter Kategori --}}
-                    <div class="flex items-center gap-2">
-                        <select
-                            class="rounded-xl border border-stone-200 bg-white px-3.5 py-2 text-xs font-semibold text-gray-700 shadow-sm focus:border-[#8c6b2d] focus:outline-none focus:ring-1 focus:ring-[#8c6b2d] sm:text-sm">
-                            <option value="">Semua Kategori</option>
-                            <option value="elektronik">Elektronik & Sound System</option>
-                            <option value="perlengkapan">Perlengkapan Salat & Karpet</option>
-                            <option value="furnitur">Mebel & MMT</option>
-                            <option value="kebersihan">Peralatan Kebersihan</option>
-                        </select>
-                    </div>
+                    <h2 class="font-serif text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+                        Daftar Inventaris Terdata
+                    </h2>
+
+                    <p class="mt-2 text-sm text-gray-600">
+                        Lihat informasi barang, jumlah, dan kondisi inventaris masjid.
+                    </p>
                 </div>
 
-                {{-- Tabel Inventaris Responsif (4 Kolom Utama) --}}
-                <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-md">
+                {{-- Pencarian dan Filter --}}
+                <form action="{{ url()->current() }}" method="GET"
+                    class="mb-5 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5">
+
+                    <div class="grid grid-cols-1 gap-3 md:grid-cols-[minmax(0,1fr)_220px_auto_auto]">
+
+                        <div>
+                            <label for="search" class="mb-1.5 block text-xs font-semibold text-gray-700">
+                                Cari Inventaris
+                            </label>
+
+                            <div class="relative">
+                                <svg class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="m21 21-4.35-4.35M19 10.5a8.5 8.5 0 11-17 0 8.5 8.5 0 0117 0z"/>
+                                </svg>
+
+                                <input
+                                    type="text"
+                                    id="search"
+                                    name="search"
+                                    value="{{ request('search') }}"
+                                    placeholder="Nama atau kode barang..."
+                                    class="w-full rounded-xl border border-stone-200 py-2.5 pl-10 pr-3 text-sm text-gray-800 placeholder:text-gray-400 focus:border-[#8c6b2d] focus:outline-none focus:ring-2 focus:ring-[#8c6b2d]/20"
+                                >
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="condition" class="mb-1.5 block text-xs font-semibold text-gray-700">
+                                Kondisi Barang
+                            </label>
+
+                            <select
+                                id="condition"
+                                name="condition"
+                                class="w-full rounded-xl border border-stone-200 bg-white px-3 py-2.5 text-sm text-gray-700 focus:border-[#8c6b2d] focus:outline-none focus:ring-2 focus:ring-[#8c6b2d]/20"
+                            >
+                                <option value="">Semua Kondisi</option>
+                                <option value="Baik" @selected(request('condition') === 'Baik')>Baik</option>
+                                <option value="Repair" @selected(request('condition') === 'Repair')>Repair</option>
+                                <option value="Rusak" @selected(request('condition') === 'Rusak')>Rusak</option>
+                                <option value="Hilang" @selected(request('condition') === 'Hilang')>Hilang</option>
+                            </select>
+                        </div>
+
+                        <div class="flex items-end">
+                            <button type="submit"
+                                class="w-full rounded-xl bg-[#8c6b2d] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#6e5321]">
+                                Cari
+                            </button>
+                        </div>
+
+                        <div class="flex items-end">
+                            <a href="{{ url()->current() }}"
+                                class="inline-flex w-full items-center justify-center rounded-xl border border-stone-200 px-5 py-2.5 text-sm font-semibold text-gray-600 transition hover:bg-stone-50 md:w-auto">
+                                Reset
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+                {{-- Tabel Responsif --}}
+                <div class="overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm">
                     <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs sm:text-sm text-gray-600">
-                            <thead
-                                class="bg-stone-100 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-gray-700 border-b border-stone-200">
+                        <table class="w-full min-w-180 text-left text-sm text-gray-600">
+                            <thead class="border-b border-stone-200 bg-stone-100 text-xs font-bold uppercase tracking-wider text-gray-700">
                                 <tr>
-                                    <th class="px-4 py-3.5 sm:px-6 sm:py-4">Nama Barang & Merk</th>
-                                    <th class="px-4 py-3.5 sm:px-6 sm:py-4">Kategori</th>
-                                    <th class="px-4 py-3.5 sm:px-6 sm:py-4">Jumlah</th>
-                                    <th class="px-4 py-3.5 sm:px-6 sm:py-4 text-center">Kondisi</th>
+                                    <th class="px-5 py-4">Barang</th>
+                                    <th class="px-5 py-4">Kode Inventaris</th>
+                                    <th class="px-5 py-4">Jumlah</th>
+                                    <th class="px-5 py-4">Kondisi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-stone-100 bg-white font-sans">
 
-                                {{-- Item 1 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4">
-                                        <p class="font-semibold text-gray-900">Sound System & Amplifier Wireless</p>
-                                        <p class="text-xs text-gray-400">Merk: TOA ZA-2128MW</p>
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-xs font-medium text-gray-600">
-                                        Elektronik & Sound
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 font-mono font-bold text-gray-800">
-                                        2 Unit
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
-                                            Baik
-                                        </span>
-                                    </td>
-                                </tr>
+                            <tbody class="divide-y divide-stone-100">
+                                @forelse ($inventories as $inventory)
+                                    @php
+                                        $condition = $inventory->condition instanceof \App\Enums\InventoryCondition
+                                            ? $inventory->condition->value
+                                            : $inventory->condition;
 
-                                {{-- Item 2 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4">
-                                        <p class="font-semibold text-gray-900">Karpet Sajadah Utama (Satu Shaf)</p>
-                                        <p class="text-xs text-gray-400">Merk: Tebal Premium Turkey Green 6m</p>
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-xs font-medium text-gray-600">
-                                        Perlengkapan Salat
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 font-mono font-bold text-gray-800">
-                                        12 Roll
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
-                                            Baik
-                                        </span>
-                                    </td>
-                                </tr>
+                                        $conditionStyle = match ($condition) {
+                                            'Baik' => 'border-emerald-200 bg-emerald-50 text-emerald-700',
+                                            'Repair' => 'border-blue-200 bg-blue-50 text-blue-700',
+                                            'Rusak' => 'border-rose-200 bg-rose-50 text-rose-700',
+                                            'Hilang' => 'border-gray-200 bg-gray-100 text-gray-700',
+                                            default => 'border-stone-200 bg-stone-50 text-gray-600',
+                                        };
+                                    @endphp
 
-                                {{-- Item 3 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4">
-                                        <p class="font-semibold text-gray-900">Air Conditioner (AC) Standing 5 PK</p>
-                                        <p class="text-xs text-gray-400">Merk: Daikin Inverter</p>
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-xs font-medium text-gray-600">
-                                        Elektronik & Pendingin
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 font-mono font-bold text-gray-800">
-                                        4 Unit
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-0.5 text-[11px] font-bold text-amber-700 border border-amber-200">
-                                            Perlu Service
-                                        </span>
-                                    </td>
-                                </tr>
+                                    <tr class="transition hover:bg-stone-50">
+                                        <td class="px-5 py-4">
+                                            <div class="flex min-w-0 items-center gap-3">
+                                                @if ($inventory->image)
+                                                    <img
+                                                        src="{{ asset('storage/' . ltrim($inventory->image, '/')) }}"
+                                                        alt="{{ $inventory->name }}"
+                                                        loading="lazy"
+                                                        class="h-12 w-12 shrink-0 rounded-xl border border-stone-200 object-cover"
+                                                    >
+                                                @else
+                                                    <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-stone-200 bg-stone-100 text-stone-400">
+                                                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"
+                                                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                                        </svg>
+                                                    </div>
+                                                @endif
 
-                                {{-- Item 4 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4">
-                                        <p class="font-semibold text-gray-900">Vacuum Cleaner Basah & Kering</p>
-                                        <p class="text-xs text-gray-400">Merk: Karcher WD 3</p>
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-xs font-medium text-gray-600">
-                                        Peralatan Kebersihan
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 font-mono font-bold text-gray-800">
-                                        2 Unit
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 border border-emerald-200">
-                                            Baik
-                                        </span>
-                                    </td>
-                                </tr>
+                                                <div class="min-w-0">
+                                                    <p class="font-semibold text-gray-900">
+                                                        {{ $inventory->name }}
+                                                    </p>
 
-                                {{-- Item 5 --}}
-                                <tr class="transition hover:bg-stone-50/80">
-                                    <td class="px-4 py-3.5 sm:px-6 sm:py-4">
-                                        <p class="font-semibold text-gray-900">Microphone Clip-On Wireless</p>
-                                        <p class="text-xs text-gray-400">Merk: Shure SVX288</p>
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-xs font-medium text-gray-600">
-                                        Elektronik & Sound
-                                    </td>
-                                    <td
-                                        class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 font-mono font-bold text-gray-800">
-                                        2 Set
-                                    </td>
-                                    <td class="whitespace-nowrap px-4 py-3.5 sm:px-6 sm:py-4 text-center">
-                                        <span
-                                            class="inline-flex items-center rounded-full bg-rose-50 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 border border-rose-200">
-                                            Rusak
-                                        </span>
-                                    </td>
-                                </tr>
+                                                    @if ($inventory->description)
+                                                        <p class="mt-1 max-w-sm truncate text-xs text-gray-500">
+                                                            {{ $inventory->description }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </td>
 
+                                        <td class="whitespace-nowrap px-5 py-4">
+                                            <span class="font-mono text-xs font-semibold text-gray-700">
+                                                {{ $inventory->code ?: '-' }}
+                                            </span>
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-5 py-4">
+                                            <span class="font-semibold text-gray-800">
+                                                {{ number_format($inventory->quantity, 0, ',', '.') }}
+                                            </span>
+                                            <span class="text-gray-500">
+                                                {{ $inventory->unit }}
+                                            </span>
+                                        </td>
+
+                                        <td class="whitespace-nowrap px-5 py-4">
+                                            <span class="inline-flex items-center rounded-full border px-3 py-1 text-xs font-bold {{ $conditionStyle }}">
+                                                {{ $condition ?: 'Tidak diketahui' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-5 py-14 text-center">
+                                            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-stone-100 text-stone-400">
+                                                <svg class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7"
+                                                        d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                                                </svg>
+                                            </div>
+
+                                            <p class="mt-4 font-semibold text-gray-800">
+                                                Inventaris tidak ditemukan
+                                            </p>
+
+                                            <p class="mt-1 text-sm text-gray-500">
+                                                Coba ubah kata kunci pencarian atau filter kondisi barang.
+                                            </p>
+                                        </td>
+                                    </tr>
+                                @endforelse
                             </tbody>
                         </table>
                     </div>
+
+                    {{-- Pagination --}}
+                    @if ($inventories->hasPages() || $inventories->total() > 0)
+                        <div class="flex flex-col gap-3 border-t border-stone-200 bg-white px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+                            <p class="text-xs text-gray-500 sm:text-sm">
+                                Menampilkan
+                                <span class="font-semibold text-gray-800">{{ $inventories->firstItem() ?? 0 }}</span>
+                                –
+                                <span class="font-semibold text-gray-800">{{ $inventories->lastItem() ?? 0 }}</span>
+                                dari
+                                <span class="font-semibold text-gray-800">{{ $inventories->total() }}</span>
+                                data inventaris
+                            </p>
+
+                            <div class="overflow-x-auto">
+                                {{ $inventories->onEachSide(1)->links() }}
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </section>
-
         </div>
     </div>
 </x-layouts.guest>

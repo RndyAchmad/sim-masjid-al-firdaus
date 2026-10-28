@@ -129,6 +129,29 @@
                     <span class="break-all">{{ $email }}</span>
                 </div>
             </div>
+            {{-- Edit Profile --}}
+            <div class="border-t border-gray-100 p-2">
+                <a
+                    href="{{ route('admin.account.edit') }}"
+                    @click="profileOpen = false"
+                    class="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-700 transition hover:bg-[#c49c4d]/10 hover:text-[#a8833e]"
+                >
+                    <svg
+                        class="h-5 w-5 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="1.8"
+                            d="M16.862 4.487l1.687-1.688a2.25 2.25 0 013.182 3.182l-9.193 9.193a4.5 4.5 0 01-1.897 1.13L7.5 17.25l.946-3.141a4.5 4.5 0 011.13-1.897l7.286-7.725zM19.5 7.125L16.875 4.5M19.5 13.5v5.25A2.25 2.25 0 0117.25 21H5.25A2.25 2.25 0 013 18.75V6.75A2.25 2.25 0 015.25 4.5h5.25"
+                        />
+                    </svg>
+                    <span>Edit Profil</span>
+                </a>
+            </div>
             {{-- Logout --}}
             <div class="border-t border-gray-100 p-2">
                 <form class="logoutForm" action="{{ route('logout') }}" method="POST">

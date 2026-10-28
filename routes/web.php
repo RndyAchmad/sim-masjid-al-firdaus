@@ -13,6 +13,7 @@ use App\Http\Controllers\AuthController;
 
 // Admin Controllers
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\AccountProfileController;
 use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidController;
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\LaporanKeuanganController as AdminLaporanKeuanganController;
@@ -56,6 +57,10 @@ Route::post('/logout', [AuthController::class, 'logout'])
 
 // ADMIN ROUTES
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+
+    // EDIT ACCOUNT
+    Route::get('/account/profile', [AccountProfileController::class,'edit',])->name('account.edit');
+    Route::put('/account/profile', [AccountProfileController::class, 'update',])->name('account.update');
 
     // DASHBOARD: SEMUA ROLE
     Route::get('/dashboard', [DashboardController::class, 'index',])->name('dashboard');

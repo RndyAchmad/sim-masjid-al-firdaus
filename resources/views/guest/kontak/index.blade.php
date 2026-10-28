@@ -68,24 +68,51 @@
                         <div class="border-t border-stone-100"></div>
 
                         {{-- WhatsApp / Telepon --}}
+
+                        @php
+                            $nomorKontak = $profile?->contact_number;
+                            $nomorWhatsApp = $nomorKontak
+                                ? preg_replace('/\D/', '', $nomorKontak)
+                                : null;
+
+                            if ($nomorWhatsApp && str_starts_with($nomorWhatsApp, '0')) {
+                                $nomorWhatsApp = '62' . substr($nomorWhatsApp, 1);
+                            } elseif ($nomorWhatsApp && str_starts_with($nomorWhatsApp, '8')) {
+                                $nomorWhatsApp = '62' . $nomorWhatsApp;
+                            }
+                        @endphp
+
                         <div class="flex items-start gap-4">
                             <div
-                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100">
+                                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-600">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 5a2 2 0 012-2h32a2 2 0 012 2v2a2 2 0 01-2 2H5a2 2 0 01-2-2V5z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                                        d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" />
                                 </svg>
                             </div>
+
                             <div>
-                                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500">WhatsApp Call
-                                    Center / Takmir</h3>
-                                <p class="mt-1 font-mono text-xs sm:text-sm font-bold text-gray-900">
-                                    +62 812-3456-7890
-                                </p>
-                                <p class="text-[11px] text-gray-500">Fast response via WhatsApp Chat</p>
+                                <h3 class="text-xs font-bold uppercase tracking-wider text-gray-500">
+                                    WhatsApp Call Center / Takmir
+                                </h3>
+
+                                @if ($nomorKontak)
+                                    <p class="mt-1 font-mono text-xs font-bold text-gray-900 sm:text-sm">
+                                        {{ $nomorKontak }}
+                                    </p>
+
+                                    @if ($nomorWhatsApp)
+                                        <a href="https://wa.me/{{ $nomorWhatsApp }}" target="_blank" rel="noopener noreferrer"
+                                            class="mt-1 inline-block text-xs font-medium text-emerald-600 hover:text-emerald-700">
+                                            Hubungi melalui WhatsApp
+                                        </a>
+                                    @endif
+                                @else
+                                    <p class="mt-1 text-xs text-gray-500 sm:text-sm">
+                                        Nomor kontak belum tersedia.
+                                    </p>
+                                @endif
                             </div>
                         </div>
 

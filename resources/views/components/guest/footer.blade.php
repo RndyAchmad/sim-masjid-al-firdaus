@@ -26,14 +26,17 @@
             <div>
                 <h3 class="mb-6 font-sans text-sm font-semibold uppercase tracking-wider text-white">Tautan Cepat</h3>
                 <ul class="space-y-4">
-                    <li><a href="{{ route('beranda') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Beranda</a></li>
-                    <li><a href="{{ route('profile') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Profil Kami</a>
+                    <li><a href="{{ route('beranda') }}"
+                            class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Beranda</a></li>
+                    <li><a href="{{ route('profile') }}"
+                            class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Profil Kami</a>
                     </li>
                     <li><a href="/kegiatan" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
                             Kegiatan</a></li>
-                    <li><a href="{{ route('articles.index') }}" class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
+                    <li><a href="{{ route('articles.index') }}"
+                            class="text-sm text-gray-400 transition hover:text-[#c49c4d]">
                             Artikel Keislaman</a></li>
-                    <li><a href="/laporan-keuangan"
+                    <li><a href="{{ route('laporan.operasional') }}"
                             class="text-sm text-gray-400 transition hover:text-[#c49c4d]">Laporan Keuangan</a></li>
                 </ul>
             </div>
@@ -61,14 +64,36 @@
                         <a href="mailto:info@masjidalfirdaus.com"
                             class="transition hover:text-[#c49c4d]">info@masjidalfirdaus.com</a>
                     </li>
+
+                    @php
+                        $nomorFooter = \App\Models\MosqueProfile::query()->value('contact_number');
+
+                        $nomorFooterWa = $nomorFooter
+                            ? preg_replace('/\D/', '', $nomorFooter)
+                            : null;
+
+                        if ($nomorFooterWa && str_starts_with($nomorFooterWa, '0')) {
+                            $nomorFooterWa = '62' . substr($nomorFooterWa, 1);
+                        } elseif ($nomorFooterWa && str_starts_with($nomorFooterWa, '8')) {
+                            $nomorFooterWa = '62' . $nomorFooterWa;
+                        }
+                    @endphp
+
                     <li class="flex items-center gap-3">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0 text-[#c49c4d]" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                         </svg>
-                        <a href="https://wa.me/6281234567890" target="_blank"
-                            class="transition hover:text-[#c49c4d]">+62 812-3456-7890</a>
+
+                        @if ($nomorFooter && $nomorFooterWa)
+                            <a href="https://wa.me/{{ $nomorFooterWa }}" target="_blank" rel="noopener noreferrer"
+                                class="transition hover:text-[#c49c4d]">
+                                {{ $nomorFooter }}
+                            </a>
+                        @else
+                            <span>Nomor kontak belum tersedia.</span>
+                        @endif
                     </li>
                 </ul>
             </div>

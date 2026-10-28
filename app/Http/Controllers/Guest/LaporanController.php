@@ -3,14 +3,129 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Http\Controllers\Controller;
+use App\Models\FinancialReport;
 use App\Models\Inventory;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
-    public function indexOperasional()
+
+    public function indexOperasional(Request $request)
     {
-        return view('guest.laporan.operasional');
+        $validated = $request->validate([
+            'bulan' => ['nullable', 'integer', 'between:1,12'],
+            'tahun' => ['nullable', 'integer', 'between:2000,2100'],
+        ]);
+
+        $sekarang = Carbon::today();
+
+        $bulan = (int) ($validated['bulan'] ?? $sekarang->month);
+        $tahun = (int) ($validated['tahun'] ?? $sekarang->year);
+
+        $awalBulan = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $akhirBulan = $awalBulan->copy()->endOfMonth();
+
+        $tanggalHariIni = $sekarang->toDateString();
+
+        // Periksa apakah periode yang dipilih belum dimulai.
+        $periodeBelumBerjalan = $awalBulan->greaterThan(
+            $sekarang->copy()->startOfMonth()
+        );
+
+        // Batasi perhitungan sampai hari ini untuk bulan berjalan.
+        $batasTanggal = $akhirBulan->greaterThan($sekarang)
+            ? $sekarang->copy()
+            : $akhirBulan->copy();
+
+        // Saldo awal periode dari seluruh transaksi sebelum bulan terpilih.
+        $pemasukanSebelumnya = FinancialReport::query()
+            ->where('type', 'income')
+            ->whereDate('transaction_date', '<', $awalBulan->toDateString())
+            ->sum('amount');
+
+        $pengeluaranSebelumnya = FinancialReport::query()
+            ->where('type', 'expense')
+            ->whereDate('transaction_date', '<', $awalBulan->toDateString())
+            ->sum('amount');
+
+        $saldoAwalPeriode = $pemasukanSebelumnya - $pengeluaranSebelumnya;
+
+        // Total pemasukan pada periode terpilih, maksimal sampai hari ini.
+        $totalPemasukan = FinancialReport::query()
+            ->where('type', 'income')
+            ->whereBetween('transaction_date', [
+                $awalBulan->toDateString(),
+                $batasTanggal->toDateString(),
+            ])
+            ->sum('amount');
+
+        // Total pengeluaran pada periode terpilih, maksimal sampai hari ini.
+        $totalPengeluaran = FinancialReport::query()
+            ->where('type', 'expense')
+            ->whereBetween('transaction_date', [
+                $awalBulan->toDateString(),
+                $batasTanggal->toDateString(),
+            ])
+            ->sum('amount');
+
+        // Selisih pemasukan dan pengeluaran pada periode terpilih.
+        $selisihPeriode = $totalPemasukan - $totalPengeluaran;
+
+        // Saldo akhir berdasarkan transaksi yang tercatat sampai batas periode.
+        $saldoAkhirPeriode = $saldoAwalPeriode + $selisihPeriode;
+
+        // Saldo kas keseluruhan sampai hari ini.
+        $pemasukanKumulatif = FinancialReport::query()
+            ->where('type', 'income')
+            ->whereDate('transaction_date', '<=', $tanggalHariIni)
+            ->sum('amount');
+
+        $pengeluaranKumulatif = FinancialReport::query()
+            ->where('type', 'expense')
+            ->whereDate('transaction_date', '<=', $tanggalHariIni)
+            ->sum('amount');
+
+        $saldoKas = $pemasukanKumulatif - $pengeluaranKumulatif;
+
+        // Daftar tahun yang tersedia untuk filter.
+        $daftarTahun = FinancialReport::query()
+            ->selectRaw('YEAR(transaction_date) as tahun')
+            ->whereNotNull('transaction_date')
+            ->distinct()
+            ->orderByDesc('tahun')
+            ->pluck('tahun')
+            ->map(fn($item) => (int) $item)
+            ->push((int) $sekarang->year)
+            ->push($tahun)
+            ->unique()
+            ->sortDesc()
+            ->values();
+
+        // Ambil transaksi yang sudah terjadi pada periode terpilih.
+        $transaksi = FinancialReport::query()
+            ->whereBetween('transaction_date', [
+                $awalBulan->toDateString(),
+                $batasTanggal->toDateString(),
+            ])
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('guest.laporan.operasional', compact(
+            'bulan',
+            'tahun',
+            'daftarTahun',
+            'totalPemasukan',
+            'totalPengeluaran',
+            'selisihPeriode',
+            'saldoKas',
+            'saldoAwalPeriode',
+            'saldoAkhirPeriode',
+            'periodeBelumBerjalan',
+            'transaksi'
+        ));
     }
 
     public function indexPembangunan()

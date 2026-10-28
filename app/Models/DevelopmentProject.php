@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'target_amount',
     'start_date',
     'end_date',
-    'completed_at',
     'status',
     'description',
     'image',
@@ -26,7 +25,6 @@ class DevelopmentProject extends Model
             'target_amount' => 'decimal:2',
             'start_date' => 'date',
             'end_date' => 'date',
-            'completed_at' => 'datetime',
             'status' => DevelopmentProjectStatus::class,
         ];
     }

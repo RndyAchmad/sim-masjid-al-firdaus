@@ -15,7 +15,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'amount',
     'purpose',
     'proof_file',
-    'created_by',
 ])]
 class DevelopmentTransaction extends Model
 {

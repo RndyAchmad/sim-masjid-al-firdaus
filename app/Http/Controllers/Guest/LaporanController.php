@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Guest;
 
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
+use App\Models\DevelopmentTransaction;
 use App\Models\FinancialReport;
 use App\Models\Inventory;
 use Carbon\Carbon;
@@ -10,7 +12,6 @@ use Illuminate\Http\Request;
 
 class LaporanController extends Controller
 {
-
     public function indexOperasional(Request $request)
     {
         $validated = $request->validate([
@@ -95,7 +96,7 @@ class LaporanController extends Controller
             ->distinct()
             ->orderByDesc('tahun')
             ->pluck('tahun')
-            ->map(fn($item) => (int) $item)
+            ->map(fn ($item) => (int) $item)
             ->push((int) $sekarang->year)
             ->push($tahun)
             ->unique()
@@ -128,11 +129,57 @@ class LaporanController extends Controller
         ));
     }
 
-    public function indexPembangunan()
+    public function indexPembangunan(Request $request)
     {
-        return view('guest.laporan.pembangunan');
-    }
+        $validated = $request->validate([
+            'bulan' => ['nullable', 'date_format:Y-m'],
+        ]);
 
+        $bulan = $validated['bulan'] ?? now()->format('Y-m');
+        $tanggalBulan = Carbon::createFromFormat('!Y-m', $bulan);
+        $tanggalAwal = $tanggalBulan->copy()->startOfMonth()->toDateString();
+        $tanggalAkhir = $tanggalBulan->copy()->endOfMonth()->toDateString();
+        $namaBulan = $tanggalBulan->copy()->locale('id')->translatedFormat('F Y');
+
+        $ringkasanKas = DevelopmentTransaction::query()
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) as total_pemasukan, '
+                .'COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) as total_pengeluaran',
+                [TransactionType::INCOME->value, TransactionType::EXPENSE->value]
+            )
+            ->first();
+
+        $ringkasanBulan = DevelopmentTransaction::query()
+            ->whereBetween('transaction_date', [$tanggalAwal, $tanggalAkhir])
+            ->selectRaw(
+                'COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) as total_pemasukan, '
+                .'COALESCE(SUM(CASE WHEN type = ? THEN amount ELSE 0 END), 0) as total_pengeluaran',
+                [TransactionType::INCOME->value, TransactionType::EXPENSE->value]
+            )
+            ->first();
+
+        $pemasukanBulan = (float) ($ringkasanBulan->total_pemasukan ?? 0);
+        $pengeluaranBulan = (float) ($ringkasanBulan->total_pengeluaran ?? 0);
+        $saldoKas = (float) ($ringkasanKas->total_pemasukan ?? 0)
+            - (float) ($ringkasanKas->total_pengeluaran ?? 0);
+
+        $transaksi = DevelopmentTransaction::query()
+            ->with('project:id,name')
+            ->whereBetween('transaction_date', [$tanggalAwal, $tanggalAkhir])
+            ->orderByDesc('transaction_date')
+            ->orderByDesc('id')
+            ->paginate(10)
+            ->withQueryString();
+
+        return view('guest.laporan.pembangunan', compact(
+            'bulan',
+            'namaBulan',
+            'pemasukanBulan',
+            'pengeluaranBulan',
+            'saldoKas',
+            'transaksi'
+        ));
+    }
 
     public function indexInventaris(Request $request)
     {

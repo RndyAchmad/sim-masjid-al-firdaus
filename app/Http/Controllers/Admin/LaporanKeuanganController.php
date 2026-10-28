@@ -7,6 +7,7 @@ use App\Models\FinancialReport;
 use App\Enums\TransactionType;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class LaporanKeuanganController extends Controller
@@ -124,21 +125,73 @@ class LaporanKeuanganController extends Controller
 
     public function show(string $id)
     {
-        return view('admin.laporan-keuangan.show', compact('id'));
+        $laporan = FinancialReport::findOrFail($id);
+
+        return view('admin.laporan-keuangan.show', compact('laporan'));
     }
 
     public function edit(string $id)
     {
-        return view('admin.laporan-keuangan.edit', compact('id'));
+        $laporan = FinancialReport::findOrFail($id);
+
+        return view('admin.laporan-keuangan.edit', compact('laporan'));
     }
 
     public function update(Request $request, string $id)
     {
-        // Logika update transaksi
+        $laporan = FinancialReport::findOrFail($id);
+
+        $validated = $request->validate([
+            'type' => ['required', Rule::in(['income', 'expense'])],
+            'transaction_date' => ['required', 'date'],
+            'amount' => ['required', 'numeric', 'min:1', 'max:9999999999999.99'],
+            'description' => ['required', 'string', 'max:5000'],
+            'proof_file' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf', 'max:2048'],
+        ], [
+            'type.required' => 'Tipe transaksi wajib dipilih.',
+            'type.in' => 'Tipe transaksi tidak valid.',
+            'transaction_date.required' => 'Tanggal transaksi wajib diisi.',
+            'transaction_date.date' => 'Tanggal transaksi tidak valid.',
+            'amount.required' => 'Nominal transaksi wajib diisi.',
+            'amount.numeric' => 'Nominal harus berupa angka.',
+            'amount.min' => 'Nominal transaksi minimal Rp1.',
+            'description.required' => 'Keterangan transaksi wajib diisi.',
+            'proof_file.mimes' => 'Bukti harus berupa JPG, JPEG, PNG, atau PDF.',
+            'proof_file.max' => 'Ukuran bukti maksimal 2 MB.',
+        ]);
+
+        if ($request->hasFile('proof_file')) {
+            $fileLama = $laporan->proof_file;
+
+            $validated['proof_file'] = $request->file('proof_file')
+                ->store('bukti-transaksi', 'public');
+
+            $laporan->update($validated);
+
+            if ($fileLama) {
+                Storage::disk('public')->delete($fileLama);
+            }
+        } else {
+            $laporan->update($validated);
+        }
+
+        return redirect()
+            ->route('admin.laporan-keuangan.edit', $laporan->id)
+            ->with('success', 'Transaksi berhasil diperbarui.');
     }
 
     public function destroy(string $id)
     {
-        // Logika hapus transaksi
+        $laporan = FinancialReport::findOrFail($id);
+
+        if ($laporan->proof_file) {
+            Storage::disk('public')->delete($laporan->proof_file);
+        }
+
+        $laporan->delete();
+
+        return redirect()
+            ->route('admin.laporan-keuangan.index')
+            ->with('success', 'Transaksi berhasil dihapus.');
     }
 }

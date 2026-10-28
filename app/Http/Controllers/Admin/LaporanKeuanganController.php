@@ -14,9 +14,14 @@ class LaporanKeuanganController extends Controller
 {
     public function index(Request $request)
     {
-        $bulan = $request->input('bulan', now()->format('Y-m'));
+        $validated = $request->validate([
+            'bulan' => ['nullable', 'date_format:Y-m'],
+            'search' => ['nullable', 'string', 'max:100'],
+        ]);
 
-        // Validasi format bulan agar aman digunakan dalam query.
+        $bulan = $validated['bulan'] ?? now()->format('Y-m');
+        $search = trim($validated['search'] ?? '');
+
         try {
             $tanggalBulan = Carbon::createFromFormat('!Y-m', $bulan);
 
@@ -29,59 +34,107 @@ class LaporanKeuanganController extends Controller
             $tanggalBulan = now()->startOfMonth();
         }
 
-        $tanggalAwal = $tanggalBulan->copy()->startOfMonth()->toDateString();
-        $tanggalAkhir = $tanggalBulan->copy()->endOfMonth()->toDateString();
+        $sekarang = Carbon::today();
+        $tanggalAwal = $tanggalBulan->copy()->startOfMonth();
+        $tanggalAkhir = $tanggalBulan->copy()->endOfMonth();
 
-        // Total seluruh pemasukan dan pengeluaran.
-        $totalPemasukan = FinancialReport::where('type', TransactionType::INCOME->value)
+        $namaBulan = $tanggalBulan->copy()
+            ->locale('id')
+            ->translatedFormat('F Y');
+
+        // Saldo kas saat ini dari seluruh transaksi yang tercatat.
+        $totalPemasukan = FinancialReport::query()
+            ->where('type', TransactionType::INCOME->value)
             ->sum('amount');
 
-        $totalPengeluaran = FinancialReport::where('type', TransactionType::EXPENSE->value)
+        $totalPengeluaran = FinancialReport::query()
+            ->where('type', TransactionType::EXPENSE->value)
             ->sum('amount');
 
         $saldoKas = $totalPemasukan - $totalPengeluaran;
 
-        // Total pemasukan bulan yang dipilih.
-        $pemasukanBulanIni = FinancialReport::where(
-            'type',
-            TransactionType::INCOME->value
-        )
-            ->whereBetween('transaction_date', [$tanggalAwal, $tanggalAkhir])
+        // Saldo awal: seluruh transaksi sebelum bulan yang dipilih.
+        $pemasukanSebelumnya = FinancialReport::query()
+            ->where('type', TransactionType::INCOME->value)
+            ->whereDate('transaction_date', '<', $tanggalAwal->toDateString())
             ->sum('amount');
 
-        // Total pengeluaran bulan yang dipilih.
-        $pengeluaranBulanIni = FinancialReport::where(
-            'type',
-            TransactionType::EXPENSE->value
-        )
-            ->whereBetween('transaction_date', [$tanggalAwal, $tanggalAkhir])
+        $pengeluaranSebelumnya = FinancialReport::query()
+            ->where('type', TransactionType::EXPENSE->value)
+            ->whereDate('transaction_date', '<', $tanggalAwal->toDateString())
             ->sum('amount');
 
-        // Query daftar transaksi.
-        $query = FinancialReport::query()
-            ->whereBetween('transaction_date', [$tanggalAwal, $tanggalAkhir]);
+        $saldoAwalPeriode = $pemasukanSebelumnya - $pengeluaranSebelumnya;
 
-        // Pencarian berdasarkan keterangan transaksi.
-        if ($request->filled('search')) {
-            $query->where(
-                'description',
-                'like',
-                '%' . $request->search . '%'
-            );
+        // Bulan mendatang tidak menampilkan transaksi yang belum terjadi.
+        $periodeBelumBerjalan = $tanggalAwal->greaterThan($sekarang->copy()->startOfMonth());
+
+        $batasTanggal = $tanggalAkhir->greaterThan($sekarang)
+            ? $sekarang->copy()
+            : $tanggalAkhir->copy();
+
+        // Ringkasan periode yang dipilih.
+        $pemasukanBulanIni = 0;
+        $pengeluaranBulanIni = 0;
+
+        if (!$periodeBelumBerjalan) {
+            $pemasukanBulanIni = FinancialReport::query()
+                ->where('type', TransactionType::INCOME->value)
+                ->whereBetween('transaction_date', [
+                    $tanggalAwal->toDateString(),
+                    $batasTanggal->toDateString(),
+                ])
+                ->sum('amount');
+
+            $pengeluaranBulanIni = FinancialReport::query()
+                ->where('type', TransactionType::EXPENSE->value)
+                ->whereBetween('transaction_date', [
+                    $tanggalAwal->toDateString(),
+                    $batasTanggal->toDateString(),
+                ])
+                ->sum('amount');
         }
 
-        $laporanKeuangan = $query
-            ->orderBy('transaction_date')
-            ->orderByDesc('id')
-            ->paginate(10)
-            ->withQueryString();
+        $selisihPeriode = $pemasukanBulanIni - $pengeluaranBulanIni;
+        $saldoAkhirPeriode = $saldoAwalPeriode + $selisihPeriode;
+
+        // Daftar transaksi untuk periode terpilih.
+        $query = FinancialReport::query()
+            ->whereBetween('transaction_date', [
+                $tanggalAwal->toDateString(),
+                $batasTanggal->toDateString(),
+            ]);
+
+        if ($search !== '') {
+            $query->where('description', 'like', '%' . $search . '%');
+        }
+
+        if ($periodeBelumBerjalan) {
+            // Periode mendatang tidak memiliki transaksi yang ditampilkan.
+            $laporanKeuangan = FinancialReport::query()
+                ->whereRaw('1 = 0')
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $laporanKeuangan = $query
+                ->orderByDesc('transaction_date')
+                ->orderByDesc('id')
+                ->paginate(10)
+                ->withQueryString();
+        }
 
         return view('admin.laporan-keuangan.index', compact(
             'laporanKeuangan',
             'saldoKas',
             'pemasukanBulanIni',
             'pengeluaranBulanIni',
-            'bulan'
+            'saldoAwalPeriode',
+            'selisihPeriode',
+            'saldoAkhirPeriode',
+            'periodeBelumBerjalan',
+            'bulan',
+            'search',
+            'namaBulan'
         ));
     }
 

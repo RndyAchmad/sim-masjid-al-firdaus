@@ -107,7 +107,7 @@
 
             @if ($unlinkedTransactions->isNotEmpty())
                 <div class="overflow-x-auto">
-                    <table class="w-full min-w-[800px] text-left text-sm">
+                    <table class="w-full min-w-200 text-left text-sm">
                         <thead class="border-b border-gray-100 bg-gray-50 text-xs font-semibold uppercase tracking-wide text-gray-500">
                             <tr>
                                 <th class="w-16 px-5 py-4 text-center">Pilih</th>

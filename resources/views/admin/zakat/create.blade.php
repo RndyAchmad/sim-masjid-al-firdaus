@@ -2,12 +2,21 @@
     <x-slot name="title">Catat Zakat</x-slot>
     <x-slot name="backUrl">{{ route('admin.zakat.index') }}</x-slot>
 
+    @php
+        $initialRows = old('items', [
+            ['nama' => '', 'fitrah_kg' => 2.5, 'mal_rp' => 0, 'infaq_rp' => 0],
+        ]);
+    @endphp
+
     <form action="{{ route('admin.zakat.store') }}" method="POST"
+        data-confirm-title="Simpan data zakat?"
+        data-confirm="Pastikan nama jiwa/orang, beras fitrah (Kg), zakat mal (Rp), dan infaq (Rp) sudah sesuai."
+        data-confirm-color="#c49c4d"
+        data-confirm-icon="question"
+        data-confirm-text="Ya, Simpan"
         x-data="{
-            kepalaKeluarga: '',
-            rows: [
-                { nama: '', fitrah_kg: 2.5, mal_rp: 0, infaq_rp: 0 }
-            ],
+            kepalaKeluarga: @js(old('kepala_keluarga', '')),
+            rows: @js($initialRows),
             addRow() {
                 this.rows.push({ nama: '', fitrah_kg: 2.5, mal_rp: 0, infaq_rp: 0 });
             },
@@ -32,6 +41,17 @@
         class="space-y-6">
         @csrf
 
+        @if ($errors->any())
+            <div class="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+                <p class="font-semibold">Periksa kembali isian form:</p>
+                <ul class="mt-1.5 list-inside list-disc space-y-1 text-xs">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         {{-- Identitas Keluarga & Tanggal --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -43,12 +63,12 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-700">Alamat</label>
-                    <input type="text" name="alamat" placeholder="Contoh: P-37 / RT 26"
+                    <input type="text" name="alamat" value="{{ old('alamat') }}" placeholder="Contoh: P-37 / RT 26"
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-700">Tanggal</label>
-                    <input type="date" name="tanggal" value="{{ date('Y-m-d') }}" required
+                    <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
                 </div>
             </div>

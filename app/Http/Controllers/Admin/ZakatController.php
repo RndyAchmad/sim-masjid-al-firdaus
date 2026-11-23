@@ -16,42 +16,97 @@ class ZakatController extends Controller
     public function index(Request $request): View
     {
         $search = trim((string) $request->query('search', ''));
-        $date = $request->query('date');
+        $date = trim((string) $request->query('date', ''));
 
-        $registrations = ZakatRegistration::query()
-            ->with('transactions')
+        $availableHijriYears = ZakatRegistration::query()
+            ->whereNotNull('hijri_year')
+            ->where('hijri_year', '!=', '')
+            ->distinct()
+            ->pluck('hijri_year')
+            ->sortByDesc(fn ($year) => (int) $year)
+            ->values();
+
+        // Ambil tahun Hijriah tertinggi yang ada di database, fallback ke '1448' jika tabel masih kosong
+        $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
+
+        $hijriYear = $request->has('hijri_year')
+            ? trim((string) $request->query('hijri_year'))
+            : $latestHijriYear;
+
+        if ($hijriYear === '') {
+            $hijriYear = $latestHijriYear;
+        }
+
+        $baseQuery = ZakatRegistration::query()
+            ->when($hijriYear !== 'all', function ($query) use ($hijriYear) {
+                $query->where('hijri_year', $hijriYear);
+            })
             ->when($search !== '', function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('head_of_family', 'like', "%{$search}%")
-                        ->orWhere('address', 'like', "%{$search}%")
-                        ->orWhereHas('transactions', function ($t) use ($search) {
-                            $t->where('person_name', 'like', "%{$search}%");
+                $like = "%{$search}%";
+                $query->where(function ($q) use ($like) {
+                    $q->where('head_of_family', 'like', $like)
+                        ->orWhere('address', 'like', $like)
+                        ->orWhere('hijri_year', 'like', $like)
+                        ->orWhereHas('transactions', function ($t) use ($like) {
+                            $t->where('person_name', 'like', $like);
                         });
                 });
             })
-            ->when(!empty($date), function ($query) use ($date) {
+            ->when($date !== '', function ($query) use ($date) {
                 $query->whereDate('received_date', $date);
-            })
+            });
+
+        $registrations = (clone $baseQuery)
+            ->with('transactions')
             ->orderByDesc('received_date')
             ->orderByDesc('created_at')
             ->orderByDesc('id')
             ->paginate(15)
             ->withQueryString();
 
+        $registrationIds = (clone $baseQuery)->select('id');
+
+        $trxStats = ZakatTransaction::query()
+            ->whereIn('zakat_registration_id', $registrationIds)
+            ->selectRaw('
+                COUNT(*) as total_souls,
+                COALESCE(SUM(fitrah_rice_kg), 0) as total_fitrah_rice_kg,
+                COALESCE(SUM(mal_cash_amount), 0) as total_mal_cash_amount,
+                COALESCE(SUM(infaq_cash_amount), 0) as total_infaq_cash_amount
+            ')
+            ->first();
+
         $summary = [
-            'total_fitrah_rice_kg' => (float) ZakatTransaction::query()->sum('fitrah_rice_kg'),
-            'total_registrations' => (int) ZakatRegistration::query()->count(),
-            'total_souls' => (int) ZakatTransaction::query()->count(),
-            'total_mal_cash_amount' => (int) ZakatTransaction::query()->sum('mal_cash_amount'),
-            'total_infaq_cash_amount' => (int) ZakatTransaction::query()->sum('infaq_cash_amount'),
+            'total_fitrah_rice_kg' => (float) ($trxStats->total_fitrah_rice_kg ?? 0),
+            'total_registrations' => (int) (clone $baseQuery)->count(),
+            'total_souls' => (int) ($trxStats->total_souls ?? 0),
+            'total_mal_cash_amount' => (int) ($trxStats->total_mal_cash_amount ?? 0),
+            'total_infaq_cash_amount' => (int) ($trxStats->total_infaq_cash_amount ?? 0),
         ];
 
-        return view('admin.zakat.index', compact('registrations', 'summary', 'search', 'date'));
+        return view('admin.zakat.index', compact(
+            'registrations',
+            'summary',
+            'search',
+            'date',
+            'hijriYear',
+            'availableHijriYears',
+            'latestHijriYear'
+        ));
     }
 
     public function create(): View
     {
-        return view('admin.zakat.create');
+        $availableHijriYears = ZakatRegistration::query()
+            ->whereNotNull('hijri_year')
+            ->where('hijri_year', '!=', '')
+            ->distinct()
+            ->orderByDesc('hijri_year')
+            ->pluck('hijri_year');
+
+        $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
+
+        return view('admin.zakat.create', compact('latestHijriYear', 'availableHijriYears'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -59,22 +114,32 @@ class ZakatController extends Controller
         $validated = $this->validateZakatRequest($request);
 
         try {
-            DB::transaction(function () use ($validated) {
+            $rowsToInsert = $this->extractTransactionRows($validated['items']);
+
+            $hijriYear = trim((string) ($validated['hijri_year'] ?? ''));
+            if ($hijriYear === '') {
+                $hijriYear = (string) (ZakatRegistration::query()
+                    ->whereNotNull('hijri_year')
+                    ->where('hijri_year', '!=', '')
+                    ->orderByDesc('hijri_year')
+                    ->value('hijri_year') ?? '1448');
+            }
+
+            DB::transaction(function () use ($validated, $rowsToInsert, $hijriYear) {
                 $registration = ZakatRegistration::create([
                     'head_of_family' => trim($validated['kepala_keluarga']),
                     'address' => isset($validated['alamat']) && trim($validated['alamat']) !== ''
                         ? trim($validated['alamat'])
                         : null,
                     'received_date' => $validated['tanggal'],
+                    'hijri_year' => $hijriYear,
                 ]);
-
-                $rowsToInsert = $this->extractTransactionRows($validated['items']);
 
                 $registration->transactions()->createMany($rowsToInsert);
             });
 
             return redirect()
-                ->route('admin.zakat.index')
+                ->route('admin.zakat.index', ['hijri_year' => $hijriYear])
                 ->with('success', 'Data pencatatan zakat berhasil disimpan.');
         } catch (\RuntimeException $e) {
             return back()
@@ -115,23 +180,25 @@ class ZakatController extends Controller
         $validated = $this->validateZakatRequest($request);
 
         try {
-            DB::transaction(function () use ($validated, $registration) {
+            $rowsToInsert = $this->extractTransactionRows($validated['items']);
+            $hijriYear = trim((string) ($validated['hijri_year'] ?? ($registration->hijri_year ?: '1448')));
+
+            DB::transaction(function () use ($validated, $registration, $rowsToInsert, $hijriYear) {
                 $registration->update([
                     'head_of_family' => trim($validated['kepala_keluarga']),
                     'address' => isset($validated['alamat']) && trim($validated['alamat']) !== ''
                         ? trim($validated['alamat'])
                         : null,
                     'received_date' => $validated['tanggal'],
+                    'hijri_year' => $hijriYear,
                 ]);
-
-                $rowsToInsert = $this->extractTransactionRows($validated['items']);
 
                 $registration->transactions()->delete();
                 $registration->transactions()->createMany($rowsToInsert);
             });
 
             return redirect()
-                ->route('admin.zakat.index')
+                ->route('admin.zakat.index', ['hijri_year' => $hijriYear])
                 ->with('success', 'Data pencatatan zakat berhasil diperbarui.');
         } catch (\RuntimeException $e) {
             return back()
@@ -152,6 +219,7 @@ class ZakatController extends Controller
     public function destroy(int|string $id): RedirectResponse
     {
         $registration = ZakatRegistration::query()->findOrFail($id);
+        $hijriYear = $registration->hijri_year;
 
         try {
             DB::transaction(function () use ($registration) {
@@ -159,7 +227,7 @@ class ZakatController extends Controller
             });
 
             return redirect()
-                ->route('admin.zakat.index')
+                ->route('admin.zakat.index', $hijriYear ? ['hijri_year' => $hijriYear] : [])
                 ->with('success', 'Data zakat berhasil dihapus.');
         } catch (\Throwable $e) {
             Log::error('Gagal menghapus data zakat: ' . $e->getMessage(), [
@@ -184,6 +252,7 @@ class ZakatController extends Controller
                 'items.*.fitrah_kg' => ['nullable', 'numeric', 'min:0', 'max:9999.99'],
                 'items.*.mal_rp' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
                 'items.*.infaq_rp' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
+                'hijri_year' => ['required', 'regex:/^[0-9]{4}$/'],
             ],
             [
                 'kepala_keluarga.required' => 'Nama kepala keluarga / pendaftar wajib diisi.',
@@ -198,6 +267,8 @@ class ZakatController extends Controller
                 'items.*.mal_rp.min' => 'Nominal zakat mal tidak boleh kurang dari 0.',
                 'items.*.infaq_rp.numeric' => 'Nominal infaq harus berupa angka.',
                 'items.*.infaq_rp.min' => 'Nominal infaq tidak boleh kurang dari 0.',
+                'hijri_year.required' => 'Tahun Hijriah wajib diisi.',
+                'hijri_year.regex' => 'Tahun Hijriah harus berupa 4 digit angka (contoh: 1448).',
             ]
         );
     }

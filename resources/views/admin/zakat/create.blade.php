@@ -3,6 +3,15 @@
     <x-slot name="backUrl">{{ route('admin.zakat.index') }}</x-slot>
 
     @php
+        $defaultHijriYear = $latestHijriYear ?? '1448';
+        $yearOptions = collect($availableHijriYears ?? [])
+            ->prepend($defaultHijriYear)
+            ->map(fn ($y) => (string) $y)
+            ->filter()
+            ->unique()
+            ->sortDesc()
+            ->values();
+
         $initialRows = old('items', [
             ['nama' => '', 'fitrah_kg' => 2.5, 'mal_rp' => 0, 'infaq_rp' => 0],
         ]);
@@ -52,9 +61,9 @@
             </div>
         @endif
 
-        {{-- Identitas Keluarga & Tanggal --}}
+        {{-- Identitas Keluarga, Tanggal & Tahun Hijriah --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-700">Kepala Keluarga / Pendaftar</label>
                     <input type="text" name="kepala_keluarga" x-model="kepalaKeluarga" required
@@ -70,6 +79,20 @@
                     <label class="block text-xs font-semibold text-gray-700">Tanggal</label>
                     <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+                </div>
+                <div>
+                    <label for="hijri_year" class="block text-xs font-semibold text-gray-700">Tahun Hijriah</label>
+                    <input id="hijri_year" type="text" list="hijri-year-options" name="hijri_year"
+                        value="{{ old('hijri_year', $defaultHijriYear) }}" required
+                        inputmode="numeric" pattern="[0-9]{4}" maxlength="4"
+                        placeholder="Contoh: {{ $defaultHijriYear }}"
+                        class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+                    <datalist id="hijri-year-options">
+                        @foreach ($yearOptions as $yr)
+                            <option value="{{ $yr }}"></option>
+                        @endforeach
+                    </datalist>
+                    <p class="mt-1 text-[11px] text-gray-400">Ketik tahun baru (4 angka) atau pilih dari daftar.</p>
                 </div>
             </div>
         </div>

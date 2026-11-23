@@ -16,6 +16,7 @@ class ZakatRegistration extends Model
         'head_of_family',
         'address',
         'received_date',
+        'hijri_year',
         'notes',
     ];
 

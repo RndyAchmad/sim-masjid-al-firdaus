@@ -1,8 +1,17 @@
 <x-layouts.admin>
     <x-slot name="title">Edit Pencatatan Zakat</x-slot>
-    <x-slot name="backUrl">{{ route('admin.zakat.index') }}</x-slot>
+    <x-slot name="backUrl">{{ route('admin.zakat.index', $registration->hijri_year ? ['hijri_year' => $registration->hijri_year] : []) }}</x-slot>
 
     @php
+        $defaultHijriYear = (string) ($registration->hijri_year ?: ($latestHijriYear ?? '1448'));
+        $yearOptions = collect($availableHijriYears ?? [])
+            ->prepend($defaultHijriYear)
+            ->map(fn ($y) => (string) $y)
+            ->filter()
+            ->unique()
+            ->sortDesc()
+            ->values();
+
         $existingRows = $registration->transactions
             ->map(function ($trx) {
                 return [
@@ -20,7 +29,7 @@
         ]);
     @endphp
 
-    <form action="{{ route('admin.zakat.update', $registration) }}" method="POST"
+    <form action="{{ route('admin.zakat.update', $registration->id) }}" method="POST"
         data-confirm-title="Simpan perubahan zakat?"
         data-confirm="Pastikan nama jiwa/orang, beras fitrah (Kg), zakat mal (Rp), dan infaq (Rp) sudah sesuai."
         data-confirm-color="#c49c4d" data-confirm-icon="question" data-confirm-text="Ya, Perbarui" x-data="{
@@ -61,9 +70,9 @@
             </div>
         @endif
 
-        {{-- Identitas Keluarga & Tanggal --}}
+        {{-- Identitas Keluarga, Tanggal & Tahun Hijriah --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div>
                     <label class="block text-xs font-semibold text-gray-700">Kepala Keluarga / Pendaftar</label>
                     <input type="text" name="kepala_keluarga" x-model="kepalaKeluarga" required
@@ -81,6 +90,20 @@
                     <input type="date" name="tanggal"
                         value="{{ old('tanggal', $registration->received_date->format('Y-m-d')) }}" required
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+                </div>
+                <div>
+                    <label for="edit_hijri_year" class="block text-xs font-semibold text-gray-700">Tahun Hijriah</label>
+                    <input id="edit_hijri_year" type="text" list="edit-hijri-year-options" name="hijri_year"
+                        value="{{ old('hijri_year', $defaultHijriYear) }}" required
+                        inputmode="numeric" pattern="[0-9]{4}" maxlength="4"
+                        placeholder="Contoh: {{ $defaultHijriYear }}"
+                        class="mt-1.5 w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+                    <datalist id="edit-hijri-year-options">
+                        @foreach ($yearOptions as $yr)
+                            <option value="{{ $yr }}"></option>
+                        @endforeach
+                    </datalist>
+                    <p class="mt-1 text-[11px] text-gray-400">Ketik tahun baru (4 angka) atau pilih dari daftar.</p>
                 </div>
             </div>
         </div>
@@ -161,7 +184,7 @@
             </div>
 
             <div class="flex items-center justify-end gap-3 border-t border-gray-100 p-6">
-                <a href="{{ route('admin.zakat.index') }}"
+                <a href="{{ route('admin.zakat.index', $registration->hijri_year ? ['hijri_year' => $registration->hijri_year] : []) }}"
                     class="rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Batal
                 </a>

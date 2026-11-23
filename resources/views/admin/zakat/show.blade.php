@@ -1,6 +1,6 @@
 <x-layouts.admin>
     <x-slot name="title">Detail Pencatatan Zakat</x-slot>
-    <x-slot name="backUrl">{{ route('admin.zakat.index') }}</x-slot>
+    <x-slot name="backUrl">{{ route('admin.zakat.index', $registration->hijri_year ? ['hijri_year' => $registration->hijri_year] : []) }}</x-slot>
 
     @php
         $transactions = $registration->transactions;
@@ -16,11 +16,22 @@
         <div
             class="flex flex-col justify-between gap-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm sm:flex-row sm:items-center">
             <div>
-                <p class="text-xs font-semibold uppercase tracking-wider text-[#c49c4d]">Informasi Pendaftaran</p>
+                <div class="flex flex-wrap items-center gap-2">
+                    <p class="text-xs font-semibold uppercase tracking-wider text-[#c49c4d]">Informasi Pendaftaran</p>
+                    @if ($registration->hijri_year)
+                        <span class="inline-flex rounded-lg bg-[#c49c4d]/15 px-2.5 py-0.5 text-xs font-semibold text-[#9c7832]">
+                            {{ $registration->hijri_year }} H
+                        </span>
+                    @endif
+                </div>
                 <h2 class="mt-1 text-xl font-bold text-gray-900">{{ $registration->head_of_family }}</h2>
                 <p class="mt-1 text-xs text-gray-500">
                     Tanggal Penerimaan: <span
                         class="font-semibold text-gray-700">{{ $registration->received_date->translatedFormat('d M Y') }}</span>
+                    @if ($registration->hijri_year)
+                        <span class="mx-1.5">•</span>
+                        Tahun Hijriah: <span class="font-semibold text-gray-700">{{ $registration->hijri_year }} H</span>
+                    @endif
                     @if ($registration->address)
                         <span class="mx-1.5">•</span>
                         Alamat: <span class="font-semibold text-gray-700">{{ $registration->address }}</span>
@@ -29,7 +40,7 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2.5">
-                <a href="{{ route('admin.zakat.edit', $registration) }}"
+                <a href="{{ route('admin.zakat.edit', $registration->id) }}"
                     class="inline-flex items-center gap-1.5 rounded-xl bg-[#c49c4d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#a8833e]">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -38,7 +49,7 @@
                     Edit Data
                 </a>
 
-                <form action="{{ route('admin.zakat.destroy', $registration) }}" method="POST"
+                <form action="{{ route('admin.zakat.destroy', $registration->id) }}" method="POST"
                     data-confirm-title="Hapus data zakat?"
                     data-confirm="Data pendaftaran atas nama {{ $registration->head_of_family }} beserta seluruh rinciannya akan dihapus.">
                     @csrf
@@ -142,7 +153,7 @@
                     Total Uang (Mal + Infaq): <span class="font-bold text-gray-900">Rp
                         {{ number_format($totalCashRp, 0, ',', '.') }}</span>
                 </p>
-                <a href="{{ route('admin.zakat.index') }}"
+                <a href="{{ route('admin.zakat.index', $registration->hijri_year ? ['hijri_year' => $registration->hijri_year] : []) }}"
                     class="inline-flex items-center justify-center rounded-xl border border-gray-300 px-4 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
                     Kembali ke Daftar
                 </a>

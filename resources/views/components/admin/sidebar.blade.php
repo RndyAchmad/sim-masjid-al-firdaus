@@ -27,7 +27,8 @@
 
         {{-- Logo --}}
         <div class="flex h-16 shrink-0 items-center justify-center border-b border-gray-800 px-4">
-            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-3 transition hover:opacity-80">
+            <a href="{{ route('admin.dashboard') }}" @click="sidebarOpen = false"
+                class="flex items-center gap-3 transition hover:opacity-80">
 
                 <div
                     class="flex h-9 w-9 items-center justify-center rounded-xl bg-linear-to-br from-[#c49c4d] to-[#c1a447] text-sm font-bold text-white shadow-lg shadow-[#c49c4d]/20">
@@ -66,7 +67,7 @@
                 </p>
 
                 {{-- Profil Masjid: Superadmin, Admin, Sekretaris --}}
-                @if ($isAdmin || $role === 'sekretaris')
+                @if ($isAdmin || $isSekretaris)
                     <a href="{{ route('admin.profile') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.profile') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
 
@@ -80,7 +81,7 @@
                     </a>
                 @endif
 
-                {{-- Kegiatan & Acara: Superadmin, Admin --}}
+                {{-- Konten & Jadwal: Superadmin, Admin --}}
                 @if ($isAdmin)
                     <a href="{{ route('admin.kegiatan.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.kegiatan.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
@@ -94,7 +95,6 @@
                         Kegiatan & Acara
                     </a>
 
-                    {{-- Berita & Pengumuman --}}
                     <a href="{{ route('admin.berita.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.berita.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
 
@@ -107,30 +107,40 @@
                         Berita & Pengumuman
                     </a>
 
-                    {{-- Artikel Keislaman --}}
                     <a href="{{ route('admin.articles.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.articles.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13V7m0 13a2 2 0 002-2V9.5A2.5 2.5 0 0017.5 7H15" />
+                                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
 
                         Artikel Keislaman
                     </a>
 
-                    {{-- Jadwal Imam Jumat --}}
                     <a href="{{ route('admin.jadwal-imam.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.jadwal-imam.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
 
                         Jadwal Imam Jumat
+                    </a>
+
+                    <a href="{{ route('admin.zakat.index') }}" @click="sidebarOpen = false"
+                        class="{{ request()->routeIs('admin.zakat.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
+
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+
+                        Pencatatan Zakat
                     </a>
                 @endif
 
@@ -149,7 +159,7 @@
                     </a>
                 @endif
 
-                {{-- Laporan Keuangan: Superadmin, Bendahara --}}
+                {{-- Keuangan, Zakat & Pembangunan: Superadmin, Admin --}}
                 @if ($isBendahara)
                     <a href="{{ route('admin.laporan-keuangan.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.laporan-keuangan.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
@@ -163,14 +173,13 @@
                         Laporan Keuangan
                     </a>
 
-                    {{-- Pembangunan: Superadmin, Bendahara --}}
                     <a href="{{ route('admin.pembangunan.index') }}" @click="sidebarOpen = false"
                         class="{{ request()->routeIs('admin.pembangunan.*') ? $activeClass : $inactiveClass }} {{ $menuClass }}">
 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 shrink-0" fill="none" viewBox="0 0 24 24"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5" />
                         </svg>
 
                         Pembangunan Masjid

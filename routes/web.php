@@ -10,9 +10,10 @@ use App\Http\Controllers\Admin\JadwalImamController as AdminJadwalImamController
 use App\Http\Controllers\Admin\KegiatanController as AdminKegiatanController;
 use App\Http\Controllers\Admin\LaporanKeuanganController as AdminLaporanKeuanganController;
 use App\Http\Controllers\Admin\PembangunanController as AdminPembangunanController;
-// Admin Controllers
 use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
+use App\Http\Controllers\Admin\ZakatController as AdminZakatController;
+// Admin Controllers
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
@@ -138,6 +139,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/{id}/edit', [AdminLaporanKeuanganController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminLaporanKeuanganController::class, 'update'])->name('update');
         Route::delete('/{id}', [AdminLaporanKeuanganController::class, 'destroy'])->name('destroy');
+    });
+
+    // ZAKAT: Admin, Superadmin
+    Route::prefix('zakat')->name('zakat.')->group(function () {
+        Route::get('/', [AdminZakatController::class, 'index'])->name('index');
+        Route::get('/create', [AdminZakatController::class, 'create'])->name('create');
+        Route::post('/', [AdminZakatController::class, 'store'])->name('store');
+        Route::get('/{id}', [AdminZakatController::class, 'show'])->name('show');
+        Route::get('/{id}/edit', [AdminZakatController::class, 'edit'])->name('edit');
+        Route::put('/{id}', [AdminZakatController::class, 'update'])->name('update');
+        Route::delete('/{id}', [AdminZakatController::class, 'destroy'])->name('destroy');
     });
 
     // PEMBANGUNAN: SUPERADMIN, BENDAHARA

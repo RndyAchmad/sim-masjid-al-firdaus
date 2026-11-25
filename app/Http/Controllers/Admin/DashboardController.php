@@ -28,22 +28,20 @@ class DashboardController extends Controller
         $isSekretaris = in_array($role, ['superadmin', 'sekretaris'], true);
         $isBendahara = in_array($role, ['superadmin', 'bendahara'], true);
 
-        // Statistik Utama
-        $stats = [
-            'users_count' => ($isSuperadmin && Schema::hasTable('users'))
-                ? (int) DB::table('users')->count()
+        // Card Statistik Utama (1 card = 1 data, tanpa zakat mal & tanpa zakat fitrah)
+        $cards = [
+            'cash_balance' => ($isBendahara && Schema::hasTable('financial_reports'))
+                ? (float) DB::table('financial_reports')->where('type', 'income')->sum('amount')
+                    - (float) DB::table('financial_reports')->where('type', 'expense')->sum('amount')
+                : 0.0,
+            'ongoing_projects_count' => ($isBendahara && Schema::hasTable('development_projects'))
+                ? (int) DB::table('development_projects')->where('status', 'ongoing')->count()
                 : 0,
             'inventories_count' => ($isSekretaris && Schema::hasTable('inventories'))
                 ? (int) DB::table('inventories')->count()
                 : 0,
-            'income_total' => ($isBendahara && Schema::hasTable('financial_reports'))
-                ? (float) DB::table('financial_reports')->where('type', 'income')->sum('amount')
-                : 0.0,
-            'expense_total' => ($isBendahara && Schema::hasTable('financial_reports'))
-                ? (float) DB::table('financial_reports')->where('type', 'expense')->sum('amount')
-                : 0.0,
-            'ongoing_projects_count' => ($isBendahara && Schema::hasTable('development_projects'))
-                ? (int) DB::table('development_projects')->where('status', 'ongoing')->count()
+            'infaq_total' => ($isAdmin && Schema::hasTable('zakat_transactions'))
+                ? (int) DB::table('zakat_transactions')->sum('infaq_cash_amount')
                 : 0,
             'activities_count' => ($isAdmin && Schema::hasTable('activity_schedules'))
                 ? (int) DB::table('activity_schedules')->count()
@@ -54,53 +52,44 @@ class DashboardController extends Controller
             'news_count' => ($isAdmin && Schema::hasTable('news_and_announcements'))
                 ? (int) DB::table('news_and_announcements')->count()
                 : 0,
+            'users_count' => ($isSuperadmin && Schema::hasTable('users'))
+                ? (int) DB::table('users')->count()
+                : 0,
         ];
 
-        $stats['cash_balance'] = $stats['income_total'] - $stats['expense_total'];
-
-        // Ringkasan Zakat (jika tabel tersedia)
-        $zakatSummary = [
-            'fitrah_rice_kg' => 0.0,
-            'mal_cash_amount' => 0,
-            'infaq_cash_amount' => 0,
-            'total_persons' => 0,
-        ];
-
-        if ($isAdmin && Schema::hasTable('zakat_transactions')) {
-            $zakatSummary['fitrah_rice_kg'] = (float) DB::table('zakat_transactions')->sum('fitrah_rice_kg');
-            $zakatSummary['mal_cash_amount'] = (int) DB::table('zakat_transactions')->sum('mal_cash_amount');
-            $zakatSummary['infaq_cash_amount'] = (int) DB::table('zakat_transactions')->sum('infaq_cash_amount');
-            $zakatSummary['total_persons'] = (int) DB::table('zakat_transactions')->count();
-        }
-
-        // Jadwal Shalat Jumat Terdekat (dari tabel friday_schedules)
-        $upcomingFridaySchedules = collect();
-        if (Schema::hasTable('friday_schedules')) {
-            $upcomingFridaySchedules = DB::table('friday_schedules')
+        // Tabel Jadwal Shalat Jumat Terdekat
+        $upcomingFridaySchedules = Schema::hasTable('friday_schedules')
+            ? DB::table('friday_schedules')
                 ->whereDate('date', '>=', now()->toDateString())
                 ->orderBy('date')
-                ->limit(3)
-                ->get();
-        }
+                ->limit(5)
+                ->get()
+            : collect();
 
-        // Transaksi Keuangan Terbaru (dari tabel financial_reports)
-        $recentFinancialReports = collect();
-        if ($isBendahara && Schema::hasTable('financial_reports')) {
-            $recentFinancialReports = DB::table('financial_reports')
+        // Tabel Transaksi Keuangan Terbaru (Bendahara / Superadmin)
+        $recentFinancialReports = ($isBendahara && Schema::hasTable('financial_reports'))
+            ? DB::table('financial_reports')
                 ->orderByDesc('transaction_date')
                 ->orderByDesc('id')
                 ->limit(5)
-                ->get();
-        }
+                ->get()
+            : collect();
 
-        // Agenda Kegiatan Terbaru (dari tabel activity_schedules)
-        $recentActivities = collect();
-        if ($isAdmin && Schema::hasTable('activity_schedules')) {
-            $recentActivities = DB::table('activity_schedules')
+        // Tabel Kegiatan Terbaru (Admin / Superadmin)
+        $recentActivities = ($isAdmin && Schema::hasTable('activity_schedules'))
+            ? DB::table('activity_schedules')
                 ->orderByDesc('id')
-                ->limit(4)
-                ->get();
-        }
+                ->limit(5)
+                ->get()
+            : collect();
+
+        // Tabel Inventaris Terbaru (Sekretaris / Superadmin)
+        $recentInventories = ($isSekretaris && Schema::hasTable('inventories'))
+            ? DB::table('inventories')
+                ->orderByDesc('id')
+                ->limit(5)
+                ->get()
+            : collect();
 
         return view('admin.dashboard', compact(
             'user',
@@ -109,11 +98,11 @@ class DashboardController extends Controller
             'isAdmin',
             'isSekretaris',
             'isBendahara',
-            'stats',
-            'zakatSummary',
+            'cards',
             'upcomingFridaySchedules',
             'recentFinancialReports',
-            'recentActivities'
+            'recentActivities',
+            'recentInventories'
         ));
     }
 }

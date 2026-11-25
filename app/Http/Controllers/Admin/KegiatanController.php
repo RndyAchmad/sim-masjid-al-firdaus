@@ -16,8 +16,6 @@ class KegiatanController extends Controller
     /**
      * Display a listing of the resource.
      */
-
-
     public function index(Request $request)
     {
         $search = trim($request->query('search', ''));
@@ -57,7 +55,6 @@ class KegiatanController extends Controller
         ));
     }
 
-
     /**
      * Show the form for creating a new resource.
      */
@@ -65,7 +62,6 @@ class KegiatanController extends Controller
     {
         return view('admin.kegiatan.create');
     }
-
 
     public function store(Request $request)
     {
@@ -97,7 +93,7 @@ class KegiatanController extends Controller
             'description' => ['nullable', 'string'],
 
             'image_poster' => [
-                'nullable',
+                'required',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048',
@@ -128,6 +124,7 @@ class KegiatanController extends Controller
 
             'excerpt.max' => 'Ringkasan kegiatan maksimal 1.000 karakter.',
 
+            'image_poster.required' => 'Poster kegiatan wajib diunggah.',
             'image_poster.image' => 'File poster harus berupa gambar.',
             'image_poster.mimes' => 'Poster harus berformat JPG, JPEG, PNG, atau WEBP.',
             'image_poster.max' => 'Ukuran poster maksimal 2 MB.',
@@ -241,7 +238,7 @@ class KegiatanController extends Controller
             'description' => ['nullable', 'string'],
 
             'image_poster' => [
-                'nullable',
+                'required',
                 'image',
                 'mimes:jpg,jpeg,png,webp',
                 'max:2048',
@@ -256,6 +253,7 @@ class KegiatanController extends Controller
             'time.required' => 'Jam kegiatan wajib diisi.',
             'time.date_format' => 'Format jam harus jam dan menit.',
             'location.required' => 'Lokasi kegiatan wajib diisi.',
+            'image_poster.required' => 'Poster kegiatan wajib diunggah.',
             'image_poster.image' => 'File poster harus berupa gambar.',
             'image_poster.mimes' => 'Poster harus berformat JPG, JPEG, PNG, atau WEBP.',
             'image_poster.max' => 'Ukuran poster maksimal 2 MB.',
@@ -289,7 +287,7 @@ class KegiatanController extends Controller
         // Pastikan deskripsi tetap memiliki nilai jika kolom database NOT NULL.
         $validated['description'] = $validated['description'] ?? '';
 
-        // Ganti poster hanya jika pengguna mengunggah gambar baru.
+        // Ganti poster dan hapus poster lama jika tersedia.
         if ($request->hasFile('image_poster')) {
             $posterBaru = $request->file('image_poster')
                 ->store('activity-posters', 'public');

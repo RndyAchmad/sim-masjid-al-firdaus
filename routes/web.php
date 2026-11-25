@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\PembangunanController as AdminPembangunanControll
 use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidController;
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\Admin\ZakatController as AdminZakatController;
+use App\Http\Controllers\Admin\IdulAdhaController as AdminIdulAdhaController;
 // Admin Controllers
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
@@ -127,6 +128,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             Route::get('/{id}/edit', [AdminZakatController::class, 'edit'])->name('edit');
             Route::put('/{id}', [AdminZakatController::class, 'update'])->name('update');
             Route::delete('/{id}', [AdminZakatController::class, 'destroy'])->name('destroy');
+        });
+
+        // Idul Adha: Admin, Superadmin
+        Route::prefix('idul-adha')->name('idul-adha.')->group(function () {
+            Route::get('/', [AdminIdulAdhaController::class, 'index'])->name('index');
+            Route::get('/create', [AdminIdulAdhaController::class, 'create'])->name('create');
+            Route::post('/', [AdminIdulAdhaController::class, 'store'])->name('store');
+            Route::get('/{idul_adha}', [AdminIdulAdhaController::class, 'show'])->name('show');
+            Route::get('/{idul_adha}/edit', [AdminIdulAdhaController::class, 'edit'])->name('edit');
+            Route::put('/{idul_adha}', [AdminIdulAdhaController::class, 'update'])->name('update');
+            Route::delete('/{idul_adha}', [AdminIdulAdhaController::class, 'destroy'])->name('destroy');
         });
     });
 

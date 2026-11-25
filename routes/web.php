@@ -117,6 +117,17 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             Route::put('/{id}', [AdminBeritaController::class, 'update'])->name('update');
             Route::delete('/{id}', [AdminBeritaController::class, 'destroy'])->name('destroy');
         });
+
+        // ZAKAT: Admin, Superadmin
+        Route::prefix('zakat')->name('zakat.')->group(function () {
+            Route::get('/', [AdminZakatController::class, 'index'])->name('index');
+            Route::get('/create', [AdminZakatController::class, 'create'])->name('create');
+            Route::post('/', [AdminZakatController::class, 'store'])->name('store');
+            Route::get('/{id}', [AdminZakatController::class, 'show'])->name('show');
+            Route::get('/{id}/edit', [AdminZakatController::class, 'edit'])->name('edit');
+            Route::put('/{id}', [AdminZakatController::class, 'update'])->name('update');
+            Route::delete('/{id}', [AdminZakatController::class, 'destroy'])->name('destroy');
+        });
     });
 
     // INVENTARIS: SUPERADMIN, SEKRETARIS
@@ -139,17 +150,6 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/{id}/edit', [AdminLaporanKeuanganController::class, 'edit'])->name('edit');
         Route::put('/{id}', [AdminLaporanKeuanganController::class, 'update'])->name('update');
         Route::delete('/{id}', [AdminLaporanKeuanganController::class, 'destroy'])->name('destroy');
-    });
-
-    // ZAKAT: Admin, Superadmin
-    Route::prefix('zakat')->name('zakat.')->group(function () {
-        Route::get('/', [AdminZakatController::class, 'index'])->name('index');
-        Route::get('/create', [AdminZakatController::class, 'create'])->name('create');
-        Route::post('/', [AdminZakatController::class, 'store'])->name('store');
-        Route::get('/{id}', [AdminZakatController::class, 'show'])->name('show');
-        Route::get('/{id}/edit', [AdminZakatController::class, 'edit'])->name('edit');
-        Route::put('/{id}', [AdminZakatController::class, 'update'])->name('update');
-        Route::delete('/{id}', [AdminZakatController::class, 'destroy'])->name('destroy');
     });
 
     // PEMBANGUNAN: SUPERADMIN, BENDAHARA

@@ -135,10 +135,20 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
             Route::get('/', [AdminIdulAdhaController::class, 'index'])->name('index');
             Route::get('/create', [AdminIdulAdhaController::class, 'create'])->name('create');
             Route::post('/', [AdminIdulAdhaController::class, 'store'])->name('store');
-            Route::get('/{idul_adha}', [AdminIdulAdhaController::class, 'show'])->name('show');
-            Route::get('/{idul_adha}/edit', [AdminIdulAdhaController::class, 'edit'])->name('edit');
-            Route::put('/{idul_adha}', [AdminIdulAdhaController::class, 'update'])->name('update');
-            Route::delete('/{idul_adha}', [AdminIdulAdhaController::class, 'destroy'])->name('destroy');
+
+            // Taruh kelompok-sapi DI ATAS route /{idul_adha}
+            Route::prefix('kelompok-sapi')->name('kelompok-sapi.')->group(function () {
+                Route::get('/', [AdminIdulAdhaController::class, 'cowGroupsIndex'])->name('index');
+                Route::post('/', [AdminIdulAdhaController::class, 'storeCowGroup'])->name('store');
+                Route::post('/{cowGroup}/members', [AdminIdulAdhaController::class, 'addCowGroupMember'])->name('members.store');
+                Route::delete('/{cowGroup}/members/{member}', [AdminIdulAdhaController::class, 'removeCowGroupMember'])->name('members.destroy');
+                Route::delete('/{cowGroup}', [AdminIdulAdhaController::class, 'destroyCowGroup'])->name('destroy');
+            });
+
+            Route::get('/{idul_adha}', [AdminIdulAdhaController::class, 'show'])->whereNumber('idul_adha')->name('show');
+            Route::get('/{idul_adha}/edit', [AdminIdulAdhaController::class, 'edit'])->whereNumber('idul_adha')->name('edit');
+            Route::put('/{idul_adha}', [AdminIdulAdhaController::class, 'update'])->whereNumber('idul_adha')->name('update');
+            Route::delete('/{idul_adha}', [AdminIdulAdhaController::class, 'destroy'])->whereNumber('idul_adha')->name('destroy');
         });
     });
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\AnimalType;
 use App\Enums\ProcurementType;
 use App\Http\Controllers\Controller;
+use App\Models\IdulAdhaCowGroup;
+use App\Models\IdulAdhaCowGroupMember;
 use App\Models\IdulAdhaQurban;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -67,10 +69,15 @@ class IdulAdhaController extends Controller
             'self_procured_count' => (clone $baseQuery)->where('procurement_type', ProcurementType::SelfProcured->value)->count(),
             'total_infaq' => (int) (clone $baseQuery)->sum('infaq_amount'),
         ];
+        
+        $cowGroups = $this->getCowGroupsForHijriYear($hijriYear);
+        $goatQurbans = $this->getGoatQurbansForHijriYear($hijriYear);
 
         return view('admin.idul-adha.index', compact(
             'qurbans',
             'summary',
+            'cowGroups',
+            'goatQurbans',
             'search',
             'date',
             'hijriYear',
@@ -296,5 +303,214 @@ class IdulAdhaController extends Controller
                 ? trim($validated['notes'])
                 : null,
         ];
+    }
+    
+    private function getCowGroupsForHijriYear(string $hijriYear)
+    {
+        return IdulAdhaCowGroup::query()
+            ->with(['members.qurban'])
+            ->when($hijriYear !== '' && $hijriYear !== 'all', function ($query) use ($hijriYear) {
+                $query->where('hijri_year', $hijriYear);
+            })
+            ->orderBy('id')
+            ->get();
+    }
+
+    public function cowGroupsIndex(Request $request): View
+    {
+        $availableHijriYears = IdulAdhaQurban::query()
+            ->whereNotNull('hijri_year')
+            ->where('hijri_year', '!=', '')
+            ->pluck('hijri_year')
+            ->merge(
+                IdulAdhaCowGroup::query()
+                    ->whereNotNull('hijri_year')
+                    ->where('hijri_year', '!=', '')
+                    ->pluck('hijri_year')
+            )
+            ->unique()
+            ->sortByDesc(fn ($year) => (int) $year)
+            ->values();
+
+        $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
+        $hijriYear = trim((string) $request->query('hijri_year', $latestHijriYear));
+        if ($hijriYear === '' || $hijriYear === 'all') {
+            $hijriYear = $latestHijriYear;
+        }
+
+        $cowGroups = IdulAdhaCowGroup::query()
+            ->with(['members.qurban'])
+            ->where('hijri_year', $hijriYear)
+            ->orderBy('id')
+            ->get();
+
+        $availableCowQurbans = IdulAdhaQurban::query()
+            ->where('hijri_year', $hijriYear)
+            ->where('animal_type', AnimalType::Sapi->value)
+            ->doesntHave('cowGroupMember')
+            ->orderBy('person_name')
+            ->get();
+
+        return view('admin.idul-adha.kelompok-sapi', compact(
+            'cowGroups',
+            'availableCowQurbans',
+            'availableHijriYears',
+            'latestHijriYear',
+            'hijriYear'
+        ));
+    }
+
+    public function storeCowGroup(Request $request): RedirectResponse
+    {
+        $validated = $request->validate(
+            [
+                'hijri_year' => ['required', 'regex:/^[0-9]{4}$/'],
+                'group_name' => ['required', 'string', 'max:255'],
+                'notes' => ['nullable', 'string'],
+            ],
+            [
+                'hijri_year.required' => 'Tahun Hijriah wajib diisi.',
+                'hijri_year.regex' => 'Tahun Hijriah harus berupa 4 digit angka.',
+                'group_name.required' => 'Nama kelompok sapi wajib diisi.',
+            ]
+        );
+
+        try {
+            IdulAdhaCowGroup::create([
+                'hijri_year' => trim($validated['hijri_year']),
+                'group_name' => trim($validated['group_name']),
+                'notes' => isset($validated['notes']) && trim($validated['notes']) !== ''
+                    ? trim($validated['notes'])
+                    : null,
+            ]);
+
+            return redirect()
+                ->route('admin.idul-adha.kelompok-sapi.index', ['hijri_year' => trim($validated['hijri_year'])])
+                ->with('success', 'Kelompok sapi berhasil ditambahkan.');
+        } catch (\Throwable $e) {
+            Log::error('Gagal membuat kelompok sapi: ' . $e->getMessage(), ['exception' => $e]);
+
+            return back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat membuat kelompok sapi.');
+        }
+    }
+
+    public function addCowGroupMember(Request $request, IdulAdhaCowGroup $cowGroup): RedirectResponse
+    {
+        $validated = $request->validate(
+            [
+                'idul_adha_qurban_id' => ['required', 'integer', 'exists:idul_adha_qurbans,id'],
+            ],
+            [
+                'idul_adha_qurban_id.required' => 'Pilih data pengqurban sapi terlebih dahulu.',
+                'idul_adha_qurban_id.exists' => 'Data pengqurban tidak ditemukan.',
+            ]
+        );
+
+        try {
+            DB::transaction(function () use ($validated, $cowGroup) {
+                $lockedGroup = IdulAdhaCowGroup::query()
+                    ->withCount('members')
+                    ->lockForUpdate()
+                    ->findOrFail($cowGroup->id);
+
+                if ($lockedGroup->members_count >= IdulAdhaCowGroup::MAX_MEMBERS) {
+                    throw new \RuntimeException(
+                        'Kelompok sapi ' . $lockedGroup->group_name . ' sudah penuh (maksimal ' . IdulAdhaCowGroup::MAX_MEMBERS . ' orang).'
+                    );
+                }
+
+                $qurban = IdulAdhaQurban::query()->findOrFail($validated['idul_adha_qurban_id']);
+
+                if ($qurban->animal_type !== AnimalType::Sapi) {
+                    throw new \RuntimeException('Hanya data pengqurban sapi yang dapat dimasukkan ke kelompok sapi.');
+                }
+
+                if ((string) $qurban->hijri_year !== (string) $lockedGroup->hijri_year) {
+                    throw new \RuntimeException('Tahun Hijriah pengqurban harus sama dengan kelompok sapi.');
+                }
+
+                $alreadyAssigned = IdulAdhaCowGroupMember::query()
+                    ->where('idul_adha_qurban_id', $qurban->id)
+                    ->exists();
+
+                if ($alreadyAssigned) {
+                    throw new \RuntimeException('Pengqurban tersebut sudah masuk ke kelompok sapi lain.');
+                }
+
+                IdulAdhaCowGroupMember::create([
+                    'idul_adha_cow_group_id' => $lockedGroup->id,
+                    'idul_adha_qurban_id' => $qurban->id,
+                ]);
+            });
+
+            return redirect()
+                ->route('admin.idul-adha.kelompok-sapi.index', ['hijri_year' => $cowGroup->hijri_year])
+                ->with('success', 'Peserta berhasil dimasukkan ke ' . $cowGroup->group_name . '.');
+        } catch (\RuntimeException $e) {
+            return back()->with('error', $e->getMessage());
+        } catch (\Throwable $e) {
+            Log::error('Gagal menambahkan anggota kelompok sapi: ' . $e->getMessage(), [
+                'cow_group_id' => $cowGroup->id,
+                'exception' => $e,
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat menambahkan peserta ke kelompok sapi.');
+        }
+    }
+
+    public function removeCowGroupMember(IdulAdhaCowGroup $cowGroup, IdulAdhaCowGroupMember $member): RedirectResponse
+    {
+        if ((int) $member->idul_adha_cow_group_id !== (int) $cowGroup->id) {
+            return back()->with('error', 'Anggota tidak sesuai dengan kelompok sapi yang dipilih.');
+        }
+
+        try {
+            $member->delete();
+
+            return redirect()
+                ->route('admin.idul-adha.kelompok-sapi.index', ['hijri_year' => $cowGroup->hijri_year])
+                ->with('success', 'Peserta berhasil dikeluarkan dari kelompok sapi.');
+        } catch (\Throwable $e) {
+            Log::error('Gagal mengeluarkan anggota kelompok sapi: ' . $e->getMessage(), [
+                'member_id' => $member->id,
+                'exception' => $e,
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat mengeluarkan peserta.');
+        }
+    }
+
+    public function destroyCowGroup(IdulAdhaCowGroup $cowGroup): RedirectResponse
+    {
+        $hijriYear = $cowGroup->hijri_year;
+
+        try {
+            $cowGroup->delete();
+
+            return redirect()
+                ->route('admin.idul-adha.kelompok-sapi.index', ['hijri_year' => $hijriYear])
+                ->with('success', 'Kelompok sapi berhasil dihapus.');
+        } catch (\Throwable $e) {
+            Log::error('Gagal menghapus kelompok sapi: ' . $e->getMessage(), [
+                'cow_group_id' => $cowGroup->id,
+                'exception' => $e,
+            ]);
+
+            return back()->with('error', 'Terjadi kesalahan saat menghapus kelompok sapi.');
+        }
+    }
+
+    private function getGoatQurbansForHijriYear(string $hijriYear)
+    {
+        return IdulAdhaQurban::query()
+            ->where('animal_type', AnimalType::Kambing->value)
+            ->when($hijriYear !== '' && $hijriYear !== 'all', function ($query) use ($hijriYear) {
+                $query->where('hijri_year', $hijriYear);
+            })
+            ->orderByDesc('received_date')
+            ->orderByDesc('id')
+            ->get();
     }
 }

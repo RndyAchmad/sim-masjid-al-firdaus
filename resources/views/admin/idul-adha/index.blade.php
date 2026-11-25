@@ -313,7 +313,7 @@
                     </p>
                 </div>
 
-                <a href=""
+                <a href="{{ route('admin.idul-adha.kelompok-sapi.index', ['hijri_year' => $activeHijriYear]) }}"
                     class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-[#c49c4d] px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-[#b08a3e]">
                     Kelola Kelompok Sapi
                 </a>
@@ -372,6 +372,92 @@
                             <tr>
                                 <td colspan="5" class="px-5 py-10 text-center text-sm text-gray-400">
                                     Belum ada data kelompok sapi untuk tahun Hijriah yang dipilih.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        @php
+            $goatQurbans = $goatQurbans ?? collect();
+        @endphp
+
+        {{-- Tabel Khusus Data Kambing --}}
+        <div class="overflow-hidden rounded-xl border border-gray-100 bg-white shadow-sm">
+            <div class="flex flex-col justify-between gap-2 border-b border-gray-100 px-5 py-4 sm:flex-row sm:items-center">
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Rekap Qurban Kambing</h3>
+                    <p class="text-xs text-gray-500">1 orang per ekor kambing (tidak dikelompokkan).</p>
+                </div>
+                <span class="inline-flex w-fit rounded-lg bg-[#c49c4d]/15 px-2.5 py-1 text-xs font-semibold text-[#9c7832]">
+                    {{ $goatQurbans->count() }} Ekor / Orang
+                </span>
+            </div>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-gray-600">
+                    <thead class="border-b border-gray-100 bg-gray-50 text-xs font-semibold uppercase text-gray-500">
+                        <tr>
+                            <th class="px-5 py-3.5">No</th>
+                            <th class="px-5 py-3.5">Nama</th>
+                            <th class="px-5 py-3.5">Tahun H</th>
+                            <th class="px-5 py-3.5">Pengadaan</th>
+                            <th class="px-5 py-3.5 text-right">Nominal / Biaya</th>
+                            <th class="px-5 py-3.5">Alamat / Catatan</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse ($goatQurbans as $goat)
+                            @php
+                                $procType = $goat->procurement_type instanceof \App\Enums\ProcurementType
+                                    ? $goat->procurement_type
+                                    : ($goat->procurement_type ? \App\Enums\ProcurementType::from($goat->procurement_type) : null);
+                                $isSelf = $procType === \App\Enums\ProcurementType::SelfProcured;
+                                $nominal = $isSelf ? (int) $goat->slaughter_care_fee : (int) $goat->agreed_amount;
+                            @endphp
+                            <tr class="hover:bg-gray-50/70">
+                                <td class="whitespace-nowrap px-5 py-4 font-medium text-gray-500">
+                                    {{ $loop->iteration }}
+                                </td>
+                                <td class="px-5 py-4 font-semibold text-gray-900">
+                                    {{ $goat->person_name }}
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4">
+                                    @if ($goat->hijri_year)
+                                        <span class="inline-flex rounded-lg bg-[#c49c4d]/15 px-2.5 py-1 text-xs font-semibold text-[#9c7832]">
+                                            {{ $goat->hijri_year }} H
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4">
+                                    @if ($procType)
+                                        <span class="rounded-md px-2 py-0.5 text-xs font-medium {{ $procType->badgeClass() }}">
+                                            {{ $procType->label() }}
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-gray-400">-</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-5 py-4 text-right">
+                                    <span class="font-semibold {{ $isSelf ? 'text-gray-700' : 'text-[#c49c4d]' }}">
+                                        Rp {{ number_format($nominal, 0, ',', '.') }}
+                                    </span>
+                                    @if ($isSelf)
+                                        <span class="block text-[11px] text-gray-400">Sembelih &amp; rawat</span>
+                                    @endif
+                                </td>
+                                <td class="px-5 py-4 text-xs text-gray-500">
+                                    {{ $goat->address ?: ($goat->notes ?: '-') }}
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="px-5 py-10 text-center text-sm text-gray-400">
+                                    Belum ada data qurban kambing untuk tahun Hijriah yang dipilih.
                                 </td>
                             </tr>
                         @endforelse

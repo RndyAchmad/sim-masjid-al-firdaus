@@ -28,7 +28,7 @@ class DashboardController extends Controller
         $isSekretaris = in_array($role, ['superadmin', 'sekretaris'], true);
         $isBendahara = in_array($role, ['superadmin', 'bendahara'], true);
 
-        // Card Statistik Utama (1 card = 1 data, tanpa zakat mal & tanpa zakat fitrah)
+        // Card statistik (1 card = 1 data, tanpa zakat/infaq)
         $cards = [
             'cash_balance' => ($isBendahara && Schema::hasTable('financial_reports'))
                 ? (float) DB::table('financial_reports')->where('type', 'income')->sum('amount')
@@ -39,9 +39,6 @@ class DashboardController extends Controller
                 : 0,
             'inventories_count' => ($isSekretaris && Schema::hasTable('inventories'))
                 ? (int) DB::table('inventories')->count()
-                : 0,
-            'infaq_total' => ($isAdmin && Schema::hasTable('zakat_transactions'))
-                ? (int) DB::table('zakat_transactions')->sum('infaq_cash_amount')
                 : 0,
             'activities_count' => ($isAdmin && Schema::hasTable('activity_schedules'))
                 ? (int) DB::table('activity_schedules')->count()

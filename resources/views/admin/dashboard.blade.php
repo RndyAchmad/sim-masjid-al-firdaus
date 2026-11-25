@@ -13,7 +13,7 @@
                         Assalamu'alaikum, {{ $user->name ?? 'Takmir Masjid' }}
                     </h2>
                     <p class="mt-1 text-sm text-gray-500">
-                        Ringkasan angka utama dalam bentuk card dan rincian data dalam bentuk tabel.
+                        Ringkasan data utama dalam bentuk card dan rincian daftar dalam bentuk tabel.
                     </p>
                 </div>
 
@@ -51,13 +51,6 @@
             @endif
 
             @if ($isAdmin)
-                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs">
-                    <p class="text-xs font-medium text-gray-500">Total Infaq</p>
-                    <p class="mt-2 text-2xl font-bold text-gray-900">
-                        Rp {{ number_format($cards['infaq_total'], 0, ',', '.') }}
-                    </p>
-                </div>
-
                 <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-xs">
                     <p class="text-xs font-medium text-gray-500">Jumlah Kegiatan</p>
                     <p class="mt-2 text-2xl font-bold text-gray-900">

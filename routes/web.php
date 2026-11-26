@@ -42,6 +42,7 @@ Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'ind
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
 Route::get('/laporan/idul-adha', [GuestLaporanController::class, 'indexIdulAdha'])->name('laporan.idul-adha');
+Route::get('/laporan/zakat', [GuestLaporanController::class, 'indexZakat'])->name('laporan.zakat');
 
 // AUTHENTICATION ROUTES
 Route::middleware('guest')->group(function () {

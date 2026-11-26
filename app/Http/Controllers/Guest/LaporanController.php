@@ -7,6 +7,8 @@ use App\Enums\AnimalType;
 use App\Http\Controllers\Controller;
 use App\Models\IdulAdhaCowGroup;
 use App\Models\IdulAdhaQurban;
+use App\Models\ZakatRegistration;
+use App\Models\ZakatTransaction;
 use App\Models\DevelopmentTransaction;
 use App\Models\FinancialReport;
 use App\Models\Inventory;
@@ -306,6 +308,86 @@ class LaporanController extends Controller
             'availableHijriYears',
             'latestHijriYear',
             'search'
+        ));
+    }
+
+    public function indexZakat(Request $request): View
+    {
+        $search = trim((string) $request->query('search', ''));
+        $date = trim((string) $request->query('date', ''));
+
+        $availableHijriYears = ZakatRegistration::query()
+            ->whereNotNull('hijri_year')
+            ->where('hijri_year', '!=', '')
+            ->distinct()
+            ->pluck('hijri_year')
+            ->sortByDesc(fn ($year) => (int) $year)
+            ->values();
+
+        $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
+
+        $hijriYear = $request->has('hijri_year')
+            ? trim((string) $request->query('hijri_year'))
+            : $latestHijriYear;
+
+        if ($hijriYear === '') {
+            $hijriYear = $latestHijriYear;
+        }
+
+        $baseQuery = ZakatRegistration::query()
+            ->when($hijriYear !== 'all', function ($query) use ($hijriYear) {
+                $query->where('hijri_year', $hijriYear);
+            })
+            ->when($search !== '', function ($query) use ($search) {
+                $like = "%{$search}%";
+                $query->where(function ($q) use ($like) {
+                    $q->where('head_of_family', 'like', $like)
+                        ->orWhere('address', 'like', $like)
+                        ->orWhereHas('transactions', function ($t) use ($like) {
+                            $t->where('person_name', 'like', $like);
+                        });
+                });
+            })
+            ->when($date !== '', function ($query) use ($date) {
+                $query->whereDate('received_date', $date);
+            });
+
+        $registrations = (clone $baseQuery)
+            ->with('transactions')
+            ->orderByDesc('received_date')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        $registrationIds = (clone $baseQuery)->select('id');
+
+        $trxStats = ZakatTransaction::query()
+            ->whereIn('zakat_registration_id', $registrationIds)
+            ->selectRaw('
+                COUNT(*) as total_souls,
+                COALESCE(SUM(fitrah_rice_kg), 0) as total_fitrah_rice_kg,
+                COALESCE(SUM(mal_cash_amount), 0) as total_mal_cash_amount,
+                COALESCE(SUM(infaq_cash_amount), 0) as total_infaq_cash_amount
+            ')
+            ->first();
+
+        $summary = [
+            'total_fitrah_rice_kg' => (float) ($trxStats->total_fitrah_rice_kg ?? 0),
+            'total_registrations' => (int) (clone $baseQuery)->count(),
+            'total_souls' => (int) ($trxStats->total_souls ?? 0),
+            'total_mal_cash_amount' => (int) ($trxStats->total_mal_cash_amount ?? 0),
+            'total_infaq_cash_amount' => (int) ($trxStats->total_infaq_cash_amount ?? 0),
+        ];
+
+        return view('guest.laporan.zakat', compact(
+            'registrations',
+            'summary',
+            'search',
+            'date',
+            'hijriYear',
+            'availableHijriYears',
+            'latestHijriYear'
         ));
     }
 }

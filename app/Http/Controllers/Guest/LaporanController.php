@@ -3,12 +3,16 @@
 namespace App\Http\Controllers\Guest;
 
 use App\Enums\TransactionType;
+use App\Enums\AnimalType;
 use App\Http\Controllers\Controller;
+use App\Models\IdulAdhaCowGroup;
+use App\Models\IdulAdhaQurban;
 use App\Models\DevelopmentTransaction;
 use App\Models\FinancialReport;
 use App\Models\Inventory;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class LaporanController extends Controller
 {
@@ -216,6 +220,92 @@ class LaporanController extends Controller
             'totalBaik',
             'totalPerbaikan',
             'totalRusakHilang'
+        ));
+    }
+
+    public function indexIdulAdha(Request $request): View
+    {
+        $availableHijriYears = IdulAdhaQurban::query()
+            ->whereNotNull('hijri_year')
+            ->where('hijri_year', '!=', '')
+            ->pluck('hijri_year')
+            ->merge(
+                IdulAdhaCowGroup::query()
+                    ->whereNotNull('hijri_year')
+                    ->where('hijri_year', '!=', '')
+                    ->pluck('hijri_year')
+            )
+            ->unique()
+            ->sortByDesc(fn ($year) => (int) $year)
+            ->values();
+
+        $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
+        $hijriYear = $request->has('hijri_year')
+            ? trim((string) $request->query('hijri_year'))
+            : $latestHijriYear;
+
+        if ($hijriYear === '') {
+            $hijriYear = $latestHijriYear;
+        }
+
+        $search = trim((string) $request->query('search', ''));
+
+        $baseQuery = IdulAdhaQurban::query()
+            ->when($hijriYear !== 'all', function ($query) use ($hijriYear) {
+                $query->where('hijri_year', $hijriYear);
+            });
+
+        $summary = [
+            'sapi_count' => (clone $baseQuery)->where('animal_type', AnimalType::Sapi->value)->count(),
+            'kambing_count' => (clone $baseQuery)->where('animal_type', AnimalType::Kambing->value)->count(),
+            'group_count' => IdulAdhaCowGroup::query()
+                ->when($hijriYear !== 'all', fn ($q) => $q->where('hijri_year', $hijriYear))
+                ->count(),
+            'total_infaq' => (int) (clone $baseQuery)->sum('infaq_amount'),
+        ];
+
+        $qurbans = (clone $baseQuery)
+            ->when($search !== '', function ($query) use ($search) {
+                $like = "%{$search}%";
+                $query->where(function ($q) use ($like) {
+                    $q->where('person_name', 'like', $like)
+                        ->orWhere('address', 'like', $like);
+                });
+            })
+            ->orderByDesc('received_date')
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        $cowGroups = IdulAdhaCowGroup::query()
+            ->with(['members.qurban'])
+            ->when($hijriYear !== 'all', fn ($q) => $q->where('hijri_year', $hijriYear))
+            ->orderBy('id')
+            ->get();
+
+        $goatQurbans = (clone $baseQuery)
+            ->where('animal_type', AnimalType::Kambing->value)
+            ->when($search !== '', function ($query) use ($search) {
+                $like = "%{$search}%";
+                $query->where(function ($q) use ($like) {
+                    $q->where('person_name', 'like', $like)
+                        ->orWhere('address', 'like', $like)
+                        ->orWhere('notes', 'like', $like);
+                });
+            })
+            ->orderByDesc('received_date')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('guest.laporan.idul-adha', compact(
+            'summary',
+            'qurbans',
+            'cowGroups',
+            'goatQurbans',
+            'hijriYear',
+            'availableHijriYears',
+            'latestHijriYear',
+            'search'
         ));
     }
 }

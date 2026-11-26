@@ -1,6 +1,6 @@
 <?php
 
-// Guest Controllers
+// Admin Controllers
 use App\Http\Controllers\Admin\AccountProfileController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\BeritaController as AdminBeritaController;
@@ -14,7 +14,7 @@ use App\Http\Controllers\Admin\ProfilMasjidController as AdminProfilMasjidContro
 use App\Http\Controllers\Admin\UsersController as AdminUsersController;
 use App\Http\Controllers\Admin\ZakatController as AdminZakatController;
 use App\Http\Controllers\Admin\IdulAdhaController as AdminIdulAdhaController;
-// Admin Controllers
+// Guest Controllers
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Guest\ActivityController as GuestActivityController;
 use App\Http\Controllers\Guest\ArticleController as GuestArticleController;
@@ -41,6 +41,7 @@ Route::get('/laporan/keuangan-operasional', [GuestLaporanController::class, 'ind
 Route::get('/laporan/keuangan-pembangunan', [GuestLaporanController::class, 'indexPembangunan'])->name('laporan.pembangunan');
 Route::get('/laporan/inventaris', [GuestLaporanController::class, 'indexInventaris'])->name('laporan.inventaris');
 Route::get('/kontak', [GuestKontakController::class, 'index'])->name('kontak');
+Route::get('/laporan/idul-adha', [GuestLaporanController::class, 'indexIdulAdha'])->name('laporan.idul-adha');
 
 // AUTHENTICATION ROUTES
 Route::middleware('guest')->group(function () {

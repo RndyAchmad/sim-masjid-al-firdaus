@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\FinancialReport;
 use App\Enums\TransactionType;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -246,5 +247,75 @@ class LaporanKeuanganController extends Controller
         return redirect()
             ->route('admin.laporan-keuangan.index')
             ->with('success', 'Transaksi berhasil dihapus.');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $search = trim((string) $request->query('search', ''));
+        $bulanInput = (string) $request->query('bulan', now()->format('Y-m'));
+
+        $periode = preg_match('/^\d{4}-\d{2}$/', $bulanInput)
+            ? Carbon::createFromFormat('Y-m', $bulanInput)->locale('id')
+            : now()->locale('id');
+
+        $bulan = $periode->format('Y-m');
+        $namaBulan = $periode->translatedFormat('F Y');
+        $awalBulan = $periode->copy()->startOfMonth()->toDateString();
+        $akhirBulan = $periode->copy()->endOfMonth()->toDateString();
+        $periodeBelumBerjalan = $periode->copy()->startOfMonth()->gt(now()->startOfMonth());
+
+        // Saldo kas keseluruhan (seluruh transaksi tercatat)
+        $totalPemasukanAll = (float) FinancialReport::where('type', TransactionType::INCOME)->sum('amount');
+        $totalPengeluaranAll = (float) FinancialReport::where('type', TransactionType::EXPENSE)->sum('amount');
+        $saldoKas = $totalPemasukanAll - $totalPengeluaranAll;
+
+        // Saldo awal periode (transaksi sebelum awal bulan terpilih)
+        $pemasukanSebelum = (float) FinancialReport::where('type', TransactionType::INCOME)
+            ->whereDate('transaction_date', '<', $awalBulan)
+            ->sum('amount');
+        $pengeluaranSebelum = (float) FinancialReport::where('type', TransactionType::EXPENSE)
+            ->whereDate('transaction_date', '<', $awalBulan)
+            ->sum('amount');
+        $saldoAwalPeriode = $pemasukanSebelum - $pengeluaranSebelum;
+
+        // Query transaksi pada bulan terpilih
+        $queryPeriode = FinancialReport::query()
+            ->whereBetween('transaction_date', [$awalBulan, $akhirBulan]);
+
+        $pemasukanBulanIni = (float) (clone $queryPeriode)
+            ->where('type', TransactionType::INCOME)
+            ->sum('amount');
+        $pengeluaranBulanIni = (float) (clone $queryPeriode)
+            ->where('type', TransactionType::EXPENSE)
+            ->sum('amount');
+
+        $saldoAkhirPeriode = $periodeBelumBerjalan
+            ? $saldoAwalPeriode
+            : ($saldoAwalPeriode + $pemasukanBulanIni - $pengeluaranBulanIni);
+
+        $laporanKeuangan = (clone $queryPeriode)
+            ->when($search !== '', function ($q) use ($search) {
+                $q->where('description', 'like', '%' . $search . '%');
+            })
+            ->orderBy('transaction_date')
+            ->orderBy('id')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.laporan-keuangan.pdf', compact(
+            'saldoKas',
+            'saldoAwalPeriode',
+            'pemasukanBulanIni',
+            'pengeluaranBulanIni',
+            'saldoAkhirPeriode',
+            'namaBulan',
+            'periodeBelumBerjalan',
+            'search',
+            'bulan',
+            'laporanKeuangan'
+        ))->setPaper('a4', 'portrait');
+
+        $filename = 'laporan-keuangan-' . $bulan . '.pdf';
+
+        return $pdf->download($filename);
     }
 }

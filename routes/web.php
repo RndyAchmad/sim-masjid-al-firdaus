@@ -169,6 +169,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::middleware('role:superadmin,bendahara')->prefix('laporan-keuangan')->name('laporan-keuangan.')->group(function () {
         Route::get('/', [AdminLaporanKeuanganController::class, 'index'])->name('index');
         Route::get('/create', [AdminLaporanKeuanganController::class, 'create'])->name('create');
+        Route::get('/export-pdf', [AdminLaporanKeuanganController::class, 'exportPdf'])->name('export-pdf');
         Route::post('/', [AdminLaporanKeuanganController::class, 'store'])->name('store');
         Route::get('/{id}', [AdminLaporanKeuanganController::class, 'show'])->name('show');
         Route::get('/{id}/edit', [AdminLaporanKeuanganController::class, 'edit'])->name('edit');

@@ -103,9 +103,25 @@ class IdulAdhaController extends Controller
             $targetHijriYear = $latestHijriYear;
         }
 
+        $previousPeople = IdulAdhaQurban::query()
+            ->whereNotNull('person_name')
+            ->where('person_name', '!=', '')
+            ->orderByDesc('received_date')
+            ->orderByDesc('id')
+            ->get(['person_name', 'phone', 'address', 'hijri_year'])
+            ->unique(fn ($item) => mb_strtolower(trim($item->person_name)))
+            ->values()
+            ->map(fn ($item) => [
+                'person_name' => trim($item->person_name),
+                'phone' => $item->phone ?? '',
+                'address' => $item->address ?? '',
+                'hijri_year' => $item->hijri_year ?? '',
+            ]);
+
         return view('admin.idul-adha.create', compact(
             'latestHijriYear',
-            'targetHijriYear'
+            'targetHijriYear',
+            'previousPeople'
         ));
     }
 

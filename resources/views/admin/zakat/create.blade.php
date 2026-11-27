@@ -12,6 +12,22 @@
             ->sortDesc()
             ->values();
 
+        $nameSuggestions = collect($previousNames ?? [])
+            ->map(fn ($n) => trim((string) $n))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+
+        $headSuggestions = collect($previousHeads ?? [])
+            ->map(fn ($h) => [
+                'name' => trim((string) data_get($h, 'name', '')),
+                'address' => trim((string) data_get($h, 'address', '')),
+            ])
+            ->filter(fn ($h) => $h['name'] !== '')
+            ->values()
+            ->all();
+
         $initialRows = old('items', [
             ['nama' => '', 'fitrah_kg' => 2.5, 'mal_rp' => 0, 'infaq_rp' => 0],
         ]);
@@ -25,6 +41,11 @@
         data-confirm-text="Ya, Simpan"
         x-data="{
             kepalaKeluarga: @js(old('kepala_keluarga', '')),
+            alamat: @js(old('alamat', '')),
+            alamatManual: false,
+            headOpen: false,
+            headSuggestions: @js($headSuggestions),
+            nameSuggestions: @js($nameSuggestions),
             rows: @js($initialRows),
             addRow() {
                 this.rows.push({ nama: '', fitrah_kg: 2.5, mal_rp: 0, infaq_rp: 0 });
@@ -33,6 +54,30 @@
                 if (this.rows.length > 1) {
                     this.rows.splice(index, 1);
                 }
+            },
+            filteredHeads(query) {
+                const q = (query || '').trim().toLowerCase();
+                if (q.length < 3) {
+                    return [];
+                }
+                return this.headSuggestions
+                    .filter(item => item.name.toLowerCase().includes(q))
+                    .slice(0, 8);
+            },
+            selectHead(item) {
+                this.kepalaKeluarga = item.name;
+                this.alamat = item.address || '';
+                this.alamatManual = false;
+                this.headOpen = false;
+            },
+            filteredNames(query) {
+                const q = (query || '').trim().toLowerCase();
+                if (q.length < 3) {
+                    return [];
+                }
+                return this.nameSuggestions
+                    .filter(name => name.toLowerCase().includes(q))
+                    .slice(0, 8);
             },
             get totalFitrahKg() {
                 return this.rows.reduce((sum, r) => sum + (parseFloat(r.fitrah_kg) || 0), 0).toFixed(2);
@@ -64,15 +109,38 @@
         {{-- Identitas Keluarga, Tanggal & Tahun Hijriah --}}
         <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div>
+                <div class="relative" @click.outside="headOpen = false">
                     <label class="block text-xs font-semibold text-gray-700">Kepala Keluarga / Pendaftar</label>
                     <input type="text" name="kepala_keluarga" x-model="kepalaKeluarga" required
-                        placeholder="Contoh: Bapak Ahmad Fauzi"
+                        autocomplete="off"
+                        @input="headOpen = (kepalaKeluarga || '').trim().length >= 3"
+                        @focus="headOpen = (kepalaKeluarga || '').trim().length >= 3"
+                        placeholder="Contoh: Bapak Ahmad Fauzi (min. 3 huruf)"
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+
+                    <div x-show="headOpen && filteredHeads(kepalaKeluarga).length > 0" x-cloak
+                        class="absolute left-0 right-0 top-full z-30 mt-1 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+                        <p class="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                            Riwayat Kepala Keluarga
+                        </p>
+                        <template x-for="headItem in filteredHeads(kepalaKeluarga)" :key="headItem.name">
+                            <button type="button"
+                                @mousedown.prevent="selectHead(headItem)"
+                                class="flex w-full items-center justify-between gap-2 px-3.5 py-2 text-left text-xs transition hover:bg-[#c49c4d]/10 hover:text-[#9c7832]">
+                                <div class="min-w-0">
+                                    <p class="truncate font-semibold text-gray-800" x-text="headItem.name"></p>
+                                    <p x-show="headItem.address" class="truncate text-[11px] text-gray-400" x-text="headItem.address"></p>
+                                </div>
+                                <span class="shrink-0 text-[10px] text-gray-400">Pilih</span>
+                            </button>
+                        </template>
+                    </div>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-gray-700">Alamat</label>
-                    <input type="text" name="alamat" value="{{ old('alamat') }}" placeholder="Contoh: P-37 / RT 26"
+                    <input type="text" name="alamat" x-model="alamat"
+                        @input="alamatManual = true"
+                        placeholder="Contoh: P-37 / RT 26"
                         class="mt-1.5 w-full rounded-xl border border-gray-300 px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
                 </div>
                 <div>
@@ -98,11 +166,11 @@
         </div>
 
         {{-- Tabel Utama: Nama (Lebar) | Zakat Fitrah (Kg) | Mal (Rp) | Infaq (Rp) --}}
-        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div class="rounded-2xl border border-gray-200 bg-white shadow-sm">
             <div class="flex flex-col justify-between gap-3 border-b border-gray-100 p-6 sm:flex-row sm:items-center">
                 <div>
                     <h2 class="text-base font-bold text-gray-900">Rincian Per Jiwa / Per Orang</h2>
-                    <p class="mt-0.5 text-xs text-gray-500">Zakat fitrah khusus beras (kg), sedangkan zakat mal dan infaq dalam rupiah (Rp).</p>
+                    <p class="mt-0.5 text-xs text-gray-500">Zakat fitrah khusus beras (kg), sedangkan zakat mal dan infaq dalam rupiah (Rp). Ketik minimal 3 huruf nama untuk melihat saran dari data sebelumnya.</p>
                 </div>
                 <button type="button" @click="addRow()"
                     class="inline-flex items-center gap-1.5 rounded-xl border border-[#c49c4d] bg-[#c49c4d]/10 px-3.5 py-2 text-xs font-semibold text-[#c49c4d] transition hover:bg-[#c49c4d] hover:text-white">
@@ -123,14 +191,32 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         <template x-for="(row, index) in rows" :key="index">
-                            <tr class="hover:bg-gray-50/60">
-                                <td class="px-4 py-3">
+                            <tr x-data="{ suggestionOpen: false }" @click.outside="suggestionOpen = false" class="hover:bg-gray-50/60">
+                                <td class="relative px-4 py-3">
                                     <input type="text" :name="'items[' + index + '][nama]'" x-model="row.nama" required
-                                        placeholder="Nama lengkap"
+                                        autocomplete="off"
+                                        @input="suggestionOpen = (row.nama || '').trim().length >= 3"
+                                        @focus="suggestionOpen = (row.nama || '').trim().length >= 3"
+                                        placeholder="Nama lengkap (min. 3 huruf untuk saran)"
                                         class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
+
+                                    <div x-show="suggestionOpen && filteredNames(row.nama).length > 0" x-cloak
+                                        class="absolute left-4 right-4 top-full z-30 mt-1 max-h-48 overflow-y-auto rounded-xl border border-gray-200 bg-white py-1 shadow-lg">
+                                        <p class="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                                            Riwayat Nama Sebelumnya
+                                        </p>
+                                        <template x-for="nameOption in filteredNames(row.nama)" :key="nameOption">
+                                            <button type="button"
+                                                @mousedown.prevent="row.nama = nameOption; suggestionOpen = false;"
+                                                class="flex w-full items-center justify-between px-3.5 py-2 text-left text-xs font-medium text-gray-700 transition hover:bg-[#c49c4d]/10 hover:text-[#9c7832]">
+                                                <span x-text="nameOption"></span>
+                                                <span class="text-[10px] text-gray-400">Pilih</span>
+                                            </button>
+                                        </template>
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <input type="number" step="0.1" min="0" :name="'items[' + index + '][fitrah_kg]'" x-model="row.fitrah_kg"
+                                    <input type="number" step="0.1" min="2.5" :name="'items[' + index + '][fitrah_kg]'" x-model="row.fitrah_kg"
                                         class="w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-sm focus:border-[#c49c4d] focus:outline-none focus:ring-2 focus:ring-[#c49c4d]/20">
                                 </td>
                                 <td class="px-4 py-3">

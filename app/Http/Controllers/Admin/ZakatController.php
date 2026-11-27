@@ -106,7 +106,32 @@ class ZakatController extends Controller
 
         $latestHijriYear = (string) ($availableHijriYears->first() ?? '1448');
 
-        return view('admin.zakat.create', compact('latestHijriYear', 'availableHijriYears'));
+        $previousNames = ZakatTransaction::query()
+            ->whereNotNull('person_name')
+            ->where('person_name', '!=', '')
+            ->distinct()
+            ->orderBy('person_name')
+            ->pluck('person_name');
+
+        $previousHeads = ZakatRegistration::query()
+            ->whereNotNull('head_of_family')
+            ->where('head_of_family', '!=', '')
+            ->orderByDesc('received_date')
+            ->orderByDesc('id')
+            ->get(['head_of_family', 'address'])
+            ->unique(fn ($item) => mb_strtolower(trim($item->head_of_family)))
+            ->values()
+            ->map(fn ($item) => [
+                'name' => trim($item->head_of_family),
+                'address' => $item->address ? trim($item->address) : '',
+            ]);
+
+        return view('admin.zakat.create', compact(
+            'latestHijriYear',
+            'availableHijriYears',
+            'previousNames',
+            'previousHeads'
+        ));
     }
 
     public function store(Request $request): RedirectResponse
@@ -249,7 +274,7 @@ class ZakatController extends Controller
                 'tanggal' => ['required', 'date'],
                 'items' => ['required', 'array', 'min:1'],
                 'items.*.nama' => ['required', 'string', 'max:255'],
-                'items.*.fitrah_kg' => ['nullable', 'numeric', 'min:0', 'max:9999.99'],
+                'items.*.fitrah_kg' => ['nullable', 'numeric', 'min:2.5', 'max:9999.99'],
                 'items.*.mal_rp' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
                 'items.*.infaq_rp' => ['nullable', 'numeric', 'min:0', 'max:999999999999'],
                 'hijri_year' => ['required', 'regex:/^[0-9]{4}$/'],
@@ -262,7 +287,7 @@ class ZakatController extends Controller
                 'items.min' => 'Minimal harus ada 1 baris rincian jiwa / orang.',
                 'items.*.nama.required' => 'Nama pada setiap baris rincian wajib diisi.',
                 'items.*.fitrah_kg.numeric' => 'Zakat fitrah harus berupa angka (Kg).',
-                'items.*.fitrah_kg.min' => 'Zakat fitrah tidak boleh kurang dari 0.',
+                'items.*.fitrah_kg.min' => 'Zakat fitrah minimal 2.5 Kg.',
                 'items.*.mal_rp.numeric' => 'Nominal zakat mal harus berupa angka.',
                 'items.*.mal_rp.min' => 'Nominal zakat mal tidak boleh kurang dari 0.',
                 'items.*.infaq_rp.numeric' => 'Nominal infaq harus berupa angka.',
